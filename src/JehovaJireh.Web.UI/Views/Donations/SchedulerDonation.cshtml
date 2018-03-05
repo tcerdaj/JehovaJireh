@@ -1,0 +1,763 @@
+﻿@using JehovaJireh.Web.UI.App_GlobalResources
+@{
+    ViewBag.Title = Resources.SchedulerDonation;
+}
+
+<h2>@ViewBag.Title</h2>
+<div id="scheduler"></div>
+<h3>Drags events from the Grid to the Scheduler:</h3>
+<div id="grid"></div>
+<div id="details"></div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/areYouSure")
+    @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/moment")
+    @Scripts.Render("~/bundles/donation/donationviewmodel")
+    @Styles.Render("~/bundles/kendo-css")
+    @Scripts.Render("~/bundles/kendo")
+    <script id="rowTemplate" type="text/x-kendo-tmpl">
+        <tr data-uid="#: uid #">
+            <td class="photo">
+                #if(ImageUrl === '' || ImageUrl === null){#
+                   <img class="drag-image" src="/img/no-photo.png" alt="#: Title #" />
+                #}else{#
+                    <img class="drag-image" src="#: Images[0].ImageUrl #" alt="#: Title #" />
+                    <div>#: Images.length # Images</div>
+                #}#
+            </td>
+            <td class="details">
+                <span class="title">#: Title #</span>
+            </td>
+            <td class="country">
+                #: Description #
+            </td>
+            <td class="country">
+                <a class="k-button k-button-icontext k-grid-edit" href="\\#" onclick="showDetails(this);"><span class="k-icon k-i-cart"></span>View Details</a>
+            </td>
+        </tr>
+    </script>
+    <script id="altRowTemplate" type="text/x-kendo-tmpl">
+        <tr data-uid="#: uid #">
+            <td class="photo">
+                #if(ImageUrl === '' || ImageUrl === null){#
+                   <img class="drag-image" src="/img/no-photo.png" alt="#: Title #" />
+                #}else{#
+                   <img class="drag-image" src="#: Images[0].ImageUrl #" alt="#: Title #" />
+                   <a class="po" href="\\#">#: Images.length # Images</a>
+                #}#
+            </td>
+            <td class="details">
+                <span class="title">#: Title #</span>
+            </td>
+            <td class="country">
+                #: Description #
+            </td>
+            <td class="country"><a class="k-button k-button-icontext k-grid-edit" href="\\#" onclick="showDetails(this);"><span class="k-icon k-i-cart"></span>View Details</a></td>
+        </tr>
+    </script>
+    <script id="event-template" type="text/x-kendo-template">
+        <div class="movie-template" style="padding:5px;cursor:pointer" onclick="showEventDetails('#= uid #')">
+            <img style="width: 115px;height:80px;" src="#= images[0].ImageUrl || '/img/no-photo.png' #">
+            <p class="event-content">
+                #: kendo.toString(start, "hh:mm") # - #: kendo.toString(end, "hh:mm") #
+            </p>
+            <p class="event-content">#: title #</p>
+            <p class="event-content">#: description #</p>
+        </div>
+    </script>
+    <script type="text/x-kendo-template" id="gridDetailsTemplate">
+        <div id="tabstrip">
+            <ul>
+                <li class="k-state-active">
+                    <span>Donation</span>
+                </li>
+                <li>
+                    <span>Contact me</span>
+                </li>
+            </ul>
+            <div id="details-container">
+                <h3>Title: #= Title #</h3>
+                <p><em>Description: #= Description #</em></p>
+                #if(Images === null){#
+                <div class="details-image-container">
+                    <img class="drag-image" src="/img/no-photo.png" alt="#: Title #" />
+                </div>
+                #}else{#
+                # for (var i = 0; i < Images.length; i++) { #
+                <div class="details-image-container" style="margin-bottom:15px;">
+                    <img src="#= Images[i].ImageUrl  #" alt="#= Title #" />
+                </div>
+                # } #
+                #}#
+            </div>
+            <div id="contactme">
+                <img src="#= UserImageUrl #" alt="Contact me" />
+                <p>Name: #= FirstName # #= LastName #</p>
+                <p>Email: #= Email #</p>
+                <p>Phone: #= Phone #</p>
+            </div>
+        </div>
+</script>
+    <script type="text/javascript">
+        var  wnd,    
+             detailsTemplate;
+
+        var userName = '@User.Identity.Name';
+        var cookieName = kendo.format("car_{0}", userName);
+        function showEventDetails(uid) {
+            var dataItem = getItemByArray(uid, $(scheduler).data("kendoScheduler").data());
+            var createdBy = dataItem.item != null ? dataItem.item.CreatedBy : dataItem.donation.CreatedBy; 
+            dataItem.FirstName = createdBy.FirstName;
+            dataItem.LastName = createdBy.LastName;
+            dataItem.Email = createdBy.Email;
+            dataItem.Phone = createdBy.PhoneNumber;
+            dataItem.UserImageUrl = createdBy.ImageUrl;
+            dataItem.Title = dataItem.title;
+            dataItem.Description = dataItem.description;
+            dataItem.Images = dataItem.images;
+
+            wnd.content(detailsTemplate(dataItem));
+            $("#tabstrip").kendoTabStrip({
+                animation: {
+                    open: {
+                        effects: "fadeIn"
+                    }
+                }
+            });
+            wnd.center().open();
+        }
+        function showDetails(e) {
+            var grid = $("#grid").data("kendoGrid");
+            var dataItem = grid.dataItem($(e).closest("tr"));
+            wnd.content(detailsTemplate(dataItem));
+            $("#tabstrip").kendoTabStrip({
+                animation: {
+                    open: {
+                        effects: "fadeIn"
+                    }
+                }
+            });
+            wnd.center().open();
+        }
+
+        function addItemToCookie(obj) {
+            var cookie = readCookie(cookieName);
+            var cookieArray = cookie !== null ? JSON.parse(cookie) : [];
+
+            if (obj !== null) {
+                cookieArray.pushIfNotExist(obj, function (e) {
+                    return e.DonationId === obj.DonationId && e.ItemId === obj.ItemId;
+                });
+            } else {
+                eraseCookie(cookieName);
+                return;
+            }
+
+            createCookie(cookieName, JSON.stringify(cookieArray), 5);
+            var msg = kendo.format("Your shopping car contains {0} item{1}", cookieArray.length, cookieArray.length > 1 ? "s" : "");
+            $(".gh-cart-c").attr('title', msg);
+            $("#gh-cart-n").text(cookieArray.length);
+        }
+
+
+        function refreshCart(data) {
+            var cart = $(".shopping-cart");
+            if (cart.is(":visible"))
+                $(".shopping-cart").hide();
+
+            if (data.length === 0) {
+                var msg = kendo.format("Your shopping car contains {0} item{1}", data.length, data.length > 1 ? "s" : "");
+                $(".fa.fa-shopping-cart.cart-icon").attr('title', msg);
+                $("#gh-cart-n").text(data.length);
+                eraseCookie(cookieName);
+                return;
+            }
+
+            eraseCookie(cookieName);
+
+            for (var i = 0; i < data.length; i++) {
+                var event = data[i];
+                var obj = { UserName: userName, Line: (i + 1), DonationId: event.DonationId, ItemId: event.ItemId, Title: event.Title, Description: event.Description, ImageUrl: event.ImageUrl, Images: event.Images };
+                addItemToCookie(obj);
+            }
+        }
+
+        function removeItemFromCookie(obj) {
+            var cookie = readCookie(cookieName);
+            var cookieArray = cookie ? JSON.parse(cookie) : [];
+            cookieArray.removeIfExist(obj, function (e) {
+                return e.DonationId === obj.DonationId && e.ItemId === obj.ItemId;
+            });
+            createCookie(cookieName, JSON.stringify(cookieArray), 5);
+            var msg = kendo.format("Your shopping car contains {0} item{1}", cookieArray.length, cookieArray.length > 1 ? "s" : "");
+            $(".gh-cart-c").attr('title', msg);
+            $("#gh-cart-n").text(cookieArray.length);
+        }
+
+        $(function () {
+            var userId = "@ViewBag.UserId";
+            moment.tz.add('America/New_York|EST EDT|50 40|0101|1Lz50 1zb0 Op0');
+
+            function scheduler_edit(e) {
+                console.log("edit");
+                var currentDate = new Date(moment().format("M/D/YYYY"));
+                var start = new Date(moment(e.event.start).format("M/D/YYYY"));
+
+                if (moment(start).isBefore(currentDate)) {
+                    e._defaultPrevented = true;
+                    alert('@Resources.SchedulerMessage');
+                }
+            }
+
+            function scheduler_navigate(e) {
+                var currentDate = moment().format("M/D/YYYY");
+                if (e.action === 'previous' && moment(e.date).isBefore(currentDate)) {
+                    e.preventDefault();
+                    $($(e.sender.element[0].firstChild).find('.k-state-default.k-header.k-nav-prev.k-state-hover')).css('opacity', .5);
+                    console.log(kendo.format("navigate:: action:{0}; view:{1}; date:{2:d};", e.action, e.view, e.date));
+                } else {
+                    $(e.sender.element[0].firstChild).find('li.k-state-default.k-header.k-nav-prev').css('opacity', 1);
+                }
+            }
+
+            function scheduler_change(e) {
+                var currentDate = new Date(moment().format("M/D/YYYY"));
+                var start = e.start; //selection start date
+
+                if (moment(start).isBefore(currentDate)) {
+                    start = new Date(moment(e.start).format("M/D/YYYY")); //selection start date
+                    alert('@Resources.SchedulerMessage');
+                    e.preventDefault;
+                }
+                else {
+                    var end = e.end; //selection end date
+                    var slots = e.slots; //list of selected slots
+                    var events = e.events; //list of selected Scheduler events
+                    var message = "change:: selection from {0:g} till {1:g}";
+
+                    if (events.length) {
+                        message += ". The selected event is '" + events[events.length - 1].title + "'";
+                    }
+
+                    console.log(kendo.format(message, start, end));
+                }
+            }
+
+            function scheduler_moveEnd(e) {
+                console.log("moveEnd");
+                e.preventDefault();
+                var currentDate = new Date(moment().format("M/D/YYYY"));
+                var start = new Date(moment(e.event.start).format("M/D/YYYY"));
+
+                if (moment(start).isBefore(currentDate)) {
+                    e._defaultPrevented = true;
+                    alert('@Resources.SchedulerMessage');
+                }
+            }
+
+            var gridDataSource = new kendo.data.DataSource({
+                error: function (xhr, textStatus, errorThrown) {
+                    openDialog("Error", generalError);
+                    this.cancelChanges();
+                },
+                contentType: "application/json",
+                transport: {
+                    read: {
+                        url: getBaseUrl() + kendo.format("Donations/{0}/RequestedBy", userId),
+                        dataType: "json",
+                        cache: true
+                    },
+                    destroy: {
+                        url: getBaseUrl() + kendo.format("Donations/{0}/RequestedBy", userId),
+                        dataType: "json"
+                    },
+                },
+                pageSize: 20,
+                serverPaging: false,
+                serverSorting: false,
+                sort: { field: "Id", dir: "desc" }
+            });
+
+            var grid = $("#grid").kendoGrid({
+                dataSource: gridDataSource,
+                height: 550,
+                sortable: true,
+                pageable: false,
+                rowTemplate: kendo.template($("#rowTemplate").html()),
+                altRowTemplate: kendo.template($("#altRowTemplate").html()),
+                dataBound: function (e) {
+                    refreshCart(this.dataItems());
+                },
+                columns: [
+                    {
+                        field: "ImageUrl",
+                        title: "@Resources.ImageUrl",
+                        width: "100px"
+                    },
+                    {
+                        field: "Title",
+                        title: "@Resources.Title",
+                        width: "150px"
+                    },
+                    {
+                        field: "Description",
+                        title: "@Resources.Description",
+                        width: "150px"
+                    },
+                    {
+                        command: [{
+                            text: "View Details",
+                            click: showDetails,
+                            iconClass: "k-icon k-i-preview k-i-eye"
+                        }
+                        ],
+                        class: "test",
+                        title: " ",
+                        width: "190px"
+                    }
+                ]
+            });
+
+            wnd = $("#details")
+                .kendoWindow({
+                    title: "Donation Details",
+                    modal: true,
+                    visible: false,
+                    resizable: false,
+                    width: 'auto'
+                }).data("kendoWindow");
+
+            detailsTemplate = kendo.template($("#gridDetailsTemplate").html());
+
+            var _grid = $(grid).data("kendoGrid");
+
+            $(_grid.element).kendoDraggable({
+                filter: "tr",
+                hint: function (e) {
+                    var item = $('<div class="k-grid k-widget" style="background-color: DarkOrange; color: black;"><table><tbody><tr>' + e.html() + '</tr></tbody></table></div>');
+                    isDragging = true;
+                    return item;
+                },
+                group: "gridGroup1",
+            });
+
+            $("#scheduler").kendoScheduler({
+                date: new Date(moment().format("YYYY/M/DD")),
+                startTime: new Date(moment().format("YYYY/M/DD 7:00")),
+                height: 400,
+                //timezone: "Etc/UTC",
+                navigate: scheduler_navigate,
+                change: scheduler_change,
+                edit: scheduler_edit,
+                move: function (e) {
+                    e.preventDefault();
+                },
+                moveEnd: scheduler_moveEnd,
+                resize: function (e) {
+                   e.preventDefault();
+                },
+                remove: function scheduler_remove(e) {
+                    e.preventDefault();
+                    console.log("removing");
+                    var event = e.event;
+                    event.id = event.taskId;
+                    removeEvent(this.dataSource, event);
+                },
+                dataBound: function (e) {
+                    //create drop area from current View
+                    createDropArea(this);
+                },
+                eventTemplate: $("#event-template").html(),
+                views: [
+                    "day",
+                    { type: "week", selected: true },
+                    "month",
+                    "agenda",
+                    "timeline"
+                ],
+                dataSource: {
+                    error: function (xhr, textStatus, errorThrown) {
+                        openDialog("Error", generalError);
+                        this.cancelChanges();
+                    },
+                    transport: {
+                        read: {
+                            url: getBaseUrl() + kendo.format("scheduler/{0}/createdBy", userId),
+                            dataType: "json",
+                            contentType: "application/json",
+                            type: "GET",
+                            cache: false
+                        },
+                        update: {
+                            url: function (model) {
+                                return getBaseUrl() + "scheduler/" + model.Id
+                            },
+                            dataType: "json",
+                            contentType: "application/json",
+                            type: "PUT",
+                            complete: function (e) {
+                                //REFRESH THE GRID IN SUCCESS.
+                                e.success(function (data) {
+                                    this.dataSource.read();
+                                    console.log("Succcess");
+                                });
+
+                                e.error(function (data) {
+                                    console.log("error");
+                                });
+                            },
+                        },
+                        create: {
+                            url: getBaseUrl() + "scheduler/create",
+                            contentType: "application/json",
+                            //dataType: "json",
+                            type: "POST",
+                            complete: function (e) {
+                                //REFRESH THE GRID IN SUCCESS.
+                                e.success(function (data) {
+                                    console.log("Succcess");
+                                    console.log("{ data: " + JSON.stringify(this.data) + "}");
+                                });
+
+                                e.error(function (data) {
+                                    openDialog("Error", generalError);
+                                });
+                            }
+                        },
+                        destroy: {
+                            url: function (model) {
+                                return getBaseUrl() + "scheduler/" + model.Id
+                            },
+                            contentType: "application/json",
+                            type: "Delete",
+                            complete: function (e) {
+                                //REFRESH THE GRID IN SUCCESS.
+                                e.success(function (data) {
+                                    console.log("Succcess");
+                                });
+
+                                e.error(function (data) {
+                                    openDialog("Error", generalError);
+                                });
+                            }
+                        },
+                        parameterMap: function (options, operation) {
+                            if (operation !== "read" && options) {
+                                return  kendo.stringify(options);
+                            }
+                        }
+                    },
+                    schema: {
+                        model: {
+                            id: "Id",
+                            fields: {
+                                taskId: { from: "Id", type: "number" },
+                                title: { from: "Title", defaultValue: "No title", validation: { required: true } },
+                                start: { type: "date", from: "StartDate" },
+                                end: { type: "date", from: "EndDate" },
+                                startTimezone: { from: "StartTimezone" },
+                                endTimezone: { from: "EndTimezone" },
+                                description: { from: "Description" },
+                                recurrenceId: { from: "RecurrenceID" },
+                                recurrenceRule: { from: "RecurrenceRule" },
+                                recurrenceException: { from: "RecurrenceException" },
+                                createdBy: { from: "CreatedBy", defaultValue: { Id: userId } },
+                                imageUrl: { from: "ImageUrl" },
+                                images: {type:"object",from: "Images"},
+                                isAllDay: { type: "boolean", from: "IsAllDay" },
+                                createdOn: { type: "date" },
+                                donation: { from: "Donation", type: "object", validation: { required: true }},
+                                item: { from: "Item", type: "object", validation: { required: false }}
+                            }
+                        },
+                        parse: function (response) {
+                            $.each(response, function (idx, elem) {
+                                if (elem.StartDate && typeof elem.StartDate == "string") {
+                                    elem.StartDate = convertToJSONDate(elem.StartDate.replace("Z",""));
+                                }
+                                if (elem.EndDate && typeof elem.EndDate == "string") {
+                                    elem.EndDate = convertToJSONDate(elem.EndDate.replace("Z", ""));
+                                }
+                            });
+
+                            return response
+                        }
+                    }
+                }
+            });
+
+            function removeEvent(dataSource, event) {
+                var itemId = event.item !== null ? event.item.Id : "00000000-0000-0000-0000-000000000000";
+                var cookie = readCookie(cookieName);
+                var cookieArray = cookie ? JSON.parse(cookie) : [];
+                $('#scheduler').busyIndicator(true);
+
+                $.ajax({
+                    url: kendo.format("{0}scheduler/{1}/Delete", getBaseUrl(), event.id),
+                    datatype: "json",
+                    contentType: 'application/json',
+                    type: "Delete",
+                    success: function (result) {
+                        try {
+                            console.log("success");
+                            dataSource.remove(event);
+                            var dataItem = {};
+                            dataItem.Donation = event.donation;
+                            dataItem.Donation.ModifiedBy = { Id: userId };
+                            dataItem.Donation.RemoveDonation = true;
+                            updateDonationStatus(itemId, dataItem, false);
+                        } catch (e) {
+                            console.error(e);
+                        } finally {
+                            $("#grid").data("kendoGrid").dataSource.read();
+                            $('#scheduler').busyIndicator(false);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        openDialog("Error", generalError);
+                        $('#scheduler').busyIndicator(false);
+                    }
+                });
+            }
+
+            function updateDonation(donationId, itemId, status) {
+                if (donation !== null && donation !== '' && donation !== undefined)
+                {
+                    $.ajax({
+                        url: kendo.format("{0}UpdateDonation/{1}/{2}?status={3}", getBaseUrl(), donationId, itemId, status),
+                        datatype: "json",
+                        contentType: 'application/json',
+                        type: "PUT",
+                        success: function (result) {
+                            console.log("success");
+                            gridDataSource.read();
+                        },
+                        error: function (xhr, status, error) {
+                            openDialog("Error", generalError);
+                        }
+                    });
+                }
+            }
+
+            function convertToJSONDate(strDate) {
+                var offsetMiliseconds = new Date().getTimezoneOffset() * 60000;
+                var dt = new Date(strDate);
+                var newDate = new Date(Date.UTC(dt.getFullYear(), dt.getMonth(), dt.getDate(), dt.getHours(), dt.getMinutes(), dt.getSeconds(), dt.getMilliseconds()));
+                return '/Date(' + newDate.getTime() + ')/';
+            }
+
+            function getGridDataItem(donation, item, array) {
+                var result = $.grep(array, function (n, i) {
+                    return item !== null || item !== "" ? (n.Donation.Id === donation.Id && n.ItemId === (item !== null ? item.Id : "")) : (n.Donation.Id === donation.Id);
+                });
+
+                try {
+                    return result[0];
+                } catch (e) {
+                    return null;
+                }
+            }
+
+           function createDropArea(scheduler) {
+               var className = "";
+               scheduler.view().content.kendoDropTargetArea({
+                    filter: ".k-scheduler-table td, .k-event",
+                    dragenter: function (e) {
+                        className = e.dropTarget.prop("class");
+                        e.draggable.hint.css("opacity", 0.3);
+                        e.dropTarget.removeClass(className).addClass("purple"); //modify dropTarget element
+                    },
+                    dragleave: function (e) {
+                        e.draggable.hint.css("opacity", 1); //modify the draggable hint
+                        e.dropTarget.removeClass("purple").addClass(className); //modify dropTarget element
+                    },
+                    drop: function (e) {
+
+                        var offset = $(e.dropTarget).offset();
+                        var slot = scheduler.slotByPosition(offset.left, offset.top);
+                        var dataItem = gridDataSource.getByUid(e.draggable.currentTarget.data("uid"));
+                        var cookie = readCookie(cookieName);
+                        var cookieArray = cookie ? JSON.parse(cookie) : [];
+                        var createdBy = { Id: dataItem.CreatedBy, FirstName: dataItem.FirstName, LastName: dataItem.LastName, Email: dataItem.Email, Phone: dataItem.Phone, ImageUrl: dataItem.UserImageUrl };
+                        if (dataItem && slot) {
+                            var offsetMiliseconds = new Date().getTimezoneOffset() * 60000;
+                            var newEvent = {
+                                title: dataItem.Title,
+                                endDate: new Date(moment(slot.endDate).add(2, 'hours')),
+                                startDate: slot.startDate,
+                                isAllDay: slot.isDaySlot,
+                                description: dataItem.Description,
+                                imageUrl: dataItem.ImageUrl || "/img/no-photo.png",
+                                createdBy: { id: userId },
+                                createdOn: new Date(),
+                                startTimezone: "America/New_York",
+                                endTimezone: null,
+                                recurrenceId: null,
+                                recurrenceRule: null,
+                                recurrenceException: null,
+                                images:dataItem.Images,
+                                donation: { Id: dataItem.DonationId, CreatedBy: createdBy },
+                                item: { Id: dataItem.ItemId, CreatedBy: createdBy }
+                            };
+
+                            $.ajax({
+                                url: getBaseUrl() + "Scheduler/Post",
+                                contentType: "application/json; charset=utf-8",
+                                cache: false,
+                                crossDomain: true,
+                                xhrFields: {
+                                    withCredentials: false
+                                },
+                                type: "POST",
+                                data: JSON.stringify(newEvent),
+                                success: function (data) {
+                                    try {
+                                        newEvent.id = data.Id;
+                                        newEvent.taskId = data.Id;
+                                        newEvent.start = newEvent.startDate;
+                                        newEvent.end = newEvent.endDate;
+                                        scheduler.dataSource.add(newEvent);//Add event to scheduler
+                                        var itemId = dataItem.Item !== null ? dataItem.ItemId : "00000000-0000-0000-0000-000000000000";
+                                        dataItem.Donation = { Id: dataItem.DonationId };
+                                        dataItem.Donation.ModifiedBy = { Id: userId };
+                                        updateDonationStatus(itemId, dataItem, false);
+                                    } catch (e) {
+                                        scheduler.dataSource.read();
+                                        $("#grid").data("kendoGrid").dataSource.read();
+                                    }
+                                },
+                                error: function (xhr, status, error) {
+                                    try {
+                                        alert(xhr.responseJSON.Message);
+                                    } catch (e) {
+                                        alert("An error has occurred.");
+                                    }
+                                }
+                            });
+                        }
+                    },
+                    group: "gridGroup1"
+               });
+            }
+        });
+
+        function updateDonationStatus(itemId, dataItem, IsRequested) {
+            $.ajax({
+                url: getBaseUrl() + "Donations/" + itemId + "/UpdateDonationStatus?IsRequested=" + IsRequested || false,
+                contentType: "application/json; charset=utf-8",
+                cache: true,
+                crossDomain: true,
+                xhrFields: {
+                    withCredentials: false
+                },
+                type: "PUT",
+                data: JSON.stringify(dataItem.Donation),
+                success: function (result) {
+                    console.log("success");
+                    var grid = $("#grid").data("kendoGrid");
+
+                    if (!IsRequested)
+                        grid.dataSource.remove(dataItem);//remove row from grid
+                    else
+                        grid.dataSource.read();
+                },
+                error: function (xhr, status, error) {
+                    try {
+                        alert(xhr.responseJSON.Message);
+                    } catch (e) {
+                        alert("An error has occurred.");
+                    }
+                }
+            });
+        }
+
+        function showDetails(e) {
+            var grid = $("#grid").data("kendoGrid");
+            var dataItem = grid.dataItem($(e).closest("tr"));
+            wnd.content(detailsTemplate(dataItem));
+            $("#tabstrip").kendoTabStrip({
+                animation: {
+                    open: {
+                        effects: "fadeIn"
+                    }
+                }
+            });
+            wnd.center().open();
+        }
+    </script>
+    <style>
+        #contactme {min-width:450px;}
+        #contactme img {margin-bottom:5px;}
+        #tabstrip h2 {
+            font-weight: lighter;
+            font-size: 5em;
+            line-height: 1;
+            padding: 0 0 0 30px;
+            margin: 0;
+        }
+
+        #tabstrip h2 span {
+            background: none;
+            padding-left: 5px;
+            font-size: .3em;
+            vertical-align: top;
+        }
+
+        #tabstrip p {
+            margin: 0;
+            padding: 0;
+        }
+
+        td[role=gridcell].selected {
+            background-color: #f35800;
+            border-color: #f85a00;
+        }
+        .details-image-container {
+            width: 100%;
+            height: auto;
+        }
+        .details-image-container img{max-width:450px;min-width:450px;}
+        
+        .orange {
+            background-color: white;
+        }
+
+        .purple {
+            background-color: orange;
+        }
+
+        .drag-image {
+            width: 116px;
+            height: 116px;
+        }
+
+        .event-content {
+            display: inline-block;
+            width: 115px;
+            white-space: nowrap;
+            overflow: hidden !important;
+            text-overflow: ellipsis;
+            margin-bottom: 0px;
+        }
+        #details-container {
+            padding: 10px;
+            max-height:500px;
+        }
+
+            #details-container h3, #details-container p {
+                margin: 0;
+                max-width:500px;
+            }
+
+        #details-container em {
+            color: #8c8c8c;
+        }
+
+        #details-container dt {
+            margin: 0;
+            display: inline;
+        }
+    </style>
+}

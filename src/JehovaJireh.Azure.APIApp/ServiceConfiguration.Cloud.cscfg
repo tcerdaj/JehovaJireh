@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="JehovaJireh.Azure.APIApp" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="4" osVersion="*" schemaVersion="2015-04.2.6">
+  <Role name="JehovaJireh.Web.Services">
+    <Instances count="1" />
+    <ConfigurationSettings>
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=jehovajireh;AccountKey=IIl1Hxo8mfl6g6KyV64ermoL1YBjyizzpsCSgcEo0XTKRIBQ3VT8KtBo1HZSD7JvXac5LbWgAMY8LUmTKRXl4A==;EndpointSuffix=core.windows.net" />
+      <Setting name="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=jehovajireh;AccountKey=sKGAdc3gY6/EhSwNzZ2A4VNIsTATMtejpKy6fHS5d5aZXcA+0ub7NjoKNUwEl2kOxo76/L/8lmFbd1t+LI0DOg==;EndpointSuffix=core.windows.net" />
+      <Setting name="SQLConnectionString" value="Server=tcp:tcsoft.database.windows.net,1433;Initial Catalog=jehovajirehDB;Persist Security Info=False;User ID=tcerda;Password=Jorge1009;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" />
+      <Setting name="LogStorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=jehovajirehlog;AccountKey=SOc5uukf/bs72UN0unp5aK6QwbKc/5O7s112+BVh5Il2XXHCAEajieLFsW8HY7JsDszScfbSFasndZZ6kEg9SQ==;EndpointSuffix=core.windows.net" />
+      <Setting name="APPINSIGHTS_INSTRUMENTATIONKEY" value="7a5bf869-ec98-4e6e-813f-415cd101d48b" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" value="true" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountUsername" value="tcerda" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountEncryptedPassword" value="MIIBnQYJKoZIhvcNAQcDoIIBjjCCAYoCAQAxggFOMIIBSgIBADAyMB4xHDAaBgNVBAMME1dpbmRvd3MgQXp1cmUgVG9vbHMCECDhqg4C23uxQ7ksAr2ilgwwDQYJKoZIhvcNAQEBBQAEggEAETIZ6sfUAl0M4XrX2zROLU0GbeEiJDcLj3c8jSZcfidXCX2N4O88OJ+cQ2ACxzTKBCveGIAyJvzb/zeVW6iK2D7FPCI3Os80bBtorRrkdt+/PReU0KrBOywnkUPEhbbPMXd8UAP76YNXfwEgNmVrNMDl3Dlx0+QlhBCZF43UsLwVlaq9qONOGea3JCtIv80QY9WnDHOuPY7e9J24IvNkZ0b3r1gpU1NobCAZWDgY/mao7H5RD7aQkGmiCfYTk+blmwPjlzGvil91YQWptDfaYqkut8Wb/a3FIAmW+nwdKhYcZUXrBXsVuaPs5bgkinmE4bOPyE3LSKljMF95lY8qtjAzBgkqhkiG9w0BBwEwFAYIKoZIhvcNAwcECFRlU5+aDCD9gBDdMqxiqxILwhJWPfRMe9CZ" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountExpiration" value="2018-07-06T23:59:59.0000000-04:00" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.RemoteForwarder.Enabled" value="true" />
+    </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="004333049AA91474F682DF3ACC8520D620A17D1A" thumbprintAlgorithm="sha1" />
+      <Certificate name="Client-VPN" thumbprint="058EDE129CE47CDBFB1EBFDAF658EBAA1943EC07" thumbprintAlgorithm="sha1" />
+    </Certificates>
+  </Role>
+</ServiceConfiguration>

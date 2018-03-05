@@ -1,0 +1,54 @@
+﻿@model JehovaJireh.Web.UI.Models.IndexViewModel
+@using JehovaJireh.Web.UI.App_GlobalResources
+
+@{
+    ViewBag.Title = Resources.Manage;
+}
+
+<h2>@ViewBag.Title.</h2>
+
+<p class="text-success">@ViewBag.StatusMessage</p>
+<div>
+    <h4>@Resources.ChangeAccoutSettings</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>@Resources.PasswordHash:</dt>
+        <dd>
+            [
+            @if (Model.HasPassword)
+            {
+                @Html.ActionLink(string.Format("{0} {1}",Resources.Change, Resources.PasswordHash), "ChangePassword")
+            }
+            else
+            {
+                @Html.ActionLink(Resources.Create, "SetPassword")
+            }
+            ]
+        </dd>
+        <dt>@Resources.UpdateAccount:</dt>
+        <dd>
+            [ @Html.ActionLink(Resources.Change, "UpdateAccount")  ]
+        </dd>
+        <dt>@Resources.LogOff:</dt>
+        <dd>
+            [ @Html.ActionLink(@Resources.LogOff, "LogOff") ]
+        </dd>
+    </dl>
+</div>
+
+@section Scripts {
+	@Scripts.Render("~/bundles/jqueryval")
+	<script type="text/javascript">
+	$.ajax({
+		beforeSend: function () {
+			// Handle the beforeSend event
+			$('#pleaseWaitDialog').modal('show');
+		},
+		complete: function () {
+			// Handle the complete event
+			$('#pleaseWaitDialog').modal('hide');
+		}
+		// ......
+	});
+	</script>
+}

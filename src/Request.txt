@@ -1,0 +1,45 @@
+USE [jehovajirehDB]
+GO
+
+/****** Object:  Table [dbo].[Request]    Script Date: 07/11/2017 1:07:15 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Request](
+	[RequestId] [int] NOT NULL,
+	[ItemType] [smallint] NOT NULL,
+	[ItemName] [nvarchar](50) NULL,
+	[ImageUrl] [nvarchar](max) NULL,
+	[Title] [nvarchar](50) NULL,
+	[Description] [nvarchar](180) NULL,
+	[RequestStatus] [smallint] NOT NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[ModifiedOn] [datetime] NULL,
+	[CreatedBy] [int] NOT NULL,
+	[ModifiedBy] [int] NULL,
+ CONSTRAINT [PK_Request] PRIMARY KEY CLUSTERED 
+(
+	[RequestId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+
+ALTER TABLE [dbo].[Request]  WITH NOCHECK ADD  CONSTRAINT [FK_Request_CreatedBy_Users_UserId] FOREIGN KEY([CreatedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+
+ALTER TABLE [dbo].[Request] CHECK CONSTRAINT [FK_Request_CreatedBy_Users_UserId]
+GO
+
+ALTER TABLE [dbo].[Request]  WITH NOCHECK ADD  CONSTRAINT [FK_Request_ModifiedBy_Users_UserId] FOREIGN KEY([ModifiedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+
+ALTER TABLE [dbo].[Request] CHECK CONSTRAINT [FK_Request_ModifiedBy_Users_UserId]
+GO
+
+

@@ -1,0 +1,13 @@
+﻿@model JehovaJireh.Web.UI.Models.ExternalLoginListViewModel
+@using Microsoft.Owin.Security
+@using JehovaJireh.Web.UI.App_GlobalResources
+
+<h4>@Resources.UserNoRegisterYet</h4>
+<hr />
+@{
+    <div>
+		<p>
+			@Html.ActionLink(Resources.Register, "Register")
+		</p>
+	</div>
+}

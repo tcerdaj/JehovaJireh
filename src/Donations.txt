@@ -1,0 +1,54 @@
+USE [jehovajirehDB]
+GO
+
+/****** Object:  Table [dbo].[Donations]    Script Date: 07/11/2017 1:07:45 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Donations](
+	[DonationId] [int] NOT NULL,
+	[RequestedBy] [int] NOT NULL,
+	[Title] [nvarchar](50) NOT NULL,
+	[Description] [nvarchar](180) NULL,
+	[DonatedOn] [datetime] NOT NULL,
+	[LastUpdate] [datetime] NULL,
+	[ExpireOn] [datetime] NULL,
+	[DonationStatus] [smallint] NOT NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[ModifiedOn] [datetime] NULL,
+	[CreatedBy] [int] NOT NULL,
+	[ModifiedBy] [int] NULL,
+	[Amount] [decimal](10, 2) NULL,
+ CONSTRAINT [PK_Donations] PRIMARY KEY CLUSTERED 
+(
+	[DonationId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+ALTER TABLE [dbo].[Donations]  WITH NOCHECK ADD  CONSTRAINT [FK_Donations_CreatedBy_Users_UserId] FOREIGN KEY([CreatedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+
+ALTER TABLE [dbo].[Donations] CHECK CONSTRAINT [FK_Donations_CreatedBy_Users_UserId]
+GO
+
+ALTER TABLE [dbo].[Donations]  WITH NOCHECK ADD  CONSTRAINT [FK_Donations_ModifiedBy_Users_UserId] FOREIGN KEY([ModifiedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+
+ALTER TABLE [dbo].[Donations] CHECK CONSTRAINT [FK_Donations_ModifiedBy_Users_UserId]
+GO
+
+ALTER TABLE [dbo].[Donations]  WITH NOCHECK ADD  CONSTRAINT [FK_Donations_RequestedBy_Users_UserId] FOREIGN KEY([RequestedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+
+ALTER TABLE [dbo].[Donations] CHECK CONSTRAINT [FK_Donations_RequestedBy_Users_UserId]
+GO
+
+

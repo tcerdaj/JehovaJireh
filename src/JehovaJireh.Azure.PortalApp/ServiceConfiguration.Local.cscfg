@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="JehovaJireh.Azure.PortalApp" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="4" osVersion="*" schemaVersion="2015-04.2.6">
+  <Role name="JehovaJireh.Web.UI">
+    <Instances count="1" />
+    <ConfigurationSettings>
+		<Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
+		<Setting name="StorageConnectionString" value="UseDevelopmentStorage=true" />
+		<Setting name="SQLConnectionString" value="Data Source=.\SQLEXPRESS;Initial Catalog=jehovajirehDB;Integrated Security=True" />
+		<Setting name="LogStorageConnectionString" value="UseDevelopmentStorage=true" />
+		<Setting name="APPINSIGHTS_INSTRUMENTATIONKEY" value="dda5ae8f-a6b2-4f3f-8484-15df696cfbc4" />
+    </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="Client-VPN" thumbprint="058EDE129CE47CDBFB1EBFDAF658EBAA1943EC07" thumbprintAlgorithm="sha1" />
+    </Certificates>
+  </Role> 
+</ServiceConfiguration>

@@ -1,0 +1,119 @@
+﻿@model JehovaJireh.Web.UI.Models.RequestViewModels
+@using JehovaJireh.Web.UI.App_GlobalResources
+@{
+    ViewBag.Title = Resources.MakeNewRequest;
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("MakeNewRequest", "Donations", FormMethod.Post, new { @enctype= "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true);
+<div class="form-horizontal">
+    <h4>Is time to let you know other what you need. </h4>
+    <h2 style="color:red">@Html.ValidationMessage("error")</h2>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.ItemType, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownListFor(m => m.ItemType, Model.ItemTypes, string.Format("-- Select {0} --", Resources.ItemType), new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.ItemType, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.ImageUpload, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <span class="btn btn-default btn-file" style="display:none">
+                Browse @Html.TextBoxFor(model => model.ImageUpload, new { type = "file", accept = "image/*", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ImageUpload, "", new { @class = "text-danger" })
+            </span>
+        </div>
+    </div>
+    <div class="form-group" style="display:none">
+        @Html.LabelFor(model => model.ImageUrl, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="img-wrap" style="width:290px;">
+                <span class="close" style="display:none">&times;</span>
+                <img id="imageUrl" src="@Model.ImageUrl" alt="" class="image" />
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Create" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+    <div id="grid"></div>
+}
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/areYouSure")
+    @Scripts.Render("~/bundles/knockout")
+    @Styles.Render("~/bundles/kendo-css")
+    @Scripts.Render("~/bundles/kendo")	
+    <script>
+        $(document).ready(function () {
+            $('.btn.btn-default.btn-file').show();
+            $('#ItemType').val('');
+        });
+
+        $("#ImageUpload").change(function () {
+            readURL(this);
+        });
+
+        $(".close").click(function () {
+            $('#ImageUpload').val('');
+            $('#imageUrl').attr('src', '');
+            $('.img-wrap').parent().parent().hide();
+        });
+
+        function readURL(input) {
+
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#imageUrl').attr('src', e.target.result);
+                    var img = $('.img-wrap img');
+                    img.height = '100%';
+                    img.width = 'auto';
+                    $('.img-wrap span').show();
+                    $('.img-wrap').parent().parent().show();
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+    <style>
+        
+
+        .img-wrap { position: relative;}
+        .img-wrap .close {position: absolute;top: 2px;right: 6px;z-index: 100;}
+        .img-wrap:hover .close{opacity:1;}
+        .img-wrap .image {opacity: 1;display: block;width: 100%;height: auto;transition: .5s ease;backface-visibility: hidden;}
+        .img-wrap:hover .image {opacity: 0.3;}
+        .btn-file { position: relative; overflow: hidden;}
+        .btn-file input[type=file] {position: absolute;top: 0;right: 0;min-width: 100%;min-height: 100%;font-size: 100px;text-align: right;filter: alpha(opacity=0);opacity: 0;outline: none;background: white;cursor: inherit;display: block;}
+    </style>
+}

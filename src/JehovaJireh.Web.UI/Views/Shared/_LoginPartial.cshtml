@@ -1,0 +1,59 @@
+﻿@using JehovaJireh.Web.UI.Helpers
+@using Microsoft.AspNet.Identity
+@using JehovaJireh.Web.UI.App_GlobalResources
+@if (Request.IsAuthenticated)
+{
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    {
+    @Html.AntiForgeryToken()
+	
+    <ul class="nav navbar-nav navbar-right">
+        <li>
+            <a onclick="myFunction()" href="#" class="dropdown-toggle dropbtn">Language</a>
+            <div id="myDropdown" class="dropdown-content">
+                @Html.Partial("_CulturePartial")
+            </div>
+        </li>
+        <li>
+            @*@Html.ActionLink(Resources.Hello + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage",@class="welcome-user" })*@
+			<ion-item class="item-profile">
+				<div class="item-avatar">
+					@Html.GravatarImage(User.Identity.GetUserName(),"#","#",null, new GravatarOptions { Size = 30, CssClass = "img-circle" })
+				</div>
+			</ion-item>
+        </li>
+        <li>
+            <a href="#" onclick="return showCart(this);" _sp="m570.l2633" title="Your shopping cart contains 2 items" class="gh-cart-i" alt="Your shopping cart contains 2 items" id="gh-cart-c">
+                <i class="fa fa-shopping-cart cart-icon"></i>
+                 Cart 
+                <i id="gh-cart-n" aria-hidden="true" class="badge">0</i>
+            </a>
+        </li>
+    </ul>
+    }
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li>
+            <a onclick="myFunction()" href="#" class="dropdown-toggle dropbtn">Language</a>
+            <div id="myDropdown" class="dropdown-content">
+                @Html.Partial("_CulturePartial")
+            </div>
+        </li>
+        <li>@Html.ActionLink(Resources.Register, "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+        <li>@Html.ActionLink(Resources.LogIn, "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+        @if (Request.IsAuthenticated)
+    {
+        <li>
+            <a href="/Donations/SchedulerDonation" _sp="m570.l2633" title="Your shopping cart contains 2 items" class="gh-cart-i" alt="Your shopping cart contains 2 items" id="gh-cart-c">
+                <i id="gh-cart-icon" class="k-icon k-i-cart" style="background-color:gray"></i>
+                <i id="gh-cart-n" aria-hidden="true">0</i>
+            </a>
+        </li>
+}
+    </ul>
+}
+@section Scripts{
+      
+    }

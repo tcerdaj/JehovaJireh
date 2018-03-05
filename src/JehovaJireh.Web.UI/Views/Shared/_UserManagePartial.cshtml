@@ -1,0 +1,43 @@
+﻿@using JehovaJireh.Web.UI.Helpers
+@using Microsoft.AspNet.Identity
+@using JehovaJireh.Web.UI.App_GlobalResources
+
+@if (Request.IsAuthenticated)
+{
+    <div class="user-manage-header">
+        @Html.ActionLink(Resources.Hello + User.Identity.GetUserName() + "!", "Index", "Manage", routeValues: null, htmlAttributes: new { title = "Manage", @class = "welcome-user" })
+        <ion-item class="item-profile">
+            <div class="item-avatar">
+
+                @Html.GravatarImage(User.Identity.GetUserName(), "Index", "Manage", null, new GravatarOptions { Size = 30, CssClass = "img-circle" })
+            </div>
+        </ion-item>
+    </div>
+    <div class="user-manage-details">
+        <h4>@Resources.ChangeAccoutSettings</h4>
+        <hr />
+        <dl class="dl-horizontal">
+        <dt>@Resources.PasswordHash:</dt>
+
+        <dd>
+            [ @Html.ActionLink(Resources.Create, "SetPassword", "Manage") ]
+        </dd>
+        
+        <dt>@Resources.UpdateAccount:</dt>
+        <dd>
+            [ @Html.ActionLink(Resources.Change, "UpdateAccount", "Manage")  ]
+        </dd>
+        <dt>@Resources.LogOff:</dt>
+        <dd>
+            [ @Html.ActionLink(@Resources.LogOff, "LogOff", "Manage") ]
+        </dd>
+        </dl>
+    </div>
+}
+else
+{
+    <h2 style="color:red">Sorry user is not authenticated.</h2>
+}
+@section Scripts{
+
+}

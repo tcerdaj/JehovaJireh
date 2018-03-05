@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ServiceConfiguration serviceName="JehovaJireh.Azure.PortalApp" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceConfiguration" osFamily="4" osVersion="*" schemaVersion="2015-04.2.6">
+  <Role name="JehovaJireh.Web.UI">
+    <Instances count="1" />
+    <ConfigurationSettings>
+	 <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=jehovajireh;AccountKey=IIl1Hxo8mfl6g6KyV64ermoL1YBjyizzpsCSgcEo0XTKRIBQ3VT8KtBo1HZSD7JvXac5LbWgAMY8LUmTKRXl4A==;EndpointSuffix=core.windows.net" />
+      <Setting name="StorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=jehovajireh;AccountKey=sKGAdc3gY6/EhSwNzZ2A4VNIsTATMtejpKy6fHS5d5aZXcA+0ub7NjoKNUwEl2kOxo76/L/8lmFbd1t+LI0DOg==;EndpointSuffix=core.windows.net" />
+      <Setting name="SQLConnectionString" value="Server=tcp:tcsoft.database.windows.net,1433;Initial Catalog=jehovajirehDB;Persist Security Info=False;User ID=tcerda;Password=Jorge1009;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" />
+      <Setting name="LogStorageConnectionString" value="DefaultEndpointsProtocol=https;AccountName=jehovajirehlog;AccountKey=SOc5uukf/bs72UN0unp5aK6QwbKc/5O7s112+BVh5Il2XXHCAEajieLFsW8HY7JsDszScfbSFasndZZ6kEg9SQ==;EndpointSuffix=core.windows.net" />
+      <Setting name="APPINSIGHTS_INSTRUMENTATIONKEY" value="dda5ae8f-a6b2-4f3f-8484-15df696cfbc4" />
+    </ConfigurationSettings>
+    <Certificates>
+      <Certificate name="Client-VPN" thumbprint="058EDE129CE47CDBFB1EBFDAF658EBAA1943EC07" thumbprintAlgorithm="sha1" />
+    </Certificates>
+  </Role>
+</ServiceConfiguration>

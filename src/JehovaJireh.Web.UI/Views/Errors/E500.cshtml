@@ -1,0 +1,25 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+
+@{
+	ViewBag.Title = "public Error";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="jumbotron">
+	<h1>General Exception</h1>
+	<p class="lead">An error occurred while processing your request.</p>
+	@{
+		if (@Model != null && @Model.Exception != null)
+		{
+			<h3>Exception was: @Model.Exception.Message</h3>
+			<h4>Stack Trace: @Model.Exception.StackTrace</h4>
+		}
+		else
+		{
+			<h3>
+				Error on Request, Exception null.
+			</h3>
+		}
+
+	}
+	<p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+</div>

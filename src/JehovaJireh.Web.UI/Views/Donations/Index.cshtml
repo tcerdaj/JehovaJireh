@@ -1,0 +1,725 @@
+﻿@model IEnumerable<JehovaJireh.Web.UI.Models.DonationViewModels>
+@using JehovaJireh.Web.UI.App_GlobalResources
+
+@{
+    ViewBag.Title = Resources.Donations;
+}
+
+<h2>@ViewBag.Title</h2>
+<p class="text-success">@ViewBag.StatusMessage</p>
+<p>La donación es el acto que consiste en dar fondos u otros bienes materiales, generalmente por razones de caridad.</p>
+<p>
+    @Html.ActionLink(Resources.MakeADonation, "MakeADonation")
+</p>
+<div id="donationlist">
+    <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h1></h1>
+                </div>
+                <div class="modal-body">
+                    <img src="" class="imagepreview" style="width: 100%;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="imagemodal-carousel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h1></h1>
+                </div>
+                <div class="modal-body">
+                    <div class="carousel-list"></div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="grid"></div>
+</div>
+
+@section Scripts{
+
+    @Styles.Render("~/bundles/kendo-css")
+    @Scripts.Render("~/bundles/kendo")
+    @Styles.Render("~/Content/fontawesome")
+
+    @Scripts.Render("~/bundles/areYouSure")
+    @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/moment")
+    
+
+    <script type="text/x-kendo-template" id="template">
+        <div class="tabstrip">
+            <ul>
+                <li class="k-state-active">
+                    @Resources.DonationDetails
+                </li>
+                <li>
+                    @Resources.ContactInfo
+                </li>
+            </ul>
+            <div>
+                <div class="donation-details"></div>
+            </div>
+            <div>
+                <div class='user-info'>
+                    <ul>
+                        <li><label>Name:</label>#= CreatedBy.FirstName # <a class="pop" href="\\#"><img style="height: 50px;" class="img-rounded  thumb" src="#= CreatedBy.ImageUrl #" /></a></li>
+                        <li><label>Home Phone:</label>#= CreatedBy.PhoneNumber #</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script id="rowTemplate" type="text/x-kendo-tmpl">
+        <tr data-uid="#: uid #">
+            <td class="line">
+                <span class="title"> #: Line #</span>
+            </td>
+            <td class="itemType">
+                #: displayFieldTextByArray(ItemType, donationTypesArray)	 #
+            </td>
+            <td class="itemName">
+                #: ItemName	 #
+            </td>
+            <td class="status">
+                #: displayFieldTextByArray(DonationStatus, donationStatusArray)	 #
+            </td>
+            <td class="photo">
+                <a class="pop" id="#= Line #" name="#= Line #" href="\\#"><img class="grid-photo" src="#:Images.length > 0 && Images[0].ImageUrl ? Images[0].ImageUrl: '/img/no-photo.png'#" alt="#: ItemName #" /></a>
+                #if(Images.length > 1 ){#
+                   <a class="pop" id="#= Line #" href="\\#">#:Images.length # images</a>
+                #}
+                else
+                {#
+                   <a class="pop" id="#= Line #" href="\\#">#:Images.length # image</a>
+                #}#
+            </td>
+            <td class="command">
+                #if(CreatedBy.UserName !== "@User.Identity.Name" && DonationStatus === 0 && "@User.Identity.IsAuthenticated" === "True" ){#
+                   <a class="k-button k-button-icontext k-grid-edit" href="\\#" onclick="setDonationRequestedBy(this, '#= Id #');"><span class="k-icon k-i-cart"></span>@Resources.WantThis</a>
+                #}#
+            </td>
+        </tr>
+    </script>
+    <script id="altRowTemplate" type="text/x-kendo-tmpl">
+        <tr class="k-alt" data-uid="#: uid #">
+            <td class="photo">
+                <img class="pop" src="../content/web/Employees/#:data.EmployeeID#.jpg" alt="#: data.EmployeeID #" />
+            </td>
+            <td class="details">
+                <span class="name">#: CreatedBy.FirstName# #: CreatedBy.LastName# </span>
+                <span class="title">Line: #: Line #</span>
+            </td>
+            <td class="country">
+                #: CreatedBy.Country #
+            </td>
+            <td class="employeeID">
+                #: CreatedBy.PhoneNumer #
+            </td>
+        </tr>
+    </script>
+    <script type="text/x-kendo-template" id="mydonationtemplate">
+        <div class="refreshBtnContainer">
+            <a href="\\#" class="k-pager-refresh k-link k-button" title="Refresh"><span class="k-icon k-i-reload"></span></a>
+        </div>
+        #if("@User.Identity.IsAuthenticated" ==="True"){#
+        <div class="toolbar">
+            <a id="miDonations" role="button" class="k-button k-button-icontext k-grid-save-changes" href="\\#"><span class="k-icon k-i-tri-state-null"></span>@Resources.MyDonations</a>
+            <a id="excludeMine" role="button" class="k-button k-button-icontext k-grid-save-changes" href="\\#"><span class="k-icon k-i-tri-state-null"></span>@Resources.ExcludeMyDonations</a>
+        </div>
+        #}#
+    </script>
+
+    <script>
+        var donationTypesArray = [],
+              donationStatusArray = [],
+                 userId = "@ViewBag.UserId";
+
+    $(document).keydown(function (e) {
+        if (e.keyCode === 37) {
+            // Previous
+            $(".left.carousel-control").click();
+            return false;
+        }
+        if (e.keyCode === 39) {
+            // Next
+            $(".right.carousel-control").click();
+            return false;
+        }
+    });
+	$(document).ready(function () {
+		$.when(donationStatus(), donationTypes()).done(function (ds, dt) {
+			donationTypesArray = dt[0]; donationStatusArray = ds[0];
+
+			var grid = $("#grid").kendoGrid({
+                dataSource: {
+                    transport: {
+                        read: function (options) {
+                            $.ajax({
+                                url: getBaseUrl() + "Donations",
+                                dataType: "json",
+                                cache: false,
+                                type: "GET",
+                                contentType: "application/json; charset=utf-8",
+                                crossDomain: true,
+                                xhrFields: {
+                                    withCredentials: false
+                                },
+                                success: function (data) {
+                                    options.success(data);
+                                },
+                                error: function (e) {
+                                    openDialog("Donations", "An general error has ocurred.");
+                                }
+                            });
+                        }
+                    },
+					pageSize: 20,
+					serverPaging: false,
+                    serverSorting: false,
+                    sort: { field: "Id", dir: "desc" },
+					schema: {
+						parse: function (response) {
+							$.each(response, function (idx, elem) {
+								if (elem.CreatedOn && typeof elem.CreatedOn == "string") {
+									elem.CreatedOn = kendo.parseDate(elem.CreatedOn, "yyyy-MM-ddTHH:mm:ss");
+								}
+								if (elem.ExpireOn && typeof elem.ExpireOn == "string") {
+									elem.ExpireOn = kendo.parseDate(elem.ExpireOn, "yyyy-MM-ddTHH:mm:ss");
+								}
+							});
+
+							return response
+						}
+					}
+				},
+				toolbar: kendo.template($("#mydonationtemplate").html()),
+				height: 550,
+				sortable: true,
+                pageable: false,
+                resizable: true,
+				detailTemplate: kendo.template($("#template").html()),
+                detailInit: detailInit,
+                dataBound: onDataBoundMaster,
+				columns: [
+					{
+						field: "CreatedOn",
+						title: "@Resources.CreatedOn",
+						width: "100px",
+						format: "{0:MM-dd-yyyy}"
+                    },
+                    {
+						field: "Id",
+						title: "Donation Id",
+						width: "50px"
+					},
+					{
+						field: "Title",
+						title: "@Resources.Title",
+						width: "100px"
+					},
+					{
+						field: "Description",
+						title: "@Resources.Description",
+						width: "100px"
+					},
+					{
+						field: "ExpireOn",
+						title: "@Resources.ExpireOn",
+						width: "50px",
+						format: "{0:MM-dd-yyyy}"
+					},
+					{
+                        field: "DonationStatus",
+						title: "@Resources.DonationStatus",
+						width: "50px",
+                        template:"#= displayFieldTextByArray(DonationStatus, donationStatusArray) #"
+                    },
+                    {
+                        field: "Images",
+						title: "@Resources.ImageUrl",
+						width: "50px",
+                        template: '#= buildImagesTemplate(Images,true) #'
+                    },
+                    {
+						title: "Action",
+						width: "80px",
+                        template:'#= buildMasterRowButton(CreatedBy.UserName, "@User.Identity.Name","@User.Identity.IsAuthenticated" === "True", DonationStatus, DonationDetails, Id) #'
+					}
+				]
+            });
+
+			grid.find(".k-grid-toolbar").on("click", ".k-pager-refresh", function (e) {
+				e.preventDefault();
+				grid.data("kendoGrid").dataSource.read();
+			});
+
+			$('#miDonations').on("click", function () {
+				if (!this.disabled) {
+					var span = $(this).children();
+					var checkedClass = "k-i-checkbox-checked";
+					var uncheckedClass = "k-i-tri-state-null";
+					grid.data("kendoGrid").dataSource.filter({});
+
+					if ($(span).hasClass(uncheckedClass)) {
+						grid.data("kendoGrid").dataSource.filter({ field: "CreatedBy.UserName", operator: "eq", value: "@User.Identity.Name" });
+						$(span).removeClass(uncheckedClass);
+						$(span).addClass(checkedClass);
+						$('#excludeMine').attr('disabled', true);
+						$('#excludeMine').prop('disabled', true);
+					} else {
+						$(span).removeClass(checkedClass);
+						$(span).addClass(uncheckedClass);
+						$('#excludeMine').attr('disabled', false);
+						$('#excludeMine').prop('disabled', false);
+					}
+				}
+			});
+
+			$('#excludeMine').on("click", function () {
+				if (!this.disabled) {
+					var span = $(this).children();
+					var checkedClass = "k-i-checkbox-checked";
+					var uncheckedClass = "k-i-tri-state-null";
+					grid.data("kendoGrid").dataSource.filter({});
+
+					if ($(span).hasClass(uncheckedClass)) {
+						grid.data("kendoGrid").dataSource.filter({ field: "CreatedBy.UserName", operator: "neq", value: "@User.Identity.Name" });
+						$(span).removeClass(uncheckedClass);
+						$(span).addClass(checkedClass);
+						$('#miDonations').attr('disabled', true);
+						$('#miDonations').prop('disabled', true);
+					} else {
+						$(span).removeClass(checkedClass);
+						$(span).addClass(uncheckedClass);
+						$('#miDonations').attr('disabled', false);
+						$('#miDonations').prop('disabled', false);
+					}
+				}
+			});
+		});
+	});
+
+    function onDataBoundMaster(arg) {
+        $('a[class="pop-master"]').on('click', function (s) {
+            var selector = $(s.currentTarget.parentElement.closest('tr'));
+            var selectedItem = $(grid).data("kendoGrid").dataItem(selector);
+
+            if (selectedItem !== undefined) {
+                //	I need to add this CarouselOptions
+                var images = selectedItem.Images;
+
+                var htmlstring = '<div id= "myCarousel" class="carousel slide" data-ride="carousel" >'
+                    + '	<ol class="carousel-indicators">';
+                for (var i = 0; i < images.length; i++) {
+                    if (i === 0)
+                        htmlstring += '<li data-target="#myCarousel" data-slide-to="' + i + '" class="active"></li>';
+                    else
+                        htmlstring += '<li data-target="#myCarousel" data-slide-to="' + i + '"></li>';
+                }
+
+                htmlstring += '	</ol>';
+                htmlstring += '<div class="carousel-inner">';
+                var image = { ImageUrl: "/img/no-photo.png" };
+
+                if (images.length == 0) {
+                    htmlstring += '<div class="item active">';
+                    htmlstring += '<img class="imagepreview"  src="' + image.ImageUrl + '" alt="Image' + i + '">';
+                    htmlstring += '</div>';
+                } else {
+
+                    for (var i = 0; i < images.length; i++) {
+                        image = images[i];
+
+                        if (i === 0) {
+                            htmlstring += '<div class="item active">';
+                            htmlstring += '<img class="imagepreview"  src="' + image.ImageUrl + '" alt="Image' + i + '">';
+                        }
+                        else {
+                            htmlstring += '<div class="item">';
+                            htmlstring += '<img class="imagepreview"  src="' + image.ImageUrl + '" alt="Image' + i + '">';
+                        }
+
+                        htmlstring += '</div>';
+                    }
+                }
+
+                htmlstring += '	</div>';
+
+                if (images.length > 1) {
+                    htmlstring += '	  <a class="left carousel-control" href="#myCarousel" data-slide="prev">';
+                    htmlstring += '		<span class="glyphicon glyphicon-chevron-left"></span>';
+                    htmlstring += '		<span class="sr-only">Previous</span>';
+                    htmlstring += '	</a>';
+                    htmlstring += '	<a class="right carousel-control" href="#myCarousel" data-slide="next">';
+                    htmlstring += '		<span class="glyphicon glyphicon-chevron-right"></span>';
+                    htmlstring += '		<span class="sr-only">Next</span>';
+                    htmlstring += '	</a>';
+                }
+                htmlstring += '</div>';
+
+                $('.modal.modal-dialog').css('width', '60%');
+                if (images.length === 1)
+                    $(".modal-header h1").text("@Resources.ImageUrl" + " 1")
+                else
+                    $(".modal-header h1").text("@Resources.Photos" + " 1")
+
+                $('.carousel-list').empty();
+                $(htmlstring).appendTo($('.carousel-list'));
+
+                $('#imagemodal-carousel').modal('show');
+                $('#myCarousel').bind('slide.bs.carousel', function (e) {
+                    var img = $('.item.active img')[0].alt;
+                    var splitImg = img.split('Image');
+                    var imgNum = parseInt(splitImg[1]);
+                    var headertext = '';
+                    var count = images.length > 0 ? (images.length - 1) : 0;
+
+                    if (e.direction === "left") {
+                        if (imgNum !== count)
+                            headertext = "Photo " + (parseInt(splitImg[1]) + 2);
+                        else
+                            headertext = "Photo 1";
+                    }
+                    else
+                        headertext = "Photo " + (imgNum === 0 ? images.length : imgNum);
+
+                    $(".modal-header h1").text(headertext);
+                });
+            }
+            else {
+                $('.modal.modal-dialog').css('width', '20% !important');
+                $(".modal-header h1").text("@Resources.ImageUrl")
+                $('.imagepreview').attr('src', $(this).find('img').attr('src'));
+                $('#imagemodal').modal('show');
+            }
+        });
+    }
+
+    function buildImagesTemplate(Images, isMasterRow) {
+        var template = "";
+        if (Images && Images.length > 0) {
+            template = '<a class="pop-master" href="#"><img class="grid-photo" src="' + (Images.length > 0 ? Images[0].ImageUrl : "/img/no-photo.png") + '" alt="Donation Image" /></a>';
+            if (Images.length > 1) {
+                template += '<a class="pop-master" href="#">' + Images.length + ' images</a>';
+            }
+            else {
+                template += '<a class="pop-master" href="#">' + Images.length + ' image</a>';
+            }
+        }
+        else {
+            template = '<img class="grid-photo" src="' + (Images.length > 0 ? Images[0].ImageUrl : "/img/no-photo.png") + '" alt="Donation Image" />';
+        }
+        return template;
+    }
+
+
+    function buildMasterRowButton(user1, user2, isAuthenticated, donationStatus, DonationDetails, donationId){
+        var hasRows = DonationDetails !== null && DonationDetails.length > 0 && DonationDetails[0].ItemName !== null;
+        var str = '<a id="' + donationId + '" class="k-button k-button-icontext k-grid-edit" href="#" onclick="setDonationRequestedBy(this, ' + donationId + ');"><span class="k-icon k-i-cart"></span>@Resources.WantThis</a>';
+        if (user1 !== user2 && isAuthenticated && donationStatus === 0 && !hasRows)
+            return str;
+        else if (!isAuthenticated)
+            return '<a class="k-button k-button-icontext k-grid-edit" id="' + donationId + '" href="#" onclick="goToLogin(this);"><span class="k-icon k-i-user"></span>@Resources.LogIn</a>';
+        else if(hasRows)
+            return '<a class="k-button k-button-icontext k-grid-edit" id="' + donationId + '" href="#" onclick="goToRowMasterDetail(this);"><span class="k-icon k-i-insert-up"></span>@Resources.DonationDetails</a>';
+        else
+            return "";
+    }
+
+	function detailInit(e) {
+		var detailRow = e.detailRow;
+
+		detailRow.find(".tabstrip").kendoTabStrip({
+			animation: {
+				open: { effects: "fadeIn" }
+			}
+		});
+
+		detailRow.find(".donation-details").kendoGrid({
+			dataSource: new kendo.data.DataSource({
+                data: e.data.DonationDetails,
+                sort: { field: "Line", dir: "asc" },
+				pageSize: 10
+			}),
+			scrollable: false,
+			sortable: true,
+            pageable: true,
+            dataBound: onDataBound,
+			rowTemplate: kendo.template($("#rowTemplate").html()),
+			selectable: "singe",
+			columns: [
+                { field: "Line", title: "@Resources.ItemLine", width: "80px" },
+				{ field: "ItemType", title: "@Resources.ItemType", width: "110px" },
+				{ field: "ItemName", title: "@Resources.ItemName", width: "110px" },
+				{ field: "DonationStatus", title: "@Resources.DonationStatus", width: "110px"},
+                { field: "Images", title: "@Resources.ImageUrl", width: "100px" },
+                { command: { text: "@Resources.WantThis", click: setDonationRequestedBy }, title: " ", width: "180px" }
+			]
+		});
+
+        function onDataBound(arg) {
+            $('a[class="pop"]').on('click', function (s) {
+                var selector = $(s.currentTarget.parentElement.closest('[data-role=grid]'));
+                var parentRow = selector.closest(".k-detail-row").prev();
+                var dataRow = $(grid).data("kendoGrid").dataItem(parentRow);
+                var selectedItem = undefined;
+
+                if (dataRow !== null && dataRow.DonationDetails !== null) {
+                    var rowIndex = this.id;
+                    var results = $.grep(dataRow.DonationDetails, function (n, i) {
+                        return n.Line.toString() === rowIndex;
+                    });
+
+                    try {
+                        results = results[0];
+                    } catch (e) {
+                        results === undefined;
+                    }
+
+                    selectedItem = results;
+                }
+
+                if (selectedItem !== undefined) {
+                    //	I need to add this CarouselOptions
+                    var images = selectedItem.Images;
+
+                    var htmlstring = '<div id= "myCarousel" class="carousel slide" data-ride="carousel" >'
+                        + '	<ol class="carousel-indicators">';
+                    for (var i = 0; i < images.length; i++) {
+                        if (i === 0)
+                            htmlstring += '<li data-target="#myCarousel" data-slide-to="' + i + '" class="active"></li>';
+                        else
+                            htmlstring += '<li data-target="#myCarousel" data-slide-to="' + i + '"></li>';
+                    }
+
+                    htmlstring += '	</ol>';
+
+                    htmlstring += '<div class="carousel-inner">';
+                    var image = { ImageUrl: "/img/no-photo.png" };
+
+                    if (images.length == 0) {
+                        htmlstring += '<div class="item active">';
+                        htmlstring += '<img class="imagepreview"  src="' + image.ImageUrl + '" alt="Image' + i + '">';
+                        htmlstring += '</div>';
+                    } else {
+
+                        for (var i = 0; i < images.length; i++) {
+                            image = images[i];
+
+                            if (i === 0) {
+
+                                htmlstring += '<div class="item active">';
+                                htmlstring += '<img class="imagepreview"  src="' + image.ImageUrl + '" alt="Image' + i + '">';
+                            }
+                            else {
+                                htmlstring += '<div class="item">';
+                                htmlstring += '<img class="imagepreview"  src="' + image.ImageUrl + '" alt="Image' + i + '">';
+                            }
+
+                            htmlstring += '</div>';
+                        }
+                    }
+
+                    htmlstring += '	</div>';
+
+                    if (images.length > 1) {
+                        htmlstring += '	  <a class="left carousel-control" href="#myCarousel" data-slide="prev">';
+                        htmlstring += '		<span class="glyphicon glyphicon-chevron-left"></span>';
+                        htmlstring += '		<span class="sr-only">Previous</span>';
+                        htmlstring += '	</a>';
+                        htmlstring += '	<a class="right carousel-control" href="#myCarousel" data-slide="next">';
+                        htmlstring += '		<span class="glyphicon glyphicon-chevron-right"></span>';
+                        htmlstring += '		<span class="sr-only">Next</span>';
+                        htmlstring += '	</a>';
+                    }
+                    htmlstring += '</div>';
+
+                    $('.modal.modal-dialog').css('width', '60%');
+                    if (images.length === 1)
+                        $(".modal-header h1").text("@Resources.ImageUrl" + " 1")
+                    else
+                        $(".modal-header h1").text("@Resources.Photos" + " 1")
+                    $('.carousel-list').empty();
+                    $(htmlstring).appendTo($('.carousel-list'));
+                    $('#imagemodal-carousel').modal('show');
+                    $('#myCarousel').bind('slide.bs.carousel', function (e) {
+                        var img = $('.item.active img')[0].alt;
+                        var splitImg = img.split('Image');
+                        var imgNum = parseInt(splitImg[1]);
+                        var headertext = '';
+                        var count = images.length > 0 ? (images.length - 1) : 0;
+
+                        if (e.direction === "left") {
+                            if (imgNum !== count)
+                                headertext = "Photo " + (parseInt(splitImg[1]) + 2);
+                            else
+                                headertext = "Photo 1";
+                        }
+                        else
+                            headertext = "Photo " + (imgNum === 0 ? images.length : imgNum);
+
+                        $(".modal-header h1").text(headertext);
+                    });
+                }
+                else {
+                    $('.modal.modal-dialog').css('width', '10% !important');
+                    $(".modal-header h1").text("@Resources.ImageUrl")
+                    $('.imagepreview').attr('src', $(this).find('img').attr('src'));
+                    $('#imagemodal').modal('show');
+                }
+            });
+        }
+	}
+
+    function setDonationRequestedBy(e, id) {
+        var cart = $(".shopping-cart");
+        var grid = $('#grid').data("kendoGrid");
+        $('#grid').busyIndicator(true);
+
+        if (cart.is(":visible"))
+            $(".shopping-cart").hide();
+
+        var isDonationLine = !$.isNumeric(id);
+        var masterRow = isDonationLine ? $(e).parent().closest("tr.k-detail-row").prev(".k-master-row") : $(e).parent().closest("tr");
+        var expanded = $.map(grid.tbody.children(":has(> .k-hierarchy-cell .k-i-collapse)"), function (row) {
+            return $(row).data("uid");
+        });
+
+        var userName = '@User.Identity.Name';
+        var cookieName = kendo.format("car_{0}", userName);
+        var cookie = readCookie(cookieName);
+        var cookieArray = cookie ? JSON.parse(cookie) : [];
+        var dataItem = grid.dataItem(masterRow);
+        var donationId = dataItem.Id;
+        var itemId = isDonationLine ? id : "00000000-0000-0000-0000-000000000000";
+        var item = dataItem.DonationDetails.length > 0 ? $.grep(dataItem.DonationDetails, function (n, i) { return n.Id == itemId })[0] : null;
+        var images = item && item.Images && item.Images.length > 0 ? item.Images : dataItem.Images && dataItem.Images.length > 0 ? dataItem.Images : [];
+        var title = isDonationLine && item ? item.ItemName : dataItem.Title;
+        var description = isDonationLine && item ? item.ItemName : dataItem.Description;
+        var obj = { UserName: userName, Line: cookieArray.length + 1, DonationId: donationId, ItemId: itemId, Title: title, Description: description, Images: images, ImageUrl: images.length > 0? images[0].ImageUrl: "" };
+        var alreadyExist = false;
+
+        cookieArray.pushIfNotExist(obj, function (e) {
+            alreadyExist = e.DonationId === obj.DonationId && e.ItemId === obj.ItemId;
+            return e.DonationId === obj.DonationId && e.ItemId === obj.ItemId;
+        });
+
+        if (alreadyExist) {
+            $('#grid').busyIndicator(false);
+            alert('This item already exist in you shooping cart');
+        }
+        else {
+            //update item
+            if (item !== null && item !== "" && item !== undefined) {
+                for (var i = 0; i < dataItem.DonationDetails.length; i++) {
+                    var _item = dataItem.DonationDetails[i];
+                    if (_item.Id == item.Id) {
+                        if (itemId !== "00000000-0000-0000-0000-000000000000") {
+                            dataItem.DonationDetails[i].RequestedBy = { Id: userId };
+                            dataItem.DonationDetails[i].ModifiedBy = { Id: userId };
+                            dataItem.DonationDetails[i].ModifiedOn = moment().format("YYYY-MM-DDTHH:MM:ss");
+                            dataItem.DonationDetails[i].DonationStatus = 2;
+                        }
+                        else
+                            dataItem.DonationDetails[i] = null;
+                    }
+                }
+            }
+
+            dataItem.RequestedBy = { Id: userId };
+            dataItem.ModifiedBy = { Id: userId };
+            dataItem.ModifiedOn = moment().format("YYYY-MM-DDTHH:MM:ss");
+            dataItem.DonationStatus = 2;
+
+            $.ajax({
+                url: getBaseUrl() + "Donations/" + itemId + "/UpdateDonationStatus?IsRequested=true",
+                contentType: "application/json; charset=utf-8",
+                cache: false,
+                crossDomain: true,
+                xhrFields: {
+                    withCredentials: false
+                },
+                type: "PUT",
+                data: JSON.stringify(dataItem),
+                success: function (result) {
+                    $('#grid').busyIndicator(false);
+                    console.log("success");
+                    createCookie(cookieName, JSON.stringify(cookieArray), 5);
+                    var msg = kendo.format("Your shopping car contains {0} item{1}", cookieArray.length, cookieArray.length > 1 ? "s" : "");
+                    $(".gh-cart-c").attr('title', msg);
+                    $("#gh-cart-n").text(cookieArray.length);
+                    
+                    dataItem.set("DonationStatus", result.DonationStatus);
+                    dataItem.set("DonationDetails", result ? result.DonationDetails : null);
+                    grid.one("dataBound", function () {
+                        grid.expandRow(grid.tbody.children().filter(function (idx, row) {
+                            return $.inArray($(row).data("uid"), expanded) >= 0;
+                        }));
+                    });
+                    grid.refresh();
+                },
+                error: function (xhr, status, error) {
+                    $('#grid').busyIndicator(false);
+                    try {
+                        alert(xhr.responseJSON.Message);
+                    } catch (e) {
+                        alert("An error has occurred.");
+                    }
+                }
+            });
+        }
+    }
+
+    function refreshCart() {
+        //Cookie Name
+        var userName = '@User.Identity.Name';
+        var cookieName = kendo.format("car_{0}", userName);
+        //Cookie Data
+        var cookie = readCookie(cookieName);
+        var cookieArray = cookie ? JSON.parse(cookie) : [];
+        //refresh element
+    }
+
+    function goToLogin(e) {
+        window.location ='@Url.Action("Login", "Account", new { returnUrl = "/Donations/" })';
+    }
+
+    function goToRowMasterDetail(e) {
+        var expanded = $(e).parent().closest("tr").find('.k-icon.k-i-collapse').length > 0;
+        var grid = $("#grid").data("kendoGrid");
+        var row = $(e).parent().closest("tr");
+
+        if (expanded) {grid.collapseRow(row);}
+        else { grid.expandRow(row) };
+    }
+
+
+    </script>
+    <style>
+        .modal-header {
+            padding: 20px;
+        }
+
+        .modal .modal-dialog {
+            /*width: 60%;*/
+        }
+
+        .grid-photo {
+            width: 100%;
+        }
+
+        .imagepreview {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+
+}

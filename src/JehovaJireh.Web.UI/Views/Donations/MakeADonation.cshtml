@@ -1,0 +1,277 @@
+﻿@model JehovaJireh.Web.UI.Models.DonationViewModels
+@using JehovaJireh.Web.UI.App_GlobalResources
+@{
+    ViewBag.Title = Resources.MakeADonation;
+}
+<div id="window" style="display:none"></div>
+<h2>@ViewBag.Title</h2>
+<p class="text-danger">@ViewBag.StatusMessage</p>
+
+@using (Html.BeginForm("MakeADonation", "Donation", FormMethod.Post, new { @class = "page-make-donation form-horizontal", role = "form", @enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <h4>@ViewBag.Title</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control", @data_bind = "value:Title,event:{'keyup':titleKeyup}" }, @style = "float:left" })
+            @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextAreaFor(model => model.Description, new { htmlAttributes = new { @class = "form-control", @type = "text" }, @style = "float:left", @data_bind = "value:Description, event:{ 'keydown': descriptionKeyup }", @cols = 40, @rows = 6 })
+            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.IsMoney, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.CheckBoxFor(model => model.IsMoney, new { @data_bind = "checked:IsMoney,event: { click: onIsMoneyChange($data) }" })
+                @Html.ValidationMessageFor(model => model.IsMoney, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="form-group" data-bind="visible:IsMoney()" style="display:none;">
+        @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control", @type = "number", min = "0.00", max = "10000.00", step = "0.01", @data_bind = "value:Amount" } })
+            @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.ExpireOn, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ExpireOn, new { htmlAttributes = new { @class = "form-control", @type = "date", @data_bind = "date:ExpireOn,value:ExpireOn,text:ExpireOn" } })
+            @Html.ValidationMessageFor(model => model.ExpireOn, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        <Label class="control-label col-md-2">
+            Photos
+        </Label>
+        <div class="col-md-10">
+            <input id="headerFiles" name="HeaderMultiFileData" type="file" multiple data-bind="fileInput: HeaderMultiFileData, customFileInput: {
+																				  buttonClass: 'btn btn-success',
+																				  fileNameClass: 'disabled form-control',
+																				  onClear: onClear,
+																				}" accept="image/*" />
+            <div class="image-container" data-bind="visible:ImageCount()>0">
+                <!-- ko foreach: {data: HeaderMultiFileData().dataURLArray, as: 'dataURL'} -->
+                <img name="headerimages" style="height: 100px; margin: 5px;" class="img-rounded  thumb" data-bind="attr: { src: dataURL }, visible: dataURL">
+                <!-- /ko -->
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.AddDetails, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.CheckBoxFor(model => model.AddDetails, new { @data_bind = "checked:AddDetails,event: { click: onAddDetails(this) }" })
+                @Html.ValidationMessageFor(model => model.AddDetails, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <!-- ko if: CanShowDetails && AddDetails -->
+    <div class="donation-details" style="display: none;" data-bind="visible: true">
+        <h2>@Resources.DonationDetails</h2>
+        <table width='100%' name="DonationDetails">
+            <thead>
+                <tr>
+                    <th width='10%'><label class="control-label col-md-2">@Resources.ItemLine</label></th>
+                    <th width='15%'><label class="control-label col-md-2">@Resources.ItemType</label></th>
+                    <th width='20%'><label class="control-label col-md-2">@Resources.ItemName</label></th>
+                    <th width='20%'> </th>
+                </tr>
+            </thead>
+            <tbody data-bind='foreach: DonationDetails'>
+                <tr>
+                    <td>
+                        <span name="Index" data-bind="text: ($index() + 1)"> </span>
+                    </td>
+                    <td>
+                        <select name="ItemType" class="form-control" data-bind='options: ItemTypes, optionsCaption: "Select...", value: ItemType, optionsText:"Text", optionsValue:"Value"'> </select>
+                    </td>
+                    <td>
+                        <input name="ItemName" class="form-control text-box single-line" data-bind='visible: ItemType, value: ItemName, valueUpdate: "afterkeydown"' />
+                    </td>
+                    <td>
+                        <div data-bind='if:ItemName() && ItemType()'>
+                            <a role="button" style="margin-left:10px;" class="k-button k-button-icontext k-grid-delete" href='#' data-bind='click: $parent.removeLine,visible:!$parent.ShowAddButton()'><span class="k-icon k-i-close"></span>@Resources.Remove</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr style="display:none" data-bind='visible:ItemName() && ItemType()'>
+                    <td colspan="4">
+                        <h3><span>@Resources.AddImage&#160;</span><span data-bind="text:ItemName"></span> </h3>
+                        <p>@Resources.AddImageInstructions</p>
+                        <div class="well" data-bind="fileDrag: MultiFileData">
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <!-- ko foreach: {data: MultiFileData().dataURLArray, as: 'dataURL'} -->
+                                    <img name="images" style="height: 100px; margin: 5px;" class="img-rounded  thumb" data-bind="attr: { src: dataURL }, visible: dataURL">
+                                    <!-- /ko -->
+                                    <div data-bind="ifnot: fileData().dataURL">
+                                        <label class="drag-label">@Resources.DragFileHere</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="file" name="MultiFileData" multiple data-bind="fileInput: MultiFileData, customFileInput: {
+																				buttonClass: 'btn btn-success',
+																				fileNameClass: 'disabled form-control',
+																				onClear: onClear,
+																			}" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <hr />
+    <div class="form-group" style="display: none;" data-bind="visible: true">
+        <div class="col-md-offset-2 col-md-10">
+            <a role="button" class="k-button k-button-icontext k-grid-add" href='#' data-bind='click: addLine'><span class="k-icon k-i-plus"></span>@Resources.AddItem</a>
+        </div>
+    </div>
+    <!-- /ko -->
+    <div class="form-group" style="display: none;" data-bind="visible: Title().length > 0">
+        <div class="col-md-offset-2 col-md-10">
+            <input data-bind="click:submit" value="@Resources.Create" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/areYouSure")
+    @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/moment")
+    @Scripts.Render("~/bundles/donation/donationviewmodel")
+    @Styles.Render("~/bundles/kendo-css")
+    @Scripts.Render("~/bundles/kendo")
+
+    <script type="text/javascript">
+		$(document).ready(function () {
+			var data = function () { return @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model)); }() || {};
+			Init(data);
+			var myWindow = $("#window"), undo = $("#undo");
+
+			function onClose() {
+				undo.fadeIn();
+			}
+
+			myWindow.kendoWindow({
+				width: "615px",
+				title: "@Resources.AddImagesPopup",
+				//content: "../content/web/window/ajax/ajaxContent.html",
+				close: onClose
+			});
+
+			undo.click(function () {
+				myWindow.data("kendoWindow").open();
+				undo.fadeOut();
+			});
+
+			$("input[name = 'culture']").click(function () {
+				$(this).parents("form").submit(); // post form
+			});
+
+        });
+    </script>
+    <style>
+        .validationMessage {
+            color: #b94a48;
+            float: left;
+            margin: 10px;
+            display: none;
+        }
+
+        .col-md-10 .custom-file-input-button-group.input-group-btn {
+            float: right;
+        }
+
+        .image-container {
+            padding: 15px;
+            margin: 12px;
+            border: 2px dashed #AAA;
+            border-radius: 7px;
+        }
+
+        @@media screen and (max-width: 1023px) {
+            div .k-window {
+                display: none !important;
+            }
+        }
+
+        tr:nth-child(even) {
+            background: rgba(204, 204, 204, 0.26);
+        }
+
+        tr:nth-child(odd) {
+            background: #FFF
+        }
+
+        .donation-details {
+            border: 1px solid #cbcbd2;
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+            .donation-details table tr td {
+                padding: 15px;
+            }
+
+            .donation-details .col-md-2 {
+                width: initial;
+            }
+
+        .progressBarContainer {
+            background: #5E5C57;
+            color: #ffffff;
+            width: 90%;
+            margin: 0 auto;
+            text-align: center;
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .progressBar {
+            position: relative;
+            width: 95%;
+            height: 50px;
+            margin: 20px auto;
+            border: 3px solid #fab617;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+            .progressBar div {
+                position: relative;
+                height: 100%;
+                background-color: #fab617;
+            }
+
+            .progressBar .progressText {
+                position: absolute;
+                margin: 0 auto;
+                top: 12px;
+                left: 0;
+                right: 0;
+                background-color: transparent;
+            }
+    </style>
+}

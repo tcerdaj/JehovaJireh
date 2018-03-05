@@ -1,0 +1,957 @@
+﻿
+@{
+    ViewBag.Title = "Chat";
+}
+<div id="chatdialog" reference=".k-button.k-button-icontext.k-grid-ViewDetails"></div>
+<audio id="audiochat" src="~/audio/you-wouldnt-believe.mp3" preload="auto"></audio>
+<audio id="audiomainchat" src="~/audio/echoed-ding.mp3" preload="auto"></audio>
+<ul class="chat-history" style="display:none"></ul>
+@*lest make two columns*@
+<div class="main-chat-container">
+    <div class="row">
+        <h2 class="loading">Loading chat...</h2>
+        <!-- =============================================================== -->
+        <!-- member list -->
+        <div class="col-md-8 bg-white">
+            <div class=" border-bottom padding-sm" style="height: 40px;display:none;">
+                <h2><i class="fa fa-group"></i><span>Members</span></h2>
+             </div>
+            <ul id="members" class="friend-list"></ul>
+        </div>
+        <!--=========================================================-->
+        <!-- chat -->
+        <div class="col-md-8 bg-white">
+            <div class="">
+                <div class="border-bottom padding-sm" style="height: 40px;display:none;">
+                    <h2><i class="fa fa-comments"></i><span>Chat</span></h2>
+                </div>
+                <input type="text" id="message" class="form-control text-box single-line" style="float:left;margin-right:3px;"/>
+                <a class="btn btn-default" href="#" id="sendmessage">
+                    <i class="fa fa-paper-plane"></i> Send
+                </a>
+                <input type="hidden" id="jsonobject" />
+                <ul id="discussion" class="friend-list"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    @Scripts.Render("~/bundles/moment")
+    @Styles.Render("~/bundles/fontawesome")
+    @Styles.Render("~/bundles/kendo-css")
+    @Scripts.Render("~/bundles/kendo")
+
+<script type="text/javascript">
+    function play_single_sound() {
+        document.getElementById('audiochat').play();
+    }
+    function play_single_main_sound() {
+        document.getElementById('audiomainchat').play();
+    }
+</script>
+    <script type="text/x-kendo-template" id="chattemplate">
+        <div class="">
+            <div class="">
+                <input class="chat-connectionid" type="hidden" value="#= ConnectionId #" />
+                <input class="chat-username" type="hidden" value="#= UserName #" />
+                <input class="chat-name" type="hidden" value="#= Name #" />
+                <input class="chat-fullname" type="hidden" value="#= FullName #" />
+                <input class="chat-connecteddatetime" type="hidden" value="#= ConnectedDateTime #" />
+                <input class="chat-avatar" type="hidden" value="#= Avatar #" />
+                <div class="panel panel-primary">
+                    <div class="panel-body">
+                        <ul class="chat">
+                            # for (var i = 0; i < UserHistory.length; i++) { #
+                                <li class="#= UserHistory[i].class # clearfix">
+                                    <span class="chat-img pull #= UserHistory[i].class #">
+                                        #= UserHistory[i].avatar #
+                                    </span>
+                                    <input class="username" type="hidden" value="#= UserHistory[i].UserName #" />
+                                    <div class="chat-body clearfix">
+                                        <div class="header">
+                                            <strong class="primary-font">#= UserHistory[i].FullName #</strong> 
+                                            <small class="pull-right text-muted">
+                                                <span class="glyphicon glyphicon-time"></span> #= moment(UserHistory[i].ConnectedDateTime).fromNow() # 
+                                            </small>
+                                        </div>
+                                        <p>#= UserHistory[i].Message #</p>
+                                    </div>
+                                </li>
+                            # } #
+                        </ul>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="input-group">
+                            <input tabindex="0" autofocus="autofocus" id="btn-input" type="text" class="form-control input-sm" placeholder="Type your message here..." />
+                            
+                            <span class="input-group-btn">
+                                <button class="btn btn-warning btn-sm" id="btn-chat">
+                                    Send
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <span id="whoistyping" class="text-muted" style="float:left;"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <!--Script references. -->
+    <!--The jQuery library is required and is referenced by default in _Layout.cshtml. -->
+    <!--Reference the SignalR library. -->
+    <script src="~/Scripts/jquery.signalR-2.1.2.min.js"></script>
+    <!--Reference the autogenerated SignalR hub script. -->
+    <script src="~/signalr/hubs"></script>
+    <!--SignalR script to update the chat page and send messages.-->
+    <script>
+        var chatDialogTemplate, wnd, username, fullName, chat, myConnectionId, name, avatar
+            ,refreshIntervalId;
+        $(document).keypress(function (e) {
+            if (e.which == 13 && wnd.element.is(":hidden")) {
+                $('#sendmessage').click();
+            }
+        });
+
+        $(function () {
+            $('.loading').hide();
+            $('.border-bottom.padding-sm').show();
+            
+            var me = convertDictionaryToObject(JSON.parse('@Html.Raw(Json.Encode(@ViewBag.Me))'));
+            username = me.UserName;
+            fullName = kendo.format("{0} {1}", me.Name, me.LastName);
+            name = me.Name;
+            avatar = me.Avatar;
+            me.ShowSays = false;
+            // Reference the auto-generated proxy for the hub.
+            chat = $.connection.chatHub;
+            chat.connection.qs = { 'userobject': JSON.stringify(me) };
+            // Create a function that the hub can call back to display messages.
+            chat.client.addNewMessageToPage = function (jsonObject, message) {
+                play_single_main_sound();
+                addNewMessageToPage(jsonObject, message);
+            };
+
+            chat.client.addChatMessage = function (who, jsonObject, message) {
+                // Add the message to the page
+                play_single_sound();
+                openChatDialogFromYou(JSON.parse(jsonObject), message);
+                fixScroll();
+            };
+
+            chat.client.whoIsTypingMessage = function (_message) {
+                // Add the message to the page
+                if (!wnd.element.is(":hidden")){
+                    if (_message !== '') {
+                        $('#whoistyping').text(htmlEncode(_message));
+                    } else {
+                        $('#whoistyping').text('');
+                    }
+                }
+            }
+
+            // Get the user name and store it to prepend to messages.
+            $('#jsonobject').val(JSON.stringify(me));
+            // Set initial focus to message input box.
+            $('#message').focus();
+            // Start the connection.
+            $.connection.hub.start().done(function (data) {
+                refreshMembers();
+
+                $('#sendmessage').click(function () {
+                    me.ShowSays = true;
+                    $('#jsonobject').val(JSON.stringify(me));
+                    // Call the Send method on the hub.
+                    if ($('#message').val() !== '') {
+                        showSays = true;
+                        chat.server.send($('#jsonobject').val(), $('#message').val());
+                        // Clear text box and reset focus for next comment.
+                        $('#message').val('').focus();
+                    }
+                });
+            });
+
+            wnd = $("#chatdialog")
+                .kendoWindow({
+                    title: "Chat",
+                    modal: true,
+                    visible: false,
+                    resizable: false,
+                    width: 500,
+                    maxHeight: 400,
+                    open: onWindowOpen,
+                    activate: onWindowActive
+                }).data("kendoWindow");
+
+            chatDialogTemplate = kendo.template($("#chattemplate").html());
+        });
+
+        function refreshMembers() {
+            chat.server.getAllActiveConnections().done(function (data) { loadUsers(data); });
+        }
+
+        function onWindowActive(e) {
+            fixScroll();
+            $('#btn-input').focus();
+        }
+
+        function onWindowOpen(e) {
+            $('#btn-input').keypress(function (k) {
+                if (k.which == 13 && !wnd.element.is(":hidden")) {
+                    $('#btn-chat').click();
+                }
+            });
+
+            $('#btn-input').focus(function () {
+                var who = $('.chat-username').val();
+                var message = kendo.format("{0} is going to start typing...", name);
+                chat.server.whoIsTyping(who, message);
+            });
+
+            $('#btn-input').keydown(function () {
+                var who = $('.chat-username').val();
+                var message = kendo.format("{0} is typing...", name);
+                chat.server.whoIsTyping(who, message);
+            });
+
+            $('#btn-input').blur(function () {
+                var message = '';
+                var who = $('.chat-username').val();
+                chat.server.whoIsTyping(who, message);
+            });
+
+            $('#btn-chat').click(function () {
+                var message = $('#btn-input').val();
+                if (message !== '') {
+                    var wConnectionId = $('.chat-connectionid').val();
+                    var wUserName = $('.chat-username').val();
+                    var wFullName = $('.chat-fullname').val();
+                    var wName = $('.chat-name').val();
+                    var connectedDateTime = $('.chat-connecteddatetime').val();
+                    var wAvatar = $('.chat-avatar').val();
+
+                    var jsonObject = {
+                        ConnectedDateTime: connectedDateTime,
+                        Who: { ConnectionId: wConnectionId, FullName: wFullName, UserName: wUserName, Name: wName, Avatar: wAvatar },
+                        Me: { ConnectionId: myConnectionId, FullName: fullName, UserName: username, Name: name, Avatar: avatar }
+                    };
+
+                    chat.server.sendChatMessage(wUserName, JSON.stringify(jsonObject), message).done(function (d) {
+                        //Add message to chat
+                        addNewMessageToChat(true, jsonObject, message);
+                        fixScroll();
+                        chat.server.whoIsTyping($('.chat-username').val(), '');
+                    });
+                };
+            });
+        }
+
+        function fixScroll() {
+            $('#btn-input').val('');
+            var scrollTo = $('#btn-input');
+            var container = $('#chatdialog');
+            container.animate({
+                scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
+            });
+        }
+
+        function addNewMessageToPage(jsonobject, message) {
+            // Add the message to the page
+            var _me = JSON.parse(jsonobject);
+            var avatar = _me.Avatar === null || _me.Avatar === undefined || _me.Avatar === '' ? '<div class="avatar-circle“><span class="initials”>' + getInitials(_me.Name + ' ' + _me.LastName) + '</span></div >' : '<div class="avatar-circle"><img class="img-circle" src="' + _me.Avatar + '" /></div>';
+            var name = _me.Name;
+            var date = formatAMPM(new Date());
+            $('#discussion').append('<li><div class="talk-bubble tri-right border round btm-left-in"><div class="talktext"><p><strong>' + htmlEncode(name)
+                + (_me.ShowSays ? ' says' : '') + '</strong>: ' + htmlEncode(message) + '<p><span class="glyphicon glyphicon-time"><small class="item-time">' + date + '</small></p></p></div></div>' + avatar + '</li>');
+
+            refreshMembers();
+        }
+
+
+        function openChatDialog(e) {
+            if (wnd.element.is(":hidden")) {//if not open
+                var connectionId = $(e).find("#wconnectionid").val();
+                var userName = $(e).find("#wusername").val();
+                var name = $(e).find("#wname").val();
+                var fullName = $(e).find("#wfullname").val();
+                var connectedDatetime = new Date();
+                var wAvatar = $(e).find("#wavatar").val();
+                var strHistory = localStorage[userName];
+                var userHistory = strHistory !== '' && strHistory !== undefined ? JSON.parse(strHistory) : [];
+
+                var pos = $(e).position();
+                var width = $(e).outerWidth();
+                wnd.title(kendo.format('<span class="glyphicon glyphicon-comment"></span> Chat {0}', e.title));
+                wnd.content(chatDialogTemplate({ ConnectionId: connectionId, UserName: userName, Name: name, FullName: fullName, ConnectedDateTime: connectedDatetime, Avatar: wAvatar, UserHistory:userHistory }));
+                wnd.center().open().element.closest(".k-window").css({
+                    top: pos.top + "px",
+                    left: pos.left + width + "px"
+                });
+            }
+        }
+
+        function openChatDialogFromYou(data, message) {
+            //TODO:
+            //1.Check if the current wnd user is the same that sent the message.
+            // * if no close the windows
+            // * open new windows
+            // * load user chat history
+            // * add new message
+            // * add new message to cache
+            var d = data.Me;
+            var currentUserName = $(wnd.title()).attr('username');
+            var pos = $('#members').position();
+            var width = $('#members').outerWidth();
+            var strHistory = localStorage[d.UserName];
+            var userHistory = strHistory !== '' && strHistory !== undefined ? JSON.parse(strHistory) : [];
+
+            wnd.title(kendo.format('<span class="glyphicon glyphicon-comment" username="' + d.UserName + '"></span> Chat {0}', d.Name));
+            wnd.content(chatDialogTemplate({ ConnectionId: d.ConnectionId, UserName: d.UserName, Name: d.Name, FullName: d.FullName, ConnectedDateTime: data.ConnectedDateTime, Avatar: d.Avatar, UserHistory: userHistory }));
+            wnd.center().open().element.closest(".k-window").css({
+                top: pos.top + "px",
+                left: pos.left + width + "px"
+            });
+
+            addNewMessageToChat(false, data, message);
+        }
+
+
+        function addNewMessageToChat(isMe, jsonObject, message) {
+            var avatar = isMe ? '<img src="http://placehold.it/50/FA6F57/fff&text=ME" alt="User Avatar" class="img-circle" />' : '<img src="' + jsonObject.Me.Avatar + '" alt="User Avatar" class="img-circle" />';
+            var direcction = isMe ? "right" : "left";
+            var fullName = jsonObject.Me.FullName;
+            var userName = jsonObject.Me.UserName;
+
+            var htmlString = '<li class="' + direcction + ' clearfix">' +
+                '<span class="chat-img pull-' + direcction + '">' +
+                avatar +
+                '</span >' +
+                '<input class="username" type="hidden" value="' + userName + '" />' +
+                '<div class="chat-body clearfix">' +
+                '<div class="header">' +
+                '<strong class="primary-font">' + fullName + '</strong> <small class="pull-right text-muted">' +
+                '<span class="glyphicon glyphicon-time"></span>&#160;' + moment(jsonObject.ConnectedDateTime).fromNow() +
+                '</small>' +
+                '</div>' +
+                '<p>' +
+                message +
+                '</p>' +
+                '</div>' +
+                '</li >';
+
+            //TODO:Get from cache user
+            //Build history
+
+            $('.chat').append(htmlString);
+
+            //add to history
+            jsonObject.Me.class = direcction;
+            jsonObject.Me.avatar = avatar;
+            jsonObject.Me.Message = message;
+            jsonObject.Me.ConnectedDateTime = new Date();
+            var _userName = isMe ? jsonObject.Who.UserName : jsonObject.Me.UserName;
+            var strHistory = localStorage[_userName];
+            var userHistory = strHistory !== '' && strHistory !== undefined ? JSON.parse(localStorage[_userName]) : [];
+            userHistory.push(jsonObject.Me);
+            localStorage[_userName] = JSON.stringify(userHistory);
+        }
+
+        function findUserFromList(userName, array) {
+            var result = null;
+            if (!(userName === undefined || userName === "" || userName === null || userName === "00000000-0000-0000-0000-000000000000") && !(array === undefined || array === "" || array === null || array.length == 0)) {
+                result = $.grep(array, function (n, i) {
+                    return $(n).attr('username') === username;
+                });
+            }
+            return result !== null && result.length > 0 ? result[0] : result;
+        }
+
+        function loadUsers(data) {
+            if (data === undefined || data === null || data === '')
+                return;
+
+            var container = $('#members');
+            container.empty();//cleaning list
+
+            for (var i = 0; i < data.length; i++) {
+                var d = data[i];
+                var me = JSON.parse(d.UserObject);
+                var enable = me.UserName !== username;
+                var connectionId = d.ConnectionId;
+
+                if (me.UserName == username)
+                    myConnectionId = connectionId;
+
+                var avatar = me.Avatar === null || me.Avatar === undefined || me.Avatar === '' ? '<div class="avatar-circle“ title="' + getInitials(me.Name + ' ' + me.LastName) +
+                    '"><span class="initials”>' + getInitials(me.Name + ' ' + me.LastName) + '</span></div >' : '<div class="avatar-circle"title="' + getInitials(me.Name + ' ' + me.LastName) +
+                    '"><img class="img-circle" src="' + me.Avatar + '" /></div>';
+
+                var strElement = '<li>'
+                    + (enable ? '<a href="#" class="clearfix" onclick="openChatDialog(this);" title="' + me.Name + '" >' : '<a href="#" class="clearfix item-disabled" title="' + me.Name + '">')
+                    + avatar
+                    + '<div class="friend-name"><strong>'+ me.Name + ' ' + me.LastName + '</strong></div >'
+                    + '<div class="last-message text-muted">&#160;has Has established connection in the room.</div>'
+                    + '<input type="hidden" id="wconnectionid" value="' + connectionId + '"/>'
+                    + '<input type="hidden" id="wusername" value="' + me.UserName + '"/>'
+                    + '<input type="hidden" id="wname" value="' + me.Name + '"/>'
+                    + '<input type="hidden" id="wfullname" value="' + me.Name + ' ' + me.LastName + '"/>'
+                    + '<input type="hidden" id="wavatar" value="' + me.Avatar + '"/>'
+                    + '<small class="time text-muted">&#160;' + moment(me.ConnectedDateTime).fromNow() + '</small>'
+                                    +'<small class="chat-alert text-muted"><i class="fa fa-reply"></i></small>'
+                                    + '</a>'
+                                + '</li >';
+                var li = $(strElement);
+                li.appendTo(container);
+            }
+        }
+
+        // This optional function html-encodes messages for display in the page.
+            function htmlEncode(value) {
+                var encodedValue = $('<div />').text(value).html();
+                return encodedValue;
+            }
+
+            function formatAMPM(date) {
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var ampm = hours >= 12 ? 'PM' : 'AM';
+                var seconds = date.getSeconds();
+                hours = hours % 12;
+                hours = hours ? hours : 12; // the hour '0' should be '12'
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+                var strTime = hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+                return strTime;
+            }
+    </script>
+    <style>
+        .clearfix.item-disabled{opacity:0.5;cursor: default;}
+        .col-md-8.bg-white {
+            display: inline-block;
+            max-height: 800px;
+            margin-right: 20px;
+            vertical-align: top;
+            overflow-x: hidden;
+            overflow-y: scroll;
+            position: relative;
+        }
+        .padding-sm {
+            margin-bottom: 10px;
+        }
+        .padding-sm h2 i:before {
+            padding: 10px;
+        }
+        .main-chat-container {
+            padding-top: 0;
+            font-size: 12px;
+            color: #777;
+            background: #f9f9f9;
+            font-family: 'Open Sans',sans-serif;
+            margin-top: 20px;
+        }
+        
+        .row {
+            display: flex;
+            padding: 5px;
+            font-size: 12px;
+            color: #777;
+            background: #f9f9f9;
+            font-family: 'Open Sans',sans-serif;
+        }
+        .row:before, .row:after {
+            margin-top: 17px;
+        } 
+       
+        
+        .avatar-circle .img-circle {
+            height: 80px;
+            width: 80px;
+        }
+
+        .avatar-circle {
+            width: 100px;
+            height: 100px;
+            background-color: $brand-special;
+            text-align: center;
+            border-radius: 50%;
+            -webkit-border-radius: 50%;
+            -moz-border-radius: 50%;
+        }
+
+        .initials {
+            position: relative;
+            top: 25px; /* 25% of parent */
+            font-size: 50px; /* 50% of parent */
+            line-height: 50px; /* 50% of parent */
+            color: #fff;
+            font-family: "Courier New", monospace;
+            font-weight: bold;
+        }
+
+        .signalR-container {
+            padding: 5% 5%;
+            background-color: lightblue;
+            font-family: "Ubuntu-Italic", "Lucida Sans", helvetica, sans;
+        }
+        /* CSS talk bubble */
+        .talk-bubble {
+            margin: 40px;
+            display: inline-block;
+            position: relative;
+            width: 200px;
+            height: auto;
+            background-color: lightyellow;
+        }
+
+        .border {
+            border: 8px solid #666;
+        }
+
+        .round {
+            border-radius: 30px;
+            -webkit-border-radius: 30px;
+            -moz-border-radius: 30px;
+        }
+
+        /* Right triangle placed top left flush. */
+        .tri-right.border.left-top:before {
+            content: ' ';
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: -40px;
+            right: auto;
+            top: -8px;
+            bottom: auto;
+            border: 32px solid;
+            border-color: #666 transparent transparent transparent;
+        }
+
+        .tri-right.left-top:after {
+            content: ' ';
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: -20px;
+            right: auto;
+            top: 0px;
+            bottom: auto;
+            border: 22px solid;
+            border-color: lightyellow transparent transparent transparent;
+        }
+
+        /* Right triangle, left side slightly down */
+        .tri-right.border.left-in:before {
+            content: ' ';
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: -40px;
+            right: auto;
+            top: 30px;
+            bottom: auto;
+            border: 20px solid;
+            border-color: #666 #666 transparent transparent;
+        }
+
+        .tri-right.left-in:after {
+            content: ' ';
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: -20px;
+            right: auto;
+            top: 38px;
+            bottom: auto;
+            border: 12px solid;
+            border-color: lightyellow lightyellow transparent transparent;
+        }
+
+        /*Right triangle, placed bottom left side slightly in*/
+        .tri-right.border.btm-left:before {
+            content: ' ';
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: -8px;
+            right: auto;
+            top: auto;
+            bottom: -40px;
+            border: 32px solid;
+            border-color: transparent transparent transparent #666;
+        }
+
+        .tri-right.btm-left:after {
+            content: ' ';
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: 0px;
+            right: auto;
+            top: auto;
+            bottom: -20px;
+            border: 22px solid;
+            border-color: transparent transparent transparent lightyellow;
+        }
+
+        /*Right triangle, placed bottom left side slightly in*/
+        .tri-right.border.btm-left-in:before {
+            content: ' ';
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: 30px;
+            right: auto;
+            top: auto;
+            bottom: -40px;
+            border: 20px solid;
+            border-color: #666 transparent transparent #666;
+        }
+
+        .tri-right.btm-left-in:after {
+            content: ' ';
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: 38px;
+            right: auto;
+            top: auto;
+            bottom: -20px;
+            border: 12px solid;
+            border-color: lightyellow transparent transparent lightyellow;
+        }
+
+        /*Right triangle, placed bottom right side slightly in*/
+        .tri-right.border.btm-right-in:before {
+            content: ' ';
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: auto;
+            right: 30px;
+            bottom: -40px;
+            border: 20px solid;
+            border-color: #666 #666 transparent transparent;
+        }
+
+        .tri-right.btm-right-in:after {
+            content: ' ';
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: auto;
+            right: 38px;
+            bottom: -20px;
+            border: 12px solid;
+            border-color: lightyellow lightyellow transparent transparent;
+        }
+        /*
+                left: -8px;
+              right: auto;
+              top: auto;
+                bottom: -40px;
+                border: 32px solid;
+                border-color: transparent transparent transparent #666;
+                left: 0px;
+              right: auto;
+              top: auto;
+                bottom: -20px;
+                border: 22px solid;
+                border-color: transparent transparent transparent lightyellow;
+
+            /*Right triangle, placed bottom right side slightly in*/
+        .tri-right.border.btm-right:before {
+            content: ' ';
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: auto;
+            right: -8px;
+            bottom: -40px;
+            border: 20px solid;
+            border-color: #666 #666 transparent transparent;
+        }
+
+        .tri-right.btm-right:after {
+            content: ' ';
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: auto;
+            right: 0px;
+            bottom: -20px;
+            border: 12px solid;
+            border-color: lightyellow lightyellow transparent transparent;
+        }
+
+        /* Right triangle, right side slightly down*/
+        .tri-right.border.right-in:before {
+            content: ' ';
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: auto;
+            right: -40px;
+            top: 30px;
+            bottom: auto;
+            border: 20px solid;
+            border-color: #666 transparent transparent #666;
+        }
+
+        .tri-right.right-in:after {
+            content: ' ';
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: auto;
+            right: -20px;
+            top: 38px;
+            bottom: auto;
+            border: 12px solid;
+            border-color: lightyellow transparent transparent lightyellow;
+        }
+
+        /* Right triangle placed top right flush. */
+        .tri-right.border.right-top:before {
+            content: ' ';
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: auto;
+            right: -40px;
+            top: -8px;
+            bottom: auto;
+            border: 32px solid;
+            border-color: #666 transparent transparent transparent;
+        }
+
+        .tri-right.right-top:after {
+            content: ' ';
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: auto;
+            right: -20px;
+            top: 0px;
+            bottom: auto;
+            border: 20px solid;
+            border-color: lightyellow transparent transparent transparent;
+        }
+
+        /* talk bubble contents */
+        .talktext {
+            padding: 1em;
+            text-align: left;
+            line-height: 1.5em;
+        }
+
+            .talktext p {
+                /* remove webkit p margins */
+                -webkit-margin-before: 0em;
+                -webkit-margin-after: 0em;
+            }
+
+            .talktext small {
+                margin-left: 7px;
+            }
+
+        /*body {
+                padding-top: 0;
+                font-size: 12px;
+                color: #777;
+                background: #f9f9f9;
+                font-family: 'Open Sans',sans-serif;
+                margin-top: 20px;
+            }*/
+
+        div.col-md-8.bg-white {
+            border: 1px solid #dad8d8;
+        }
+
+        .friend-list {
+            list-style: none;
+            margin-left: -40px;
+        }
+
+            .friend-list li {
+                border-bottom: 1px solid #eee;
+            }
+
+                .friend-list li a div img {
+                    float: left;
+                    width: 45px;
+                    height: 45px;
+                    margin-right: 0px;
+                }
+
+                .friend-list li a {
+                    position: relative;
+                    display: block;
+                    padding: 10px;
+                    transition: all .2s ease;
+                    -webkit-transition: all .2s ease;
+                    -moz-transition: all .2s ease;
+                    -ms-transition: all .2s ease;
+                    -o-transition: all .2s ease;
+                }
+
+                    .friend-list li a div { float:left;}
+                    .friend-list li.active a {
+                        background-color: #f1f5fc;
+                    }
+
+                .friend-list li a .friend-name,
+                .friend-list li a .friend-name:hover {
+                    color: #777;
+                }
+
+                .friend-list li a .last-message {
+                    width: 65%;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+
+                .friend-list li a .time {
+                    position: absolute;
+                    top: 10px;
+                    right: 8px;
+                }
+
+        small, .small {
+            font-size: 85%;
+        }
+
+        .friend-list li a .chat-alert {
+            position: absolute;
+            right: 8px;
+            top: 27px;
+            font-size: 10px;
+            padding: 3px 5px;
+        }
+
+        .chat-message {
+            padding: 60px 20px 115px;
+        }
+
+        .chat {
+            list-style: none;
+            margin: 0;
+            padding:0;
+        }
+
+        .chat-message {
+            background: #f9f9f9;
+        }
+
+        .chat li img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50em;
+            -moz-border-radius: 50em;
+            -webkit-border-radius: 50em;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        .chat-body {
+            padding-bottom: 20px;
+        }
+
+        .chat li.left .chat-body {
+            margin-left: 70px;
+            background-color: #fff;
+        }
+
+        .chat li .chat-body {
+            position: relative;
+            font-size: 11px;
+            padding: 10px;
+            border: 1px solid #f1f5fc;
+            box-shadow: 0 1px 1px rgba(0,0,0,.05);
+            -moz-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+            -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+        }
+
+            .chat li .chat-body .header {
+                padding-bottom: 5px;
+                border-bottom: 1px solid #f1f5fc;
+            }
+
+            .chat li .chat-body p {
+                margin: 0;
+            }
+
+        .chat li.left .chat-body:before {
+            position: absolute;
+            top: 10px;
+            left: -8px;
+            display: inline-block;
+            background: #fff;
+            width: 16px;
+            height: 16px;
+            border-top: 1px solid #f1f5fc;
+            border-left: 1px solid #f1f5fc;
+            content: '';
+            transform: rotate(-45deg);
+            -webkit-transform: rotate(-45deg);
+            -moz-transform: rotate(-45deg);
+            -ms-transform: rotate(-45deg);
+            -o-transform: rotate(-45deg);
+        }
+
+        .chat li.right .chat-body:before {
+            position: absolute;
+            top: 10px;
+            right: -8px;
+            display: inline-block;
+            background: #fff;
+            width: 16px;
+            height: 16px;
+            border-top: 1px solid #f1f5fc;
+            border-right: 1px solid #f1f5fc;
+            content: '';
+            transform: rotate(45deg);
+            -webkit-transform: rotate(45deg);
+            -moz-transform: rotate(45deg);
+            -ms-transform: rotate(45deg);
+            -o-transform: rotate(45deg);
+        }
+
+        .chat li {
+            margin: 15px 0;
+        }
+
+            .chat li.right .chat-body {
+                margin-right: 70px;
+                background-color: #fff;
+            }
+
+        .chat-box {
+            position: fixed;
+            bottom: 0;
+            left: 444px;
+            right: 0;
+            padding: 15px;
+            border-top: 1px solid #eee;
+            transition: all .5s ease;
+            -webkit-transition: all .5s ease;
+            -moz-transition: all .5s ease;
+            -ms-transition: all .5s ease;
+            -o-transition: all .5s ease;
+        }
+
+        .primary-font {
+            color: #3c8dbc;
+        }
+
+        a:hover, a:active, a:focus {
+            text-decoration: none;
+            outline: 0;
+        }
+    </style>
+}

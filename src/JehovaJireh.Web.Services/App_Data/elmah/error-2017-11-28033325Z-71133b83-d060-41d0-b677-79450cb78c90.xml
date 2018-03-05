@@ -1,0 +1,189 @@
+﻿<error errorId="71133b83-d060-41d0-b677-79450cb78c90" application="/LM/W3SVC/3/ROOT" host="TEOFILO-LAPTOP" type="System.Web.HttpException" message="The controller for path '/donations' could not be found." source="JehovaJireh.Web.Services" detail="System.Web.HttpException (0x80004005): The controller for path '/donations' could not be found.&#xD;&#xA;   at JehovaJireh.Web.Services.Plumbing.WindsorControllerFactory.GetControllerInstance(RequestContext requestContext, Type controllerType) in C:\Users\tcerda\Source\Repos\Web\JehovaJireh\src\JehovaJireh.Web.Services\Plumbing\WindsorControllerFactory.cs:line 31&#xD;&#xA;   at System.Web.Mvc.DefaultControllerFactory.CreateController(RequestContext requestContext, String controllerName)&#xD;&#xA;   at System.Web.Mvc.MvcHandler.ProcessRequestInit(HttpContextBase httpContext, IController&amp; controller, IControllerFactory&amp; factory)&#xD;&#xA;   at System.Web.Mvc.MvcHandler.BeginProcessRequest(HttpContextBase httpContext, AsyncCallback callback, Object state)&#xD;&#xA;   at System.Web.HttpApplication.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute()&#xD;&#xA;   at System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean&amp; completedSynchronously)" time="2017-11-28T03:33:25.9652914Z" statusCode="404">
+  <serverVariables>
+    <item name="ALL_HTTP">
+      <value string="HTTP_CONNECTION:keep-alive&#xD;&#xA;HTTP_ACCEPT:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8&#xD;&#xA;HTTP_ACCEPT_ENCODING:gzip, deflate, br&#xD;&#xA;HTTP_ACCEPT_LANGUAGE:en-US,en;q=0.9,es;q=0.8&#xD;&#xA;HTTP_COOKIE:entireToken={&quot;AccessToken&quot;:&quot;nJgS4yn4oKa4bAkgv5c0otMEn_g8ZF2Obq4IWfHpkcL2z9EXFqMMquCp5XGhs2rFItfUpkMxKN7pBTSXAje3OZEwK3TUnKbrI5eCAU5xMHOvLw0_7fd7617DSHqfRXMnbPUpGHrexQaUtWaWoz37PvrR2lf9UzgIToSGOvA-mLp8bOw1PkaeNvC7wOMsW_OepdsvDh536uD96PppdJZuae8vhIaJ2Ru7lh7jAle5unzQdIDUn_q5ifuhTfzMNKKHxE_fyvT7V0o5e9ksgwD8ShWP_GnazAffczpf63XVzW7NG6pyAN9f2T767FtxDvP_YwvOxegx9avs-q09z-QosCOyqABdT2owpJ22whCiTIBa5CCNROjec84p25AYHY5hNCfZdgveTkYaXTEWaNXz-ARe5QJv0SNVnn51pAmdUmZ6f0hRtudNLmceXQlqiHjFu4xmpAH0CA78yOxYQ5i4OYBoGN87ZoxkK00JDAaubd3H17pL0zzsjl5BFseCEKbcV3bi00m6fvKVT0RQLvQWHx3iMFbq1yqD-3ZMATGmwyPB2o6cAGv2aP7ge8zOm24uwjfvGbm7dyPWYaD34vMFTw&quot;,&quot;TokenType&quot;:&quot;bearer&quot;,&quot;ExpiresIn&quot;:345599,&quot;Issued&quot;:&quot;09/14/2017 10:41:29 AM&quot;,&quot;Expires&quot;:&quot;09/18/2017 10:41:29 AM&quot;,&quot;User&quot;:&quot;dev@qadev.com&quot;,&quot;CompanyID&quot;:&quot;102a2fa1-8148-45a4-94c8-0dec5b073433&quot;,&quot;UserID&quot;:&quot;3f8a9e96-36df-4d21-939c-75b69ac9c168&quot;,&quot;ProfileUserID&quot;:&quot;fd72b21a-d27f-41ab-9d98-31cc06c3a2ea&quot;,&quot;ProfileType&quot;:&quot;0&quot;,&quot;TechEntityID&quot;:&quot;5fbd9d28-aff2-486d-8f19-4001e6c8b0a8&quot;,&quot;Refresh&quot;:&quot;True&quot;,&quot;RefreshToken&quot;:&quot;D8479BB67123CCAF2F5FEDCFA11751C95E184FEB2211B2986FD5E19AC9121F72&quot;,&quot;ServerURL&quot;:&quot;https://server.descocloud.com/&quot;,&quot;WebURL&quot;:&quot;https://www.descocloud.com/&quot;,&quot;APIVersion&quot;:25,&quot;DeploymentSlot&quot;:0,&quot;IssuedDateTime&quot;:&quot;\/Date(1505385689000)\/&quot;,&quot;ExpiresDateTime&quot;:&quot;\/Date(1505731289000)\/&quot;,&quot;CanRefresh&quot;:true,&quot;IsExpired&quot;:false,&quot;RequiredRenewal&quot;:false}; DeviceID=9df69f2c-7180-4dd0-95f9-ba445fa78569; imageURL=https://pendulumstorage.blob.core.windows.net/102a2fa1-8148-45a4-94c8-0dec5b073433/employee_small_3534b27e-3286-4a08-8b7f-ecfe9c5c653f.jpg; access={&quot;SystemAdministrator&quot;:0,&quot;ProfileType&quot;:0,&quot;BackOffice&quot;:4,&quot;Dashboard&quot;:4,&quot;WorkOrder&quot;:4,&quot;Invoice&quot;:0,&quot;Quote&quot;:0,&quot;Items&quot;:4,&quot;CustomFormsSetup&quot;:4,&quot;SettingsCompany&quot;:4,&quot;SettingsCompanyOwner&quot;:4,&quot;SettingsEmployees&quot;:4,&quot;SettingsAgreements&quot;:4,&quot;SettingsMasterEquipment&quot;:4,&quot;SettingsWorkOrder&quot;:4,&quot;SettingsWorkOrderManager&quot;:4,&quot;TimeEntry&quot;:4,&quot;LicenseLevel&quot;:2,&quot;GoogleMaps&quot;:4,&quot;ArgoTrak&quot;:4,&quot;CustomForms&quot;:4,&quot;FieldApp&quot;:4,&quot;RequireReviewOnComplete&quot;:0,&quot;EnableFinalizingWO&quot;:4,&quot;EnableIsolatedPricebook&quot;:0,&quot;EnableMobileContactInfo&quot;:0,&quot;TwilioTelephone&quot;:4,&quot;TwilioMessaging&quot;:4,&quot;QuoteProfitability&quot;:4,&quot;InvoiceProfitability&quot;:4,&quot;Beta&quot;:true,&quot;RecCount&quot;:0,&quot;APIVersion&quot;:0}; ai_user=Gfgh|2017-10-03T20:30:21.686Z; __RequestVerificationToken=lsBdW5Re0LLm9oK1KV2f47vkWNvvnuUAlc5JAUqRzxb_DcuOEBTRCFx3mTNUQOq7mLfZe4OBcXCEUapAxuQhFNhWv4bkpNyW7hglW946hDQ1; ASP.NET_SessionId=tvmcuny5sstc3hq4nwtovqmz; .AspNet.ApplicationCookie=bzjcheHRyuE-lmmDoSWrokPKi8XM6mMn6Digusua1vLhc8wVQn3RV3vmGeb2UZjVeMjrOW6PPhUtHOPuOiaf9K9we3rL1zQbW-bVHZOe6xyu3pSiXX9xLAo1jdEZufNCyVLWDOIOgFtcvRQmx4Clbf1uLfsYCEklqVBSUeL0z_8ibqavd_L5klqkLahMWlbTe_p5aRMKerx6ilR5k7zX0ahDG1vERH9r0dHUcMSywAhNOa3-IoOvJiIvXhBix35W3Opazmv6xMbZgdMaE5YHjPoQ5HVfDiiF9bDVhqiTIMtmuF6uTaLJ36j_vE_Iw33uDDyEAhJpjSJqRukJIO9UjNkOIRdtUlXzAmQ6K-VZxYIq5DQtSJde9-qXITl4u1ta0pQnH2qTZndtQ-Xw7sUaCAnMMlkdnkJgP3X_ku-0C2yieOw36r1XJsTm9PyzOmBGlIE5ZFN4lKgj3-mD6G8jWQ; ai_session=9Qg6j|1511835505366|1511839966001.475&#xD;&#xA;HTTP_HOST:localhost:58095&#xD;&#xA;HTTP_USER_AGENT:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36&#xD;&#xA;HTTP_UPGRADE_INSECURE_REQUESTS:1&#xD;&#xA;HTTP_ORIGIN:http://evil.com/&#xD;&#xA;" />
+    </item>
+    <item name="ALL_RAW">
+      <value string="Connection: keep-alive&#xD;&#xA;Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8&#xD;&#xA;Accept-Encoding: gzip, deflate, br&#xD;&#xA;Accept-Language: en-US,en;q=0.9,es;q=0.8&#xD;&#xA;Cookie: entireToken={&quot;AccessToken&quot;:&quot;nJgS4yn4oKa4bAkgv5c0otMEn_g8ZF2Obq4IWfHpkcL2z9EXFqMMquCp5XGhs2rFItfUpkMxKN7pBTSXAje3OZEwK3TUnKbrI5eCAU5xMHOvLw0_7fd7617DSHqfRXMnbPUpGHrexQaUtWaWoz37PvrR2lf9UzgIToSGOvA-mLp8bOw1PkaeNvC7wOMsW_OepdsvDh536uD96PppdJZuae8vhIaJ2Ru7lh7jAle5unzQdIDUn_q5ifuhTfzMNKKHxE_fyvT7V0o5e9ksgwD8ShWP_GnazAffczpf63XVzW7NG6pyAN9f2T767FtxDvP_YwvOxegx9avs-q09z-QosCOyqABdT2owpJ22whCiTIBa5CCNROjec84p25AYHY5hNCfZdgveTkYaXTEWaNXz-ARe5QJv0SNVnn51pAmdUmZ6f0hRtudNLmceXQlqiHjFu4xmpAH0CA78yOxYQ5i4OYBoGN87ZoxkK00JDAaubd3H17pL0zzsjl5BFseCEKbcV3bi00m6fvKVT0RQLvQWHx3iMFbq1yqD-3ZMATGmwyPB2o6cAGv2aP7ge8zOm24uwjfvGbm7dyPWYaD34vMFTw&quot;,&quot;TokenType&quot;:&quot;bearer&quot;,&quot;ExpiresIn&quot;:345599,&quot;Issued&quot;:&quot;09/14/2017 10:41:29 AM&quot;,&quot;Expires&quot;:&quot;09/18/2017 10:41:29 AM&quot;,&quot;User&quot;:&quot;dev@qadev.com&quot;,&quot;CompanyID&quot;:&quot;102a2fa1-8148-45a4-94c8-0dec5b073433&quot;,&quot;UserID&quot;:&quot;3f8a9e96-36df-4d21-939c-75b69ac9c168&quot;,&quot;ProfileUserID&quot;:&quot;fd72b21a-d27f-41ab-9d98-31cc06c3a2ea&quot;,&quot;ProfileType&quot;:&quot;0&quot;,&quot;TechEntityID&quot;:&quot;5fbd9d28-aff2-486d-8f19-4001e6c8b0a8&quot;,&quot;Refresh&quot;:&quot;True&quot;,&quot;RefreshToken&quot;:&quot;D8479BB67123CCAF2F5FEDCFA11751C95E184FEB2211B2986FD5E19AC9121F72&quot;,&quot;ServerURL&quot;:&quot;https://server.descocloud.com/&quot;,&quot;WebURL&quot;:&quot;https://www.descocloud.com/&quot;,&quot;APIVersion&quot;:25,&quot;DeploymentSlot&quot;:0,&quot;IssuedDateTime&quot;:&quot;\/Date(1505385689000)\/&quot;,&quot;ExpiresDateTime&quot;:&quot;\/Date(1505731289000)\/&quot;,&quot;CanRefresh&quot;:true,&quot;IsExpired&quot;:false,&quot;RequiredRenewal&quot;:false}; DeviceID=9df69f2c-7180-4dd0-95f9-ba445fa78569; imageURL=https://pendulumstorage.blob.core.windows.net/102a2fa1-8148-45a4-94c8-0dec5b073433/employee_small_3534b27e-3286-4a08-8b7f-ecfe9c5c653f.jpg; access={&quot;SystemAdministrator&quot;:0,&quot;ProfileType&quot;:0,&quot;BackOffice&quot;:4,&quot;Dashboard&quot;:4,&quot;WorkOrder&quot;:4,&quot;Invoice&quot;:0,&quot;Quote&quot;:0,&quot;Items&quot;:4,&quot;CustomFormsSetup&quot;:4,&quot;SettingsCompany&quot;:4,&quot;SettingsCompanyOwner&quot;:4,&quot;SettingsEmployees&quot;:4,&quot;SettingsAgreements&quot;:4,&quot;SettingsMasterEquipment&quot;:4,&quot;SettingsWorkOrder&quot;:4,&quot;SettingsWorkOrderManager&quot;:4,&quot;TimeEntry&quot;:4,&quot;LicenseLevel&quot;:2,&quot;GoogleMaps&quot;:4,&quot;ArgoTrak&quot;:4,&quot;CustomForms&quot;:4,&quot;FieldApp&quot;:4,&quot;RequireReviewOnComplete&quot;:0,&quot;EnableFinalizingWO&quot;:4,&quot;EnableIsolatedPricebook&quot;:0,&quot;EnableMobileContactInfo&quot;:0,&quot;TwilioTelephone&quot;:4,&quot;TwilioMessaging&quot;:4,&quot;QuoteProfitability&quot;:4,&quot;InvoiceProfitability&quot;:4,&quot;Beta&quot;:true,&quot;RecCount&quot;:0,&quot;APIVersion&quot;:0}; ai_user=Gfgh|2017-10-03T20:30:21.686Z; __RequestVerificationToken=lsBdW5Re0LLm9oK1KV2f47vkWNvvnuUAlc5JAUqRzxb_DcuOEBTRCFx3mTNUQOq7mLfZe4OBcXCEUapAxuQhFNhWv4bkpNyW7hglW946hDQ1; ASP.NET_SessionId=tvmcuny5sstc3hq4nwtovqmz; .AspNet.ApplicationCookie=bzjcheHRyuE-lmmDoSWrokPKi8XM6mMn6Digusua1vLhc8wVQn3RV3vmGeb2UZjVeMjrOW6PPhUtHOPuOiaf9K9we3rL1zQbW-bVHZOe6xyu3pSiXX9xLAo1jdEZufNCyVLWDOIOgFtcvRQmx4Clbf1uLfsYCEklqVBSUeL0z_8ibqavd_L5klqkLahMWlbTe_p5aRMKerx6ilR5k7zX0ahDG1vERH9r0dHUcMSywAhNOa3-IoOvJiIvXhBix35W3Opazmv6xMbZgdMaE5YHjPoQ5HVfDiiF9bDVhqiTIMtmuF6uTaLJ36j_vE_Iw33uDDyEAhJpjSJqRukJIO9UjNkOIRdtUlXzAmQ6K-VZxYIq5DQtSJde9-qXITl4u1ta0pQnH2qTZndtQ-Xw7sUaCAnMMlkdnkJgP3X_ku-0C2yieOw36r1XJsTm9PyzOmBGlIE5ZFN4lKgj3-mD6G8jWQ; ai_session=9Qg6j|1511835505366|1511839966001.475&#xD;&#xA;Host: localhost:58095&#xD;&#xA;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36&#xD;&#xA;Upgrade-Insecure-Requests: 1&#xD;&#xA;Origin: http://evil.com/&#xD;&#xA;" />
+    </item>
+    <item name="APPL_MD_PATH">
+      <value string="/LM/W3SVC/3/ROOT" />
+    </item>
+    <item name="APPL_PHYSICAL_PATH">
+      <value string="C:\Users\tcerda\Source\Repos\Web\JehovaJireh\src\JehovaJireh.Web.Services\" />
+    </item>
+    <item name="AUTH_TYPE">
+      <value string="" />
+    </item>
+    <item name="AUTH_USER">
+      <value string="" />
+    </item>
+    <item name="AUTH_PASSWORD">
+      <value string="*****" />
+    </item>
+    <item name="LOGON_USER">
+      <value string="" />
+    </item>
+    <item name="REMOTE_USER">
+      <value string="" />
+    </item>
+    <item name="CERT_COOKIE">
+      <value string="" />
+    </item>
+    <item name="CERT_FLAGS">
+      <value string="" />
+    </item>
+    <item name="CERT_ISSUER">
+      <value string="" />
+    </item>
+    <item name="CERT_KEYSIZE">
+      <value string="" />
+    </item>
+    <item name="CERT_SECRETKEYSIZE">
+      <value string="" />
+    </item>
+    <item name="CERT_SERIALNUMBER">
+      <value string="" />
+    </item>
+    <item name="CERT_SERVER_ISSUER">
+      <value string="" />
+    </item>
+    <item name="CERT_SERVER_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="CERT_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="CONTENT_LENGTH">
+      <value string="0" />
+    </item>
+    <item name="CONTENT_TYPE">
+      <value string="" />
+    </item>
+    <item name="GATEWAY_INTERFACE">
+      <value string="CGI/1.1" />
+    </item>
+    <item name="HTTPS">
+      <value string="off" />
+    </item>
+    <item name="HTTPS_KEYSIZE">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SECRETKEYSIZE">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SERVER_ISSUER">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SERVER_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="INSTANCE_ID">
+      <value string="3" />
+    </item>
+    <item name="INSTANCE_META_PATH">
+      <value string="/LM/W3SVC/3" />
+    </item>
+    <item name="LOCAL_ADDR">
+      <value string="127.0.0.1" />
+    </item>
+    <item name="PATH_INFO">
+      <value string="/donations" />
+    </item>
+    <item name="PATH_TRANSLATED">
+      <value string="C:\Users\tcerda\Source\Repos\Web\JehovaJireh\src\JehovaJireh.Web.Services\donations" />
+    </item>
+    <item name="QUERY_STRING">
+      <value string="" />
+    </item>
+    <item name="REMOTE_ADDR">
+      <value string="127.0.0.1" />
+    </item>
+    <item name="REMOTE_HOST">
+      <value string="127.0.0.1" />
+    </item>
+    <item name="REMOTE_PORT">
+      <value string="53786" />
+    </item>
+    <item name="REQUEST_METHOD">
+      <value string="GET" />
+    </item>
+    <item name="SCRIPT_NAME">
+      <value string="/donations" />
+    </item>
+    <item name="SERVER_NAME">
+      <value string="localhost" />
+    </item>
+    <item name="SERVER_PORT">
+      <value string="58095" />
+    </item>
+    <item name="SERVER_PORT_SECURE">
+      <value string="0" />
+    </item>
+    <item name="SERVER_PROTOCOL">
+      <value string="HTTP/1.1" />
+    </item>
+    <item name="SERVER_SOFTWARE">
+      <value string="Microsoft-IIS/10.0" />
+    </item>
+    <item name="URL">
+      <value string="/donations" />
+    </item>
+    <item name="HTTP_CONNECTION">
+      <value string="keep-alive" />
+    </item>
+    <item name="HTTP_ACCEPT">
+      <value string="text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" />
+    </item>
+    <item name="HTTP_ACCEPT_ENCODING">
+      <value string="gzip, deflate, br" />
+    </item>
+    <item name="HTTP_ACCEPT_LANGUAGE">
+      <value string="en-US,en;q=0.9,es;q=0.8" />
+    </item>
+    <item name="HTTP_COOKIE">
+      <value string="entireToken={&quot;AccessToken&quot;:&quot;nJgS4yn4oKa4bAkgv5c0otMEn_g8ZF2Obq4IWfHpkcL2z9EXFqMMquCp5XGhs2rFItfUpkMxKN7pBTSXAje3OZEwK3TUnKbrI5eCAU5xMHOvLw0_7fd7617DSHqfRXMnbPUpGHrexQaUtWaWoz37PvrR2lf9UzgIToSGOvA-mLp8bOw1PkaeNvC7wOMsW_OepdsvDh536uD96PppdJZuae8vhIaJ2Ru7lh7jAle5unzQdIDUn_q5ifuhTfzMNKKHxE_fyvT7V0o5e9ksgwD8ShWP_GnazAffczpf63XVzW7NG6pyAN9f2T767FtxDvP_YwvOxegx9avs-q09z-QosCOyqABdT2owpJ22whCiTIBa5CCNROjec84p25AYHY5hNCfZdgveTkYaXTEWaNXz-ARe5QJv0SNVnn51pAmdUmZ6f0hRtudNLmceXQlqiHjFu4xmpAH0CA78yOxYQ5i4OYBoGN87ZoxkK00JDAaubd3H17pL0zzsjl5BFseCEKbcV3bi00m6fvKVT0RQLvQWHx3iMFbq1yqD-3ZMATGmwyPB2o6cAGv2aP7ge8zOm24uwjfvGbm7dyPWYaD34vMFTw&quot;,&quot;TokenType&quot;:&quot;bearer&quot;,&quot;ExpiresIn&quot;:345599,&quot;Issued&quot;:&quot;09/14/2017 10:41:29 AM&quot;,&quot;Expires&quot;:&quot;09/18/2017 10:41:29 AM&quot;,&quot;User&quot;:&quot;dev@qadev.com&quot;,&quot;CompanyID&quot;:&quot;102a2fa1-8148-45a4-94c8-0dec5b073433&quot;,&quot;UserID&quot;:&quot;3f8a9e96-36df-4d21-939c-75b69ac9c168&quot;,&quot;ProfileUserID&quot;:&quot;fd72b21a-d27f-41ab-9d98-31cc06c3a2ea&quot;,&quot;ProfileType&quot;:&quot;0&quot;,&quot;TechEntityID&quot;:&quot;5fbd9d28-aff2-486d-8f19-4001e6c8b0a8&quot;,&quot;Refresh&quot;:&quot;True&quot;,&quot;RefreshToken&quot;:&quot;D8479BB67123CCAF2F5FEDCFA11751C95E184FEB2211B2986FD5E19AC9121F72&quot;,&quot;ServerURL&quot;:&quot;https://server.descocloud.com/&quot;,&quot;WebURL&quot;:&quot;https://www.descocloud.com/&quot;,&quot;APIVersion&quot;:25,&quot;DeploymentSlot&quot;:0,&quot;IssuedDateTime&quot;:&quot;\/Date(1505385689000)\/&quot;,&quot;ExpiresDateTime&quot;:&quot;\/Date(1505731289000)\/&quot;,&quot;CanRefresh&quot;:true,&quot;IsExpired&quot;:false,&quot;RequiredRenewal&quot;:false}; DeviceID=9df69f2c-7180-4dd0-95f9-ba445fa78569; imageURL=https://pendulumstorage.blob.core.windows.net/102a2fa1-8148-45a4-94c8-0dec5b073433/employee_small_3534b27e-3286-4a08-8b7f-ecfe9c5c653f.jpg; access={&quot;SystemAdministrator&quot;:0,&quot;ProfileType&quot;:0,&quot;BackOffice&quot;:4,&quot;Dashboard&quot;:4,&quot;WorkOrder&quot;:4,&quot;Invoice&quot;:0,&quot;Quote&quot;:0,&quot;Items&quot;:4,&quot;CustomFormsSetup&quot;:4,&quot;SettingsCompany&quot;:4,&quot;SettingsCompanyOwner&quot;:4,&quot;SettingsEmployees&quot;:4,&quot;SettingsAgreements&quot;:4,&quot;SettingsMasterEquipment&quot;:4,&quot;SettingsWorkOrder&quot;:4,&quot;SettingsWorkOrderManager&quot;:4,&quot;TimeEntry&quot;:4,&quot;LicenseLevel&quot;:2,&quot;GoogleMaps&quot;:4,&quot;ArgoTrak&quot;:4,&quot;CustomForms&quot;:4,&quot;FieldApp&quot;:4,&quot;RequireReviewOnComplete&quot;:0,&quot;EnableFinalizingWO&quot;:4,&quot;EnableIsolatedPricebook&quot;:0,&quot;EnableMobileContactInfo&quot;:0,&quot;TwilioTelephone&quot;:4,&quot;TwilioMessaging&quot;:4,&quot;QuoteProfitability&quot;:4,&quot;InvoiceProfitability&quot;:4,&quot;Beta&quot;:true,&quot;RecCount&quot;:0,&quot;APIVersion&quot;:0}; ai_user=Gfgh|2017-10-03T20:30:21.686Z; __RequestVerificationToken=lsBdW5Re0LLm9oK1KV2f47vkWNvvnuUAlc5JAUqRzxb_DcuOEBTRCFx3mTNUQOq7mLfZe4OBcXCEUapAxuQhFNhWv4bkpNyW7hglW946hDQ1; ASP.NET_SessionId=tvmcuny5sstc3hq4nwtovqmz; .AspNet.ApplicationCookie=bzjcheHRyuE-lmmDoSWrokPKi8XM6mMn6Digusua1vLhc8wVQn3RV3vmGeb2UZjVeMjrOW6PPhUtHOPuOiaf9K9we3rL1zQbW-bVHZOe6xyu3pSiXX9xLAo1jdEZufNCyVLWDOIOgFtcvRQmx4Clbf1uLfsYCEklqVBSUeL0z_8ibqavd_L5klqkLahMWlbTe_p5aRMKerx6ilR5k7zX0ahDG1vERH9r0dHUcMSywAhNOa3-IoOvJiIvXhBix35W3Opazmv6xMbZgdMaE5YHjPoQ5HVfDiiF9bDVhqiTIMtmuF6uTaLJ36j_vE_Iw33uDDyEAhJpjSJqRukJIO9UjNkOIRdtUlXzAmQ6K-VZxYIq5DQtSJde9-qXITl4u1ta0pQnH2qTZndtQ-Xw7sUaCAnMMlkdnkJgP3X_ku-0C2yieOw36r1XJsTm9PyzOmBGlIE5ZFN4lKgj3-mD6G8jWQ; ai_session=9Qg6j|1511835505366|1511839966001.475" />
+    </item>
+    <item name="HTTP_HOST">
+      <value string="localhost:58095" />
+    </item>
+    <item name="HTTP_USER_AGENT">
+      <value string="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36" />
+    </item>
+    <item name="HTTP_UPGRADE_INSECURE_REQUESTS">
+      <value string="1" />
+    </item>
+    <item name="HTTP_ORIGIN">
+      <value string="http://evil.com/" />
+    </item>
+  </serverVariables>
+  <cookies>
+    <item name="entireToken">
+      <value string="{&quot;AccessToken&quot;:&quot;nJgS4yn4oKa4bAkgv5c0otMEn_g8ZF2Obq4IWfHpkcL2z9EXFqMMquCp5XGhs2rFItfUpkMxKN7pBTSXAje3OZEwK3TUnKbrI5eCAU5xMHOvLw0_7fd7617DSHqfRXMnbPUpGHrexQaUtWaWoz37PvrR2lf9UzgIToSGOvA-mLp8bOw1PkaeNvC7wOMsW_OepdsvDh536uD96PppdJZuae8vhIaJ2Ru7lh7jAle5unzQdIDUn_q5ifuhTfzMNKKHxE_fyvT7V0o5e9ksgwD8ShWP_GnazAffczpf63XVzW7NG6pyAN9f2T767FtxDvP_YwvOxegx9avs-q09z-QosCOyqABdT2owpJ22whCiTIBa5CCNROjec84p25AYHY5hNCfZdgveTkYaXTEWaNXz-ARe5QJv0SNVnn51pAmdUmZ6f0hRtudNLmceXQlqiHjFu4xmpAH0CA78yOxYQ5i4OYBoGN87ZoxkK00JDAaubd3H17pL0zzsjl5BFseCEKbcV3bi00m6fvKVT0RQLvQWHx3iMFbq1yqD-3ZMATGmwyPB2o6cAGv2aP7ge8zOm24uwjfvGbm7dyPWYaD34vMFTw&quot;,&quot;TokenType&quot;:&quot;bearer&quot;,&quot;ExpiresIn&quot;:345599,&quot;Issued&quot;:&quot;09/14/2017 10:41:29 AM&quot;,&quot;Expires&quot;:&quot;09/18/2017 10:41:29 AM&quot;,&quot;User&quot;:&quot;dev@qadev.com&quot;,&quot;CompanyID&quot;:&quot;102a2fa1-8148-45a4-94c8-0dec5b073433&quot;,&quot;UserID&quot;:&quot;3f8a9e96-36df-4d21-939c-75b69ac9c168&quot;,&quot;ProfileUserID&quot;:&quot;fd72b21a-d27f-41ab-9d98-31cc06c3a2ea&quot;,&quot;ProfileType&quot;:&quot;0&quot;,&quot;TechEntityID&quot;:&quot;5fbd9d28-aff2-486d-8f19-4001e6c8b0a8&quot;,&quot;Refresh&quot;:&quot;True&quot;,&quot;RefreshToken&quot;:&quot;D8479BB67123CCAF2F5FEDCFA11751C95E184FEB2211B2986FD5E19AC9121F72&quot;,&quot;ServerURL&quot;:&quot;https://server.descocloud.com/&quot;,&quot;WebURL&quot;:&quot;https://www.descocloud.com/&quot;,&quot;APIVersion&quot;:25,&quot;DeploymentSlot&quot;:0,&quot;IssuedDateTime&quot;:&quot;\/Date(1505385689000)\/&quot;,&quot;ExpiresDateTime&quot;:&quot;\/Date(1505731289000)\/&quot;,&quot;CanRefresh&quot;:true,&quot;IsExpired&quot;:false,&quot;RequiredRenewal&quot;:false}" />
+    </item>
+    <item name="DeviceID">
+      <value string="9df69f2c-7180-4dd0-95f9-ba445fa78569" />
+    </item>
+    <item name="imageURL">
+      <value string="https://pendulumstorage.blob.core.windows.net/102a2fa1-8148-45a4-94c8-0dec5b073433/employee_small_3534b27e-3286-4a08-8b7f-ecfe9c5c653f.jpg" />
+    </item>
+    <item name="access">
+      <value string="{&quot;SystemAdministrator&quot;:0,&quot;ProfileType&quot;:0,&quot;BackOffice&quot;:4,&quot;Dashboard&quot;:4,&quot;WorkOrder&quot;:4,&quot;Invoice&quot;:0,&quot;Quote&quot;:0,&quot;Items&quot;:4,&quot;CustomFormsSetup&quot;:4,&quot;SettingsCompany&quot;:4,&quot;SettingsCompanyOwner&quot;:4,&quot;SettingsEmployees&quot;:4,&quot;SettingsAgreements&quot;:4,&quot;SettingsMasterEquipment&quot;:4,&quot;SettingsWorkOrder&quot;:4,&quot;SettingsWorkOrderManager&quot;:4,&quot;TimeEntry&quot;:4,&quot;LicenseLevel&quot;:2,&quot;GoogleMaps&quot;:4,&quot;ArgoTrak&quot;:4,&quot;CustomForms&quot;:4,&quot;FieldApp&quot;:4,&quot;RequireReviewOnComplete&quot;:0,&quot;EnableFinalizingWO&quot;:4,&quot;EnableIsolatedPricebook&quot;:0,&quot;EnableMobileContactInfo&quot;:0,&quot;TwilioTelephone&quot;:4,&quot;TwilioMessaging&quot;:4,&quot;QuoteProfitability&quot;:4,&quot;InvoiceProfitability&quot;:4,&quot;Beta&quot;:true,&quot;RecCount&quot;:0,&quot;APIVersion&quot;:0}" />
+    </item>
+    <item name="ai_user">
+      <value string="Gfgh|2017-10-03T20:30:21.686Z" />
+    </item>
+    <item name="__RequestVerificationToken">
+      <value string="lsBdW5Re0LLm9oK1KV2f47vkWNvvnuUAlc5JAUqRzxb_DcuOEBTRCFx3mTNUQOq7mLfZe4OBcXCEUapAxuQhFNhWv4bkpNyW7hglW946hDQ1" />
+    </item>
+    <item name="ASP.NET_SessionId">
+      <value string="tvmcuny5sstc3hq4nwtovqmz" />
+    </item>
+    <item name=".AspNet.ApplicationCookie">
+      <value string="bzjcheHRyuE-lmmDoSWrokPKi8XM6mMn6Digusua1vLhc8wVQn3RV3vmGeb2UZjVeMjrOW6PPhUtHOPuOiaf9K9we3rL1zQbW-bVHZOe6xyu3pSiXX9xLAo1jdEZufNCyVLWDOIOgFtcvRQmx4Clbf1uLfsYCEklqVBSUeL0z_8ibqavd_L5klqkLahMWlbTe_p5aRMKerx6ilR5k7zX0ahDG1vERH9r0dHUcMSywAhNOa3-IoOvJiIvXhBix35W3Opazmv6xMbZgdMaE5YHjPoQ5HVfDiiF9bDVhqiTIMtmuF6uTaLJ36j_vE_Iw33uDDyEAhJpjSJqRukJIO9UjNkOIRdtUlXzAmQ6K-VZxYIq5DQtSJde9-qXITl4u1ta0pQnH2qTZndtQ-Xw7sUaCAnMMlkdnkJgP3X_ku-0C2yieOw36r1XJsTm9PyzOmBGlIE5ZFN4lKgj3-mD6G8jWQ" />
+    </item>
+    <item name="ai_session">
+      <value string="9Qg6j|1511835505366|1511839966001.475" />
+    </item>
+  </cookies>
+</error>

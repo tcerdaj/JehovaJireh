@@ -1,0 +1,273 @@
+﻿@using Microsoft.AspNet.Identity
+@using JehovaJireh.Web.UI.Helpers
+@using JehovaJireh.Web.UI.App_GlobalResources
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="@CultureHelper.GetCurrentNeutralCulture()" dir="@(CultureHelper.IsRighToLeft() ? "rtl" : "ltr")">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - @Resources.ApplicationName</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jquery.cookie")
+    @Scripts.Render("~/bundles/common")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink(@Resources.ApplicationName, "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink(Resources.Home, "Index", "Home")</li>
+                    <li class="menu-item dropdown">
+                        <a href='@Html.ActionLink("Index", "Donations")' class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown">@Resources.Donations<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li class="menu-item">@Html.ActionLink(Resources.ViewDonations, "Index", "Donations")</li>
+                            <li class="menu-item">@Html.ActionLink(Resources.RequestList, "RequestList", "Donations")</li>
+                            <li class="menu-item">@Html.ActionLink(Resources.SchedulerDonation, "SchedulerDonation", "Donations")</li>
+                        </ul>
+                    </li>
+                    <li>@Html.ActionLink(Resources.About, "About", "Home")</li>
+                    <li>
+                    <li>@Html.ActionLink(Resources.Contact, "Contact", "Home")</li>
+                    <li>@Html.ActionLink(Resources.Bible, "Index", "Bible")</li>
+                </ul>
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+
+        @Html.Partial("_PleaseWaitPartial")
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - @Resources.ApplicationName</p>
+        </footer>
+    </div>
+    <div class="container">
+        <div class="shopping-cart" style="display:none">
+            <div class="shopping-cart-header">
+                <i class="fa fa-shopping-cart cart-icon"></i><span id="gh-cart-n-cart" class="badge">0</span>
+                <div class="shopping-cart-total">
+                    <span class="lighter-text">Total:</span>
+                    <span class="main-color-text">$0.00</span>
+                </div>
+            </div> <!--end shopping-cart-header -->
+            <ul class="shopping-cart-items"></ul>
+            @if (@ViewBag.Title == @Resources.SchedulerDonation)
+            {
+                <a id="checkoutbutton" href="#" class="button-disabled">Checkout</a>
+            }
+            else
+            {
+                <a id="checkoutbutton" href="/Donations/SchedulerDonation" class="button">Checkout</a>
+            }
+            <div class="user-manage" style="display:none">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    @Html.Partial("_UserManagePartial")
+                }
+            </div>
+        </div> <!--end shopping-cart -->
+    </div>
+    <script>
+        /* When the user clicks on the button,
+        toggle between hiding and showing the dropdown content */
+        function myFunction() {
+            document.getElementById("myDropdown").classList.toggle("show");
+        }
+
+        // Close the dropdown if the user clicks outside of it
+        window.onclick = function (event) {
+            if (!$(event.target).hasClass('dropbtn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            fixScroll();
+            $(window).scroll(function () {
+                fixScroll();
+            });
+
+            $('.avatar-image-container').click(function (e) {
+                showCart(this);
+            });
+        });
+
+        function fixScroll() {
+            if ($(window).scrollTop() >= 100) {
+                $('header').addClass('scrolled');
+                //$("#logo img").animate({ width: 42 }
+                //    , 50);
+                $("#logo").addClass("logo-scrolled");
+                $(".shrink").addClass('img-scrolled');
+            }
+            else {
+                $('header').removeClass('scrolled');
+                $(".shrink").removeClass('img-scrolled');
+                $("#logo").removeClass("logo-scrolled");
+            }
+        }
+
+        $(document).mouseup(function (e) {
+            var container = $(".shopping-cart");
+
+            // if the target of the click isn't the container nor a descendant of the container
+            if (!container.is(e.target) && container.has(e.target).length === 0) {
+                container.hide();
+            }
+        });
+
+        String.prototype.trimToLength = function (m) {
+            return (this.length > m)
+                ? jQuery.trim(this).substring(0, m).split(" ").slice(0, -1).join(" ") + "..."
+                : this;
+        };
+
+        function showCart(tag) {
+            var cart = $(".shopping-cart");
+            var sci = $(".shopping-cart-items");
+            var checkoutbutton = $("#checkoutbutton");
+            var isAvatar = tag.className !== "gh-cart-i";
+            var offset = $(tag).offset();
+            cart.css('left', offset.left)
+            cart.css('width', isAvatar ? '331px' : '320px');
+            $('.shopping-cart-header').css('display', isAvatar ? 'none' : 'block');
+            $('.shopping-cart-items').css('display', isAvatar ? 'none' : 'block');
+            $('.user-manage').css('display', isAvatar ? 'block' : 'none');
+            checkoutbutton.css('display', isAvatar ? 'none' : 'block');
+            sci.empty();
+            $("#gh-cart-n-cart").text(0);
+
+            if (cart.is(":visible"))
+                $(".shopping-cart").hide();
+            else {
+                var cookieArray = getCookiesArray();
+
+                if (cookieArray) {
+                    var msg = "Your shopping car contains " + cookieArray.length + " item" + (cookieArray.length > 1 ? "s" : "");
+                    $(".gh-cart-c").attr('title', msg);
+                    $("#gh-cart-n").text(cookieArray.length);
+
+                    rebuildCartItems(cookieArray)
+                    if ('@ViewBag.Title' != '@Resources.SchedulerDonation') {
+                        checkoutbutton.removeClass("button-disabled").addClass("button");
+                        checkoutbutton.attr('href', '/Donations/SchedulerDonation');
+                    }
+                }
+                else {
+                    checkoutbutton.removeClass("button").addClass("button-disabled");
+                    checkoutbutton.attr('href', '#');
+                }
+
+                $(".shopping-cart").slideDown("slow");
+            }
+        }
+
+        function showUserMange() {
+            $(".user-manage").slideDown("slow");
+        }
+
+		(function ($) {
+            var cookieName = "culture";
+            $("input[name = 'culture']").parent().click(function () {
+				eraseCookie(cookieName);
+                createCookie(cookieName, $(this).children("input").val(), 5);
+                updateLanguageLabel();
+				$(this).parents("#culture-form").submit(); // post form
+                //$('a[href="/Manage"]')[0].css('float', 'left');
+            });
+
+            //update shopping car
+            var cookieArray = getCookiesArray();
+            if (cookieArray) {
+                var msg = "Your shopping car contains " + cookieArray.length + " item" + (cookieArray.length > 1 ? "s" : "");
+                $(".gh-cart-c").attr('title', msg);
+                $("#gh-cart-n").text(cookieArray.length);
+
+                rebuildCartItems(cookieArray)
+            }
+
+
+            updateLanguageLabel();
+             //var cookie = readCookie(cookieName);
+		})(jQuery);
+
+        function updateLanguageLabel() {
+            $(".dropbtn").text($("input[name = 'culture']:checked").next().text());
+        }
+
+        function getCookiesArray() {
+            try {
+                var cName = "", cValue = "";
+                document.cookie.split(/; */).forEach(function (cookieraw) {
+                    var cookie = cookieraw.split('=');
+                    if (cookie[0].indexOf("car") > -1)
+                        cName = cookie[0];//print it
+                });
+
+                var userName = '@User.Identity.IsAuthenticated' == 'True' ? '@User.Identity.Name' : '';
+                var cookieName = "";
+
+                if (userName !== '')
+                    cookieName = "car_" + userName;
+                else
+                    cookieName = "car_" + cName;
+                var cookieArray = JSON.parse(readCookie(cookieName));
+            } catch (e) {
+                return null;
+            }
+
+            return cookieArray;
+        }
+
+        function rebuildCartItems(data) {
+            var sci = $(".shopping-cart-items");
+            sci.empty();
+
+            for (var i = 0; i < data.length; i++) {
+                var item = data[i];
+                var imageUrl = data[i].Images && data[i].Images.length > 0 ? data[i].Images[0].ImageUrl : "/img/no-photo.png";
+                var li = '<li class="clearfix" title="' + item.Title +'">'+
+                    '<img class="image-item" src= "' + imageUrl + '" alt= "'+ item.Title + '" />'+
+                    '<span class="item-name" >' + item.Title.trimToLength(10) + '&#160</span>'+
+                             '<span class="item-price">$0.00</span>'+
+                             '<span class="item-quantity">Quantity: 01</span>'+
+                    '</li >';
+                sci.append(li);
+            }
+
+            $("#gh-cart-n-cart").text(data.length);
+        }
+
+		function getCurrentCulture()
+		{
+            return {
+                "twoLetter": "@System.Threading.Thread.CurrentThread.CurrentUICulture.Name.ToLowerInvariant()",
+                "threeLetter": "@System.Threading.Thread.CurrentThread.CurrentUICulture.ThreeLetterISOLanguageName.ToLowerInvariant()"
+            }
+        }
+
+    </script>
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

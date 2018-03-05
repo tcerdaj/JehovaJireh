@@ -1,0 +1,175 @@
+﻿@{
+    ViewBag.Title = "Volume";
+}
+
+<h2>Volume @ViewBag.Lang</h2>
+<div>
+    <h3>Please pick your favorite Bible version.</h3>
+    <input id="version" style="width:50%" />
+    <h3>Book</h3>
+    <input id="book" style="width:50%" />
+</div>
+<div class="demo-section k-content">
+    <div id="treeview"></div>
+</div>
+
+
+
+@section Scripts{
+    @Styles.Render("~/bundles/kendo-css")
+    @Scripts.Render("~/bundles/kendo")
+
+  <script type="text/javascript">
+      var volumes = [];
+        $(document).ready(function () {
+            //Version Selector
+            $.when(fillVolumes()).done(function (e) {
+            var vDataSource = new kendo.data.DataSource({
+                serverFiltering: false,
+                transport: {
+                    read: {
+                        dataType: "json",
+                        url: function (m) {
+                            return getBaseUrl() + "bible/Volumes?language_family_code=" + '@ViewBag.Lang'
+                        },
+                    }
+                }
+            });
+
+            var version = $("#version").kendoComboBox({
+                dataTextField: "volume_name",
+                dataValueField: "dam_id",
+                headerTemplate: '<div class="dropdown-header k-widget k-header">' +
+                '<span>Bible Version</span>' +
+                '</div>',
+                footerTemplate: 'Total #: instance.dataSource.total() # items found',
+                template:
+                '<span class="k-state-default"><h3>#: data.version_code # #: data.version_name #</h3><p class="k-group">#: data.collection_name #</p></span>',
+                dataSource: { data:  volumes  },
+                filter: "contains",
+                height: 400,
+                minLength: 3,
+                autoWidth: true,
+            }).data('kendoComboBox');;
+
+            //Book selector
+            var bDataSource = new kendo.data.DataSource({
+                serverFiltering: false,
+                transport: {
+                    read: {
+                        dataType: "json",
+                        url: function (m) {
+                            return getBaseUrl() + "bible/books?dam_id=" + version.value()
+                        },
+                    }
+                }
+            });
+
+            var book = $("#book").kendoComboBox({
+                dataTextField: "book_name",
+                dataValueField: "dam_id",
+                cascadeFrom: "version",
+                headerTemplate: '<div class="dropdown-header k-widget k-header">' +
+                '<span>Book - Chapters</span>' +
+                '</div>',
+                footerTemplate: 'Total #: instance.dataSource.total() # items found',
+                template:
+                '<span class="k-state-default"><h3>#: data.book_name # #: data.number_of_chapters #</h3><p>#: data.english_name #</p></span>',
+                dataSource: bDataSource,
+                filter: "contains",
+                height: 400,
+                minLength: 3,
+                autoWidth: true,
+            }).data('kendoComboBox');
+
+            
+
+                var books = {
+                    schema: {
+                        model: {
+                            id: "dam_id",
+                            hasChildren: function (a) {
+                                return true;
+                            }
+                        
+                        }
+                    },
+                    transport: {
+                        read: {
+                            url: function (options) {
+                                return kendo.format("{0}bible/books?dam_id={1}", getBaseUrl(),  options.dam_id);
+                            }
+                        }
+                    }
+                };
+
+                var groupedVolumes = groupByVolume(volumes);
+
+                var items = {
+                    data: volumes,
+                    schema: {
+                        model: {
+                            id: "dam_id",
+                            children: books,
+                            hasChildren: function (a) {
+                                return true;
+                            }
+                        }
+                    }
+                };
+
+                var inline = new kendo.data.HierarchicalDataSource({
+                    data: groupedVolumes,
+                    schema: {
+                        model: {
+                            children: "items",
+                            id: "id",
+                            hasChildren: "items"
+                        }
+                    }
+                });
+
+                $("#treeview").kendoTreeView({
+                    dataSource: inline,
+                    dataTextField: ["collection_name","volume_name", "book_name"]
+                });
+            });
+      });
+
+        var groupByVolume = function (data) {
+            
+            var collection =  data.reduce(function (result, current) {
+                try {
+                    result[current.collection_name].items.push(current);
+                    result[current.collection_name].collection_code = current.collection_code;
+                } catch (e) {
+                    result[current.collection_name] = { collection_code: current.collection_code, items: result[current.collection_name] || [] };
+                    result[current.collection_name].items.push(current);
+                }
+                return result;
+            }, {});
+            var result = [];
+            for (var prop in collection) {
+                var value = collection[prop];
+                result.push({ "id": value.collection_code, "collection_name": prop, "items": value.items });
+            }
+            
+            return result;
+        }
+
+      var fillVolumes = function () {
+          return $.ajax({
+              url: getBaseUrl() + "bible/Volumes?language_family_code=" + '@ViewBag.Lang',
+              datatype: "json",
+              type: "GET",
+              success: function (result) {
+                  console.log("success");
+                  volumes = result;
+              },
+              error: function (xhr, status, error) {
+                  alert(xhr.responseTest);
+              }
+          });
+      };
+  </script>
+}

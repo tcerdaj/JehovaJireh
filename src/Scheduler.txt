@@ -1,0 +1,47 @@
+USE [jehovajirehDB]
+GO
+
+/****** Object:  Table [dbo].[Scheduler]    Script Date: 07/11/2017 1:06:36 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Scheduler](
+	[SchedulerId] [int] NOT NULL,
+	[ItemId] [uniqueidentifier] NOT NULL,
+	[ItemName] [nvarchar](50) NULL,
+	[Title] [nvarchar](50) NULL,
+	[ImageUrl] [nvarchar](max) NULL,
+	[Description] [nvarchar](180) NULL,
+	[StartDate] [datetime] NOT NULL,
+	[EndDate] [datetime] NOT NULL,
+	[RecurrenceRule] [nvarchar](50) NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[ModifiedOn] [datetime] NULL,
+	[CreatedBy] [int] NOT NULL,
+	[ModifiedBy] [int] NULL,
+ CONSTRAINT [PK_Scheduler] PRIMARY KEY CLUSTERED 
+(
+	[SchedulerId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+
+ALTER TABLE [dbo].[Scheduler]  WITH NOCHECK ADD  CONSTRAINT [FK_Scheduler_CreatedBy_Users_UserId] FOREIGN KEY([CreatedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+
+ALTER TABLE [dbo].[Scheduler] CHECK CONSTRAINT [FK_Scheduler_CreatedBy_Users_UserId]
+GO
+
+ALTER TABLE [dbo].[Scheduler]  WITH NOCHECK ADD  CONSTRAINT [FK_Scheduler_ModifiedBy_Users_UserId] FOREIGN KEY([ModifiedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+
+ALTER TABLE [dbo].[Scheduler] CHECK CONSTRAINT [FK_Scheduler_ModifiedBy_Users_UserId]
+GO
+
+

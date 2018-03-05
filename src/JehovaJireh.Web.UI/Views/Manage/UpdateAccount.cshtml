@@ -1,0 +1,240 @@
+﻿@model JehovaJireh.Web.UI.Models.UpdateAccountViewModel
+@using JehovaJireh.Web.UI.App_GlobalResources
+
+@{
+                /**/
+
+                ViewBag.Title = Resources.UpdateAccount;
+}
+
+<h2>@ViewBag.Title</h2>
+
+@using (Html.BeginForm("UpdateAccount", "Manage", FormMethod.Post, new { @class = "page-register form-horizontal", role = "form", @enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="sub-title" style="overflow:hidden;">
+        <div style="width:50%;float:left">
+            <h4>@ViewBag.Title</h4>
+        </div>
+        <div style="width:50%;float:left;text-align:right;">
+            <p><a class="btn btn-default" href="#"  onclick="goToCancel()">Cancel</a></p>
+        </div>
+    </div>
+    <hr />
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.ImageUrl)
+    @Html.HiddenFor(m => m.FileData)
+    @Html.HiddenFor(m => m.UserName)
+    @Html.HiddenFor(m => m.FirstName)
+    @Html.HiddenFor(m => m.LastName)
+    @Html.HiddenFor(m => m.Email)
+
+    <section class="secction-main">
+        <div class="secction-content">
+            <h3>@Resources.AccountPhoto</h3>
+
+            <div class="form-group">
+                @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
+
+                <div class="col-md-10">
+                    <div class="well" data-bind="fileDrag: FileData">
+                        <div class="form-group row">
+                            <div class="col-md-6">
+                                <img style="height: 125px;" class="img-rounded  thumb" data-bind="attr: { src: FileData().dataURL }, visible: FileData().dataURL">
+                                <div data-bind="ifnot: FileData().dataURL">
+                                    <label class="drag-label">@Resources.DragFileHere</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="file" name="FileData" data-bind="fileInput: FileData, customFileInput: {
+															  buttonClass: 'btn btn-success',
+															  fileNameClass: 'disabled form-control',
+															  onClear: onClear,
+															}" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="secction-main">
+        <div class="secction-content">
+             <h3>@Resources.AccountInfo</h3>
+            <div class="form-group">
+                @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.DisplayFor(m => m.UserName, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.FirstName, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.DisplayFor(m => m.FirstName, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.LastName, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.DisplayFor(m => m.LastName, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Gender, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    <div class="user-gender">
+                        Male: @Html.RadioButtonFor(m => m.Gender, "0")
+                        Female: @Html.RadioButtonFor(m => m.Gender, "1")
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="secction-main">
+        <div class="secction-content">
+            <h3>@Resources.ContactInfo</h3>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.DisplayFor(m => m.Email, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.PhoneNumber, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="secction-main">
+        <div class="secction-content">
+            <h3>@Resources.ContactAddress</h3>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Address, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.Address, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.City, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.City, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.State, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.State, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Zip, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.Zip, new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="secction-main">
+        <div class="secction-content">
+            <h3>@Resources.AdditionalInfo</h3>
+            <div class="form-group">
+                @Html.LabelFor(m => m.IsChurchMember, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.CheckBoxFor(m => m.IsChurchMember, new { @class = "checkbox", @data_bind = "checked:IsChurchMember" })
+                </div>
+            </div>
+            <div class="form-group" data-bind="visible:!IsChurchMember()">
+                @Html.LabelFor(m => m.ChurchName, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.ChurchName, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group" data-bind="visible:!IsChurchMember()">
+                @Html.LabelFor(m => m.ChurchAddress, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.ChurchAddress, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group" data-bind="visible:!IsChurchMember()">
+                @Html.LabelFor(m => m.ChurchPhone, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.ChurchPhone, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group" data-bind="visible:!IsChurchMember()">
+                @Html.LabelFor(m => m.ChurchPastor, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.ChurchPastor, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.NeedToBeVisited, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.CheckBoxFor(m => m.NeedToBeVisited, new { @class = "checkbox" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Comments, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextAreaFor(m => m.Comments, new { @class = "form-control", @rows=6 })
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="form-group" style="padding-top: 29px;">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-default" value="@Resources.UpdateAccount" />
+        </div>
+    </div>
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/areYouSure")
+    @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/maskedinput")
+    @Scripts.Render("~/bundles/account/registerviewmodel")
+    <script type="text/javascript">
+        $.ajax({
+            beforeSend: function () {
+                // Handle the beforeSend event
+                $('#pleaseWaitDialog').modal('show');
+            },
+            complete: function () {
+                // Handle the complete event
+                $('#pleaseWaitDialog').modal('hide');
+            }
+            // ......
+        });
+    </script>
+
+    <script type="text/javascript">
+		var mask = "(999) 999-9999";
+
+        function goToCancel() {
+            window.location = '/';   
+        }
+
+		$(document).ready(function () {
+			var data = function () { return @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model)); }() || {};
+			Init(data);
+
+			$('.page-register.form-horizontal').areYouSure(
+				{
+					message: "Los cambios realizados aun no se han guardado."
+				}
+			);
+
+			$("#PhoneNumber").mask(mask);
+			$("#ChurchPhone").mask(mask);
+        });
+    </script>
+    <style>
+        .sub-title{
+            overflow:hidden;
+        }
+        .sub-title div{float:left;width:50%}
+    </style>
+}

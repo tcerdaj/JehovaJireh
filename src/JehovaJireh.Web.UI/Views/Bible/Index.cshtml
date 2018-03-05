@@ -1,0 +1,929 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Bible Study</h2>
+@if (ViewBag.ErrorMessage != null && ViewBag.ErrorMessage != string.Empty)
+{
+    <div class="alert alert-danger" role="alert">
+        @ViewBag.ErrorMessage
+    </div>
+}
+<h3>Juan 5:39 Reina-Valera 1960 (RVR1960)</h3>
+<p>39 Escudriñad las Escrituras; porque a vosotros os parece que en ellas tenéis la vida eterna; y ellas son las que dan testimonio de mí;</p>
+<div class="row">
+    <script id="bw-widget-src" src="//es.bibles.org/widget/client"></script>
+    <script>
+        BIBLESEARCH.widget({
+            "background": "616D74",
+            "color": "2B1616",
+            "placeholder": "Buscar pasajes de la Biblia y palabras clave",
+            "selected": "spa-RVR1960",
+            "versions": "eng-ESV,spa-BHTI,spa-BLP,spa-BLPH,spa-BTI,spa-DHH,spa-DHHE,spa-RVC,spa-RVR1960,spa-RVR95,spa-TLA"
+        });
+    </script>
+</div>
+<div class="search-bar">
+    <div class="arrow-left" style="display:none">❮</div>
+    <div class="arrow-right" style="display:none">❯</div>
+    <div class="btn-group" role="group" aria-label="...">
+        <div class="input-group col-md-12">
+            <button id="ver" type="button" class="btn btn-lg btn-danger">Version</button>
+            <button id="book" type="button" style="display:none;margin-left:15px;" class="btn btn-lg btn-danger">Book</button>
+        </div>
+    </div>
+</div>
+<div class="section-content" style="display:none">
+    <h3>Please pick your prefered language</h3>
+    <ul id="fieldlist"></ul>
+</div>
+<div class="divsection">
+    <!-- scrollable fdfas-->
+    <div class="scrollable-holder">
+        <div class="passage-overlay" style="display:none;"></div>
+        <div class="passage-overlay-container" style="display:none;">
+            <div class="passage-overlay-content">
+                <p>El pasaje que usted está viendo no está disponible en la versión seleccionada.  Favor de usar "Examinar" para ver un pasaje en la versión seleccionada.</p>
+                <div class="cancel">
+                    <button class="btn dark">Cancelar</button>
+                </div>
+            </div>
+        </div>
+        <div class="selection-box" style="display:none;">
+            <div class="selected-verses">
+                <strong>Seleccionado:</strong>
+                <span class="selected-references"></span>
+            </div>
+        </div>
+        <div class="scrollable" style="height: 735.875px;"></div>
+    </div>
+   
+</div>
+<div>
+    <ul class="pager">
+        <li class="previous"><a href="#">Previous</a></li>
+        <li class="next"><a href="#">Next</a></li>
+    </ul>
+</div>
+@section Scripts{
+    @Styles.Render("~/bundles/kendo-css")
+    @Scripts.Render("~/bundles/kendo")
+    @Scripts.Render("~/bundles/searchable")
+
+    <script type="text/javascript">
+        var languages = [];
+        var cookieName = "bibleParams";
+        var selectedVersion = null;
+        var selectedBooks = null;
+        var selectedVerses = null;
+        var onChangeVersionAuto = false;
+        var myParams = null;
+
+        $('.search-bar').busyIndicator(true);
+        var loadingPage = false; isClick = false;
+
+        $(document).ready(function () {
+            loadingPage = true;
+
+            $.when(fillLanguages()).done(function (_langResult) {
+                myParams = readCookie(cookieName);
+                if (myParams === null || myParams === undefined || myParams === '') {
+
+                    for (var i = 0; i < languages.length; i++) {
+                        var lang = languages[i];
+                        var li = $('<li><a href="/Bible/Volume?lang=' + lang.language_family_code + '">' + lang.language_family_name + '</a></li>');
+                        li.appendTo($('#fieldlist'));
+                    }
+
+
+                    $('.section-content').show();
+                    init();
+                }
+                else {
+                    //build buttons
+                    var verses = function () { return @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Verses)); }();
+                    var data = null;
+                    try {
+                        data = JSON.parse(myParams);
+                    } catch (e) {
+                        console.log(e);
+                    }
+                    //retry call if null
+                    if (verses === null && data !== null) {
+                        $.when(fillVersus(data.id)).done(function (result) {
+                            loadSelectedInfo(data, result.response.verses);
+                        });
+                    } else if (data !== null) {
+                        loadSelectedInfo(data, verses);
+                    }
+                }
+            });
+        });
+
+        function loadSelectedInfo(data, verses) {
+            selectedVersion = data.version;
+            selectedBooks = data.books;
+            var version = data.id.substring(data.id.indexOf('-') + 1, data.id.indexOf(':'));
+            var lang = data.id.substring(0, data.id.indexOf('-'));
+            var fullVersion = data.id.substring(0, data.id.indexOf(':'));
+            var chapter = data.id.split('.')[1];
+            var book = kendo.format("{0} {1}", data.name, chapter);
+            var bookRef = data.id.substring(data.id.indexOf(':') + 1);
+
+            $("#ver").text(version);
+            $("#book").text(book);
+            $("#book").show();
+            $("#book").on("click", function (e) {
+                isClick = true;
+            })
+
+            var container = $(".divsection .scrollable-holder .scrollable");
+            container.empty();
+            var divContainer = $(kendo.format('<div class="text-holder {0}"></div>', fullVersion));
+            var divHeader = $(kendo.format('<div class="area"><h2>{0}</h2></div>', book));
+            divHeader.appendTo(divContainer);
+            var divContent = $(kendo.format('<div id="{0}" class="chapter verse-block"></div>', bookRef));
+            divContent.appendTo(divContainer);
+            divContainer.appendTo(container);
+
+            for (var i = 0; i < verses.length; i++) {
+                var verse = verses[i];
+                $(verse.text).appendTo(divContainer);
+            }
+            
+            var copyright = verses[0].copyright;
+            var divFooter = $(kendo.format('<div class="copyright-statement">{0}</div>', copyright));
+            divFooter.appendTo(container);
+
+            //next previous button
+            var selectedBook = getItemById(data.id.split('.')[0], selectedBooks.response.books);
+
+            if (selectedBook !== null && selectedBook.next !== null && selectedBook.next.book !== null) {
+                $('.arrow-right').attr("id", selectedBook.next.book.id + ".1");
+                $('.pager .next a').attr("href", "/bible/index?id=" + selectedBook.next.book.id + ".1");
+                $('.arrow-right').show();
+            }
+
+            if (selectedBook !== null && selectedBook.previous !== null && selectedBook.next.previous !== null) {
+                $('.arrow-left').attr("id", selectedBook.previous.book.id + ".1");
+                $('.pager .previous a').attr("href", "/bible/index?id=" + selectedBook.next.book.id + ".1");
+                $('.arrow-left').show();
+            }
+
+            $('.search-bar').busyIndicator(false);
+            $('.section-content').hide();
+            init(lang);
+        }
+
+
+        function init(lang) {
+            //container
+            var container = $("<div>");
+            var details = $([
+                '<div class="row">',
+                '<div class="col-lg-12">',
+                '<input type="search" style="width:100%" id="search" value="" class="form-control" placeholder="Search your prefered language">',
+                '</div>',
+                '</div>',
+                '<div class="row">',
+                '<div class="col-lg-12">',
+                '<div class="table" id="table">',
+
+                '</div>',
+                '<hr>',
+                '</div>',
+                '</div>'].join(""));
+
+            container.append(details);
+
+            var options = {
+                container: 'body',
+                title: 'Pick Bible language',
+                html: true,
+                content: container.html(),
+                placement: 'bottom'
+            };
+
+            $('#ver').popover(options);
+
+            setTimeout(function () {
+                var cssOptions = {
+                    "border-left-width": "0px",
+                    "position": "relative",
+                    "float": "none",
+                    "max-width": "70%"
+                };
+                $(".bw-widget-input").css(cssOptions);
+            }, 500);
+
+            $("#ver").on('hidden.bs.popover', function (e) {
+                $(".popover.fade.bottom:eq(0)").remove();
+            });
+
+            $('#ver').on('shown.bs.popover', function (e) {
+                // do something…
+                //generate kendo grid
+                if ($('.popover.fade.bottom.in').length === 2) {
+                    $('#book').click();
+                }
+
+                var popover = $('.popover.fade.bottom.in');
+                $("#search").kendoComboBox({
+                    placeholder: "Search Language...",
+                    dataTextField: "language_family_name",
+                    dataValueField: "language_family_iso",
+                    filter: "contains",
+                    template: "#= language_family_name # - #= language_family_english #",
+                    autoBind: false,
+                    minLength: 3,
+                    filtering: onLanguageFiltering,
+                    select: onLanguageSelect,
+                    dataSource: {
+                        data: languages
+                    }
+                });
+
+                var language = getCurrentCulture().threeLetter;
+                var grid = $("#table").kendoGrid({
+                    dataSource: {
+                        type: "json",
+                        transport: {
+                            read: {
+                                url: kendo.format("{0}bible/VersionsAbs?language={1}", getBaseUrl(), (lang || language)),
+                                dataType: "json",
+                                complete: function (data, status) {
+                                    if (status === "success" && lang !== undefined && selectedVersion != null) {
+                                        var fullVersion = selectedVersion.id;
+                                        var row = grid.table.find(kendo.format("tr td:contains('{0}')", fullVersion)).parent();
+                                        onChangeVersionAuto = true;
+                                        grid.select(row);
+                                    }
+                                    else if (status === "error") {
+                                        openDialog(status, generalError);
+                                    }
+                                    else {
+                                        onChangeVersionAuto = false;
+                                    }
+                                }
+                            }
+                        },
+                        schema: {
+                            data: "response.versions"
+                        },
+                        aggregate: [
+                            { field: "id", aggregate: "count" }
+                        ],
+                        sort: {
+                            field: "name",
+                            dir: "asc"
+                        }
+                    },
+                    groupable: false,
+                    height: 300,
+                    selectable: "single",
+                    scrollable: true,
+                    serverFiltering: true,
+                    dataBound: function () {
+                        var rowCount = grid.table.find("tbody > tr:visible").length;
+                        document.getElementById('countVer').innerHTML = rowCount;
+                        
+                    },
+                    change: onVersionChange,
+                    columns: [{
+                        field: "id",
+                        title: "Version",
+                        template: "#= id # - #= name #",
+                        footerTemplate: "Items: <span id='countVer'> #:kendo.toString(count,'id')# </span>"
+                    }]
+                }).data("kendoGrid");
+                function onLanguageFiltering(e) {
+                    e.preventDefault();
+                    var val = e.filter.value;
+                    var filter = {
+                        logic: "or",
+                        filters: [
+                            { field: "language_family_iso", operator: "contains", value: val },
+                            { field: "language_family_code", operator: "contains", value: val },
+                            { field: "language_family_name", operator: "contains", value: val },
+                            { field: "language_family_english", operator: "contains", value: val },
+                        ]
+                    };
+                    this.dataSource.filter(filter);
+                }
+                function onLanguageSelect(e) {
+                    if (e.item) {
+                        var dataItem = this.dataItem(e.item.index());
+                        console.log('language selected', dataItem.language_family_iso);
+
+                        var read = {
+                            dataType: "json",
+                            url: function (m) {
+                                return kendo.format("{0}bible/versionsAbs?language={1}", getBaseUrl(), dataItem.language_family_iso)
+                            }
+                        }
+                        var grid = $("#table").data("kendoGrid");
+                        grid.dataSource.transport.options.read = read;
+                        grid.dataSource.read();
+                        //grid.dataSource.filter(filter);
+                    }
+                }
+                popover.offset({ top: popover.offset().top, left: $(this).offset().left });
+                popover.find(".arrow").css("left", (this.clientWidth / 2));
+                
+            });
+
+            if (selectedVersion !== null && selectedBooks !== null)
+                buildBookList(selectedVersion, selectedBooks);
+
+            loadingPage = false;
+        }
+        var fillLanguages = function () {
+            return $.ajax({
+                url: getBaseUrl() + "bible/languages",
+                type: "GET",
+                datatype: "json",
+                contentType: "application/json; charset=utf-8",
+                headers: {
+                    'Authorization': kendo.format('{0}/oauth/access_token', getBaseUrl()),
+                    'Content-Type': 'application/json'
+                },
+                crossDomain: true,
+                xhrFields: {
+                    withCredentials: false
+                },
+                success: function (result) {
+                    languages = result;
+                },
+                error: function (xhr, status, error) {
+                    openDialog("Error", xhr.responseText || generalError);
+                },
+                complete: function (r) {
+                    $('.search-bar').busyIndicator(false);
+                }
+            });
+        }
+
+        var fillVersions = function (language) {
+            return $.ajax({
+                url: kendo.format("{0}bible/VersionsAbs?language={1}", getBaseUrl(), language),
+                datatype: "json",
+                type: "GET",
+                success: function (result) {
+
+                },
+                error: function (xhr, status, error) {
+                    openDialog("Error", generalError);
+                },
+                complete: function (r) {
+                    $('.search-bar').busyIndicator(false);
+                }
+            });
+        }
+
+
+        var fillBooks = function (version) {
+            return $.ajax({
+                url: kendo.format("{0}bible/book?version={1}", getBaseUrl(), version),
+                datatype: "json",
+                type: "GET",
+                async: false,
+                success: function (result) {
+
+                },
+                error: function (xhr, status, error) {
+                    openDialog("Error", generalError);
+                },
+                complete: function (r) {
+                    $('.search-bar').busyIndicator(false);
+                }
+            }).responseJSON;
+        }
+
+        var fillVersus = function (id) {
+            return $.ajax({
+                url: kendo.format("{0}bible/verses?id={1}", getBaseUrl(), id),
+                datatype: "json",
+                type: "GET",
+                async: false,
+                success: function (result) {
+
+                },
+                error: function (xhr, status, error) {
+                    openDialog("Error", generalError);
+                },
+                complete: function (r) {
+
+                }
+            }).responseJSON;
+        }
+
+        function getOffset(el) {
+            el = el.getBoundingClientRect();
+            return {
+                left: el.left + window.scrollX,
+                top: el.top + window.scrollY
+            }
+        }
+
+          //functions
+        function rememberMySelection(mySelection) {
+            var grid = $("#table").data("kendoGrid");
+            var selectedLanguage = grid.dataItem(grid.select());
+
+            grid = $("#table-version").data("kendoGrid");
+            var selectedVersion = grid.dataItem(grid.select());
+
+            grid = $("#table-book").data("kendoGrid");
+            var selectedBook = grid.dataItem(grid.select());
+            var data = { "lang": selectedLanguage, "version": selectedVersion, "book": selectedBook, "selection": mySelection };
+
+            eraseCookie(cookieName);
+            createCookie(cookieName, JSON.stringify(data), 5);
+
+            //re-direct index
+            var url = '@Html.Raw(@Url.Action("Index", new { @version = "dam_id", @book = "book_id", @chapterid = "chapter_id" }))';
+            var href = url.replace("dam_id", selectedVersion.dam_id).replace("book_id", selectedBook.book_id).replace("chapter_id", mySelection.chapter_id);
+            window.location.href = href;
+        }
+        
+
+        function onBookChange(arg) {
+            var selected = $.map(this.select(), function (item) {
+                return $(item).text();
+            });
+            var grid = $("#table-book").data("kendoGrid");
+            var selectedBook = grid.dataItem(grid.select());
+            var chapters = selectedBook.number_of_chapters;
+            var dam_id = selectedBook.dam_id;
+            var book_id = selectedBook.book_id;
+            var prevElem = $('#book');
+            var elem = $('<button id="chapter" type="button" class="btn btn-lg btn-danger">Chapter</button>');
+            var propover = $('.popover.fade.bottom.in');
+
+            if ($('#chapter').length === 0)
+                prevElem.after(elem);
+            else
+                elem = $('#chapter');
+
+            var elemIndex = (propover.length > 0 && propover.length <= 3 ? propover.length - 1 : 2).toString();
+            var langpopover = $('.popover.fade.bottom.in:eq(' + elemIndex + ')');
+            var offset = langpopover.offset();
+            var width = langpopover.width();
+            var height = langpopover.height();
+
+            //container
+            var container = $('<div id="booksContainer"></div>');
+
+            var exist = $("#fieldlist-books").length > 0;
+            var details = $("#fieldlist-books").length === 0 ? $("<ul id='fieldlist-books' style='font-size:25px;'></ul>") : $("#fieldlist-books");
+            $("#fieldlist-books li").remove();
+            $("#fieldlist-books li").empty();
+
+            for (var i = 0; i < parseInt(chapters); i++) {
+                var chapter_id = i + 1;
+                var mySelection = {
+                    'dam_id': dam_id,
+                    'book_id': book_id,
+                    'chapter_id': chapter_id
+                };
+
+                var json = JSON.stringify(mySelection);
+                var li = "<li><a class='chapters' href='#' onclick='rememberMySelection(" + json + ")'>" + chapter_id + "</a></li>";
+                $(li).appendTo(details);
+            }
+
+            if (!exist) {
+                container.append(details);
+                $(elem).popover({
+                    container: 'body',
+                    title: 'Select a chapter',
+                    html: true,
+                    content: container[0].outerHTML,
+                    placement: 'bottom'
+                });
+
+                $(elem).popover('show');
+                elem.css('width', (width - 10));
+            }
+
+            if (chapters <= 40)
+                $("#booksContainer").removeClass("fieldlist-content");
+            else
+                $("#booksContainer").addClass("fieldlist-content");
+
+            $("#fieldlist-books li").css('width', chapters >= 100 ? '50px' : '37px');
+
+            $(elem).on('shown.bs.popover', function (e) {
+                var width = $('.popover.fade.bottom.in:eq(2)').css('width');
+                $(this).css('width', width);
+                $('#chapter').css('width', (width));
+            });
+
+            $('.popover.fade.bottom.in:eq(3)').css('width', width);
+            $('.popover.fade.bottom.in:eq(3)').css('height', height);
+            $('.popover.fade.bottom.in:eq(3)').offset({
+                "top": offset.top, "left": (offset.left + width + 10)
+            });
+        }
+        function onVersionChange(arg) {
+            var grid = $("#table").data("kendoGrid");
+            var _selectedVersion = arg.sender.dataItem(arg.sender.select());
+
+            if (_selectedVersion === null) { //this because we re-loading the page with previous selectection.
+                _selectedVersion = selectedVersion;
+                return;
+            }
+            selectedVersion = _selectedVersion;
+            if (!onChangeVersionAuto) {
+                $.when(fillBooks(selectedVersion.id)).done(function (books) {
+                    buildBookList(selectedVersion, books);
+                });
+            }
+
+            onChangeVersionAuto = false;
+        }
+
+        function buildBookList(selectedVersion, books) {
+            var ver = $("#ver"), book = $("#book");
+            ver.text(selectedVersion.abbreviation);
+            ver.val(selectedVersion.id);
+            book.show();
+            var prevPopoverBody = $('.popover.fade.bottom.in:eq(0)');
+            var offset = prevPopoverBody.offset();
+            var width = prevPopoverBody.width();
+            var height = prevPopoverBody.height();
+            //ver.popover('hide');
+            selectedBooks = books;
+            //container
+            var container = $('<div id="booksContainer"></div>');
+            var chaptersContainer = $('<div id="chaptersContainer"></div>');
+
+            var exist = $("#fieldlist-books").length > 0;
+            var details = $("#fieldlist-books").length === 0 ? $("<ul id='fieldlist-books'></ul>") : $("#fieldlist-books");
+            $("#fieldlist-books li").remove();
+            $("#fieldlist-books li").empty();
+            var defaultValue = books.response.books[0];
+            var _chapterId = 1;
+
+            if (myParams != null) {
+                var _param = JSON.parse(myParams);
+                var _versionId = _param.id.split(".")[0];
+                _chapterId = _param.id.split(".")[1];
+                defaultValue = getItemById(_versionId, books.response.books);
+            }
+
+            if (books && books.response.books) {
+                var _books = books.response.books;
+                for (var i = 0; i < _books.length; i++) {
+                    var current_book = _books[i];
+                    var json = JSON.stringify(current_book);
+                    if (current_book.id === defaultValue.id)
+                        var li = "<li class='active'><a id='" + current_book.id + "' class='chapters' href='#' data='" + json + "' >" + current_book.name + "</a></li>";
+                    else
+                        var li = "<li><a id='" + current_book.id + "' class='chapters' href='#' data='" + json + "' >" + current_book.name + "</a></li>";
+
+                    $(li).appendTo(details);
+                }
+            }
+
+            if (!exist) {
+                container.append(details);
+                var options = {
+                    container: 'body',
+                    title: kendo.format('{0} Selected', defaultValue.name),
+                    html: true,
+                    content: container[0].outerHTML,
+                    placement: 'bottom'
+                };
+
+                $(book).popover(options);
+
+                $(book).on('shown.bs.popover', function (e) {
+                    var popoverContent = $(".popover-content");
+                    chaptersContainer.appendTo(popoverContent);
+
+                    if ($('.popover.fade.bottom.in').length === 2) {
+                        ver.click();
+                    }
+                    var options = { "height": height + 10, "width": width + 200 };
+                    if (!loadingPage && !isClick) {
+                        $('.popover.fade.bottom.in:eq(0)').css(options);
+                        $("f-left").val(kendo.format("{0} books", books.response.books.length));
+                    }
+                    else {
+                        options = { "height": 440.011364, "width": 472.011364 };
+                        $('.popover.fade.bottom.in:eq(0)').css(options);
+                        $("f-left").val(kendo.format("{0} books", books.response.books.length));
+                    }
+
+                    //fill default value chapters when appear.
+                    var activeElement = $("#fieldlist-books:eq(0) li.active");
+                    var firstElement = $("#fieldlist-books:eq(0) li:first()");
+                    $('#booksContainer').animate({
+                        scrollTop: activeElement.offset().top - firstElement.offset().top 
+                    }, 'slow');
+
+                    var footerDiv = $(kendo.format('<div class="popover-footer"><div class="f-left">{0} books</div><div class="f-right"></div></>', books.response.books.length));
+                    footerDiv.appendTo(popoverContent);
+
+                    buildChaptersList(activeElement, chaptersContainer);
+                    $('#fieldlist-books li').on('click', function (e) {
+                        $('.popover.fade.bottom.in').busyIndicator(true);
+                        var thisElement = $(this);
+                        $(this.parentElement.children).removeClass("active");
+                        thisElement.addClass("active");
+                        $(".popover-title").text(kendo.format("{0} Selected", thisElement[0].firstElementChild.text));
+
+                        setTimeout(function () {
+                            buildChaptersList(thisElement, chaptersContainer);    
+                        }, 0);
+                    });
+
+                    isClick = false;
+                });
+
+                if (!loadingPage)
+                    $(book).popover('show');
+            }
+        }
+
+        function buildChaptersList(elem, container) {
+            container.empty();
+            var ul = $("#fieldlist-chapters").length === 0 ? $('<ul id="fieldlist-chapters"></ul>') : $("#fieldlist-chapters");
+            ul.empty();
+            var data = $(elem.find("a")).attr("data");
+            var json = JSON.parse(data);
+            var chapters = json.chapters
+
+            for (var i = 0; i < chapters.length; i++) {
+                var chap = chapters[i];
+                var this_verse = chap.id.substr(chap.id.indexOf(':') + 1, (chap.id.indexOf('.')));
+                var selected_verse = myParams !== '' || myParams !== null || myParams !== undefined ? JSON.parse(myParams) : null;
+                selected_verse = selected_verse !== null ? selected_verse.id.substr(selected_verse.id.indexOf(':') + 1, (selected_verse.id.indexOf('.'))): null;
+                var version = chap.id.split(':')[0], book = json.abbr;
+                var li = kendo.format('<li><a id="{0}" name="{2}" href="#" onclick="gotoVerse(this)">{1}</a></li>', chap.id, chap.chapter, json.name);
+
+                if (this_verse === selected_verse)
+                    li = kendo.format('<li class="active"><a id="{0}" name="{2}" href="#" onclick="gotoVerse(this)">{1}</a></li>', chap.id, chap.chapter, json.name);
+                                
+                $(li).appendTo(ul);
+            }
+
+            ul.appendTo(container);
+            $(".f-right").text(kendo.format("{0} chapters", chapters.length));
+            
+            var itemsAllowinscreen = Math.floor(container.css('max-height').replace('px', '') / ul.children().first().height());
+            if (chapters.length > itemsAllowinscreen)
+                container.css("width", "20%");
+            else
+                container.css("width", "15%");
+
+            var activeElement = $("#fieldlist-chapters:eq(0) li.active");
+            var firstElement = $("#fieldlist-chapters:eq(0) li:first()");
+
+            if (activeElement.length > 0) {
+                container.animate({
+                    scrollTop: activeElement.offset().top - firstElement.offset().top
+                }, 'slow');
+            }
+                        
+            $('.popover.fade.bottom.in').busyIndicator(false);
+
+            $('#fieldlist-chapters li').on('click', function (e) {
+               
+            });
+        }
+
+        function gotoVerse(id) {
+            $(id).parent().parent().children().removeClass("active");
+            $(id).parent().addClass("active");
+            var data = { "id": id.id, "name": id.name, "version": selectedVersion, "books": selectedBooks };
+            var jsonString = JSON.stringify(data);
+            eraseCookie(cookieName);
+            createCookie(cookieName, JSON.stringify(data), 5);
+            //re-direct index
+            var url = '@Html.Raw(@Url.Action("Index", "Bible", new { id = "_id" }))';
+            var href = url.replace("/_id", ("?id=" + id.id));
+            window.location.href = href;
+        }
+        function getSelectedItem(tableName) {
+            return $("#" + tableName).data("kendoGrid").dataItem($("#" + tableName).data("kendoGrid").select());
+        }
+    </script>
+    <style>
+        .text-holder .p {
+            text-indent: 0.125in;
+            text-align: left;
+        }
+
+        p {
+            font-family: inherit;
+            font-weight: normal;
+            font-size: 2rem;
+            line-height: 1.6;
+            margin-bottom: 1.25rem;
+            text-rendering: optimizeLegibility;
+        }
+
+        .divsection {
+            overflow: scroll;
+        }
+
+        .copyright-statement {
+            color: #777;
+            font-family: "Raleway", sans-serif;
+            line-height: 1.2;
+        }
+
+        .divsection .scrollable-holder .scrollable .text-holder {
+            margin-bottom: 20px;
+            font-family: "CharisSILRegular", Georgia, "Times New Roman", Times, serif;
+            font-size: 1.1em;
+            line-height: 1.5em;
+            margin: 0 10px;
+            overflow: visible;
+            position:relative;
+        }
+        
+        .divsection .scrollable-holder .scrollable .text-holder .s {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 4pt;
+            margin-top: 8pt;
+        }
+
+            .divsection .scrollable-holder .scrollable .text-holder .p {
+                text-indent: 0.125in;
+                text-align: left;
+            }
+
+            .divsection .scrollable-holder .scrollable .text-holder span {
+                padding: 3px 0;
+            }
+
+            .divsection .scrollable-holder .scrollable .text-holder sup, .search-res sup {
+                color: #6b7677;
+                font-size: 0.7em;
+                margin: 0;
+                padding: 0 2px;
+            }
+
+        #custom-search-input {
+            padding: 3px;
+            border: solid 1px #E4E4E4;
+            border-radius: 6px;
+            background-color: #fff;
+        }
+
+            #custom-search-input input {
+                border: 0;
+                box-shadow: none;
+            }
+
+            #custom-search-input button {
+                margin: 2px 0 0 0;
+                background: none;
+                box-shadow: none;
+                border: 0;
+                color: #666666;
+                padding: 0 8px 0 10px;
+                border-left: solid 1px #ccc;
+            }
+
+                #custom-search-input button:hover {
+                    border: 0;
+                    box-shadow: none;
+                    border-left: solid 1px #ccc;
+                }
+
+            #custom-search-input .glyphicon-search {
+                font-size: 23px;
+            }
+
+        #fieldlist {
+            height: auto;
+            -webkit-columns: 5;
+            -moz-columns: 5;
+            columns: 5;
+            -moz-column-fill: balance;
+            column-fill: balance;
+            list-style: none;
+        }
+
+        .fieldlist-content {
+            max-height: 365px;
+            overflow-y: scroll;
+            margin-bottom: 5px;
+        }
+
+        #fieldlist-books {
+            font-size: 20px;
+            height: auto;
+            overflow: hidden;
+            display: table;
+            padding: 0;
+            list-style: none;
+            background-color: transparent;
+            display: inline;
+        }
+
+            #fieldlist-books .active, #fieldlist-chapters .active{
+                background-color: #616D74;
+                cursor: default;
+            }
+        
+                #fieldlist-books .active a, #fieldlist-chapters .active a {
+                    color: white;
+                }
+                
+
+            #fieldlist-books li {
+                padding: 4px;
+                margin-left: 0;
+                margin-right: auto;
+                cursor: pointer;
+            }
+
+        #fieldlist-chapters {
+            list-style: none;
+            margin-left: 0;
+            padding-left: 5px;
+        }
+
+        .demo-hint {
+            line-height: 22px;
+            color: #aaa;
+            font-style: italic;
+            font-size: .9em;
+            padding-top: 1em;
+        }
+
+        .search-bar {
+            padding: 10px;
+            background: gainsboro;
+            border: 1px solid #d3d4d0;
+        }
+
+        .row-padding {
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+
+        .popover-content {
+            /*margin: 5px;*/
+        }
+
+        .footer a {
+            display: none;
+        }
+
+        .bw-widget-input-new-value {
+            border-left-width: 0px;
+            position: relative;
+            float: none;
+        }
+
+        #chaptersContainer {
+            max-height: 360px;
+            overflow: auto;
+            float: right;
+            width:15%;
+            text-align:center;
+        }
+
+        #booksContainer {
+            max-height: 360px;
+            overflow: auto;
+            float: left;
+            width: 80%
+        }
+
+        .popover-content .popover-footer {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            padding: 1rem;
+            background-color: #efefef;
+            text-align: center;
+            display: flex;
+        }
+
+            .popover-content .popover-footer div {
+                width: 50%;
+            }
+
+        
+        .arrow-left{float:left;padding-left:10px;}
+        .arrow-right { float: right; text-align:right;padding-right:10px}
+        .arrow-left, .arrow-right {vertical-align: middle;line-height:50px;width:50px;}
+            .arrow-left:hover, .arrow-right:hover {
+                -webkit-transition: 0.5s all ease;
+                transition: 0.5s all ease;
+                background-color: #616D74;
+                z-index: -2;
+                cursor:pointer;
+            }
+    </style>
+}

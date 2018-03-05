@@ -1,0 +1,189 @@
+﻿<error errorId="3e070239-cfcb-489e-98d6-61a8e1fdf05f" application="/LM/W3SVC/3/ROOT" host="LAPTOP-TEO" type="System.Web.HttpException" message="A potentially dangerous Request.Path value was detected from the client (&amp;)." source="System.Web" detail="System.Web.HttpException (0x80004005): A potentially dangerous Request.Path value was detected from the client (&amp;).&#xD;&#xA;   at System.Web.HttpRequest.ValidateInputIfRequiredByConfig()&#xD;&#xA;   at System.Web.HttpApplication.PipelineStepManager.ValidateHelper(HttpContext context)" time="2018-02-01T18:04:30.0345430Z" statusCode="400">
+  <serverVariables>
+    <item name="ALL_HTTP">
+      <value string="HTTP_CONNECTION:keep-alive&#xD;&#xA;HTTP_ACCEPT:text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8&#xD;&#xA;HTTP_ACCEPT_ENCODING:gzip, deflate, br&#xD;&#xA;HTTP_ACCEPT_LANGUAGE:en-US,en;q=0.9,es;q=0.8&#xD;&#xA;HTTP_COOKIE:ai_user=g5v97|2018-01-05T06:00:11.890Z; imageURL=https://pendulumstorage.blob.core.windows.net/d8b0966b-1de0-419c-9e95-7d1dcef377cf/employee_small_23b893db-d4df-405d-b625-3b7641a7cb24.jpg; access={&quot;SystemAdministrator&quot;:0,&quot;ProfileType&quot;:0,&quot;BackOffice&quot;:4,&quot;Dashboard&quot;:4,&quot;WorkOrder&quot;:4,&quot;Invoice&quot;:0,&quot;Quote&quot;:0,&quot;Items&quot;:4,&quot;CustomFormsSetup&quot;:4,&quot;SettingsCompany&quot;:4,&quot;SettingsCompanyOwner&quot;:4,&quot;SettingsEmployees&quot;:4,&quot;SettingsAgreements&quot;:4,&quot;SettingsMasterEquipment&quot;:4,&quot;SettingsWorkOrder&quot;:4,&quot;SettingsWorkOrderManager&quot;:4,&quot;TimeEntry&quot;:4,&quot;LicenseLevel&quot;:2,&quot;GoogleMaps&quot;:4,&quot;ArgoTrak&quot;:4,&quot;CustomForms&quot;:4,&quot;FieldApp&quot;:4,&quot;RequireReviewOnComplete&quot;:4,&quot;EnableFinalizingWO&quot;:4,&quot;EnableIsolatedPricebook&quot;:0,&quot;EnableMobileContactInfo&quot;:4,&quot;TwilioTelephone&quot;:4,&quot;TwilioMessaging&quot;:4,&quot;QuoteProfitability&quot;:4,&quot;InvoiceProfitability&quot;:4,&quot;Beta&quot;:true,&quot;RecCount&quot;:0,&quot;APIVersion&quot;:0}; entireToken={&quot;AccessToken&quot;:&quot;Rl4QOjQkbEhNDeXId6ACQ2MfiRp3SV3zkRACCan48dLZnTVTRsajOSQt18F4LCftxIIuQddX3Qh5YCw4RCKa-Z4Icf-SpNstVfYZ9kmSFWLFhzQo9yBkzh--GqLrcMGh3XROYguFhTDG8kECKU6TfXZcBN75bkN4-aFFLZRTjzcOPYALdFsWsrrZlUWlAItGUVfWsYo-0YetL9kB7eOKVLuPI2ycuQLADp5BdF8bZ0-tznqFH8o8XxkdQlkSKPZQ3IxhQ9egbSyKVmqu-Ckd7xmVBRES3t9XiE1XhU4A6c3lHPLGt4BiT2fzzI4t86VD1Egrsg1HMNlha4qheJQ4ETPmnSl5HhuQ5ce4EDjSnTXVA397i4fLwxQrQuBINQR1SO41YnK_oLamVFncVQxQerJUA79YWyvxYZKb8aqPxVoCe0HCmjGxjWHFZ_IQoImt8S6CnMshPQlI5gRWP7hWIe0_H2bV72zRVO22MMJhwvsBAdbjV_aj0gVjxAVWGqHnP5VAqUKH-B1yLLZlpt7q4kz5lvNElyGlfrAJo5op8EGDLpTZ_prthKVA4FgOFcU83an41plw6af7ee_E0L7KlaCsktKaEwJTnL10NvAHb2E&quot;,&quot;TokenType&quot;:&quot;bearer&quot;,&quot;ExpiresIn&quot;:345599,&quot;Issued&quot;:&quot;1/5/2018 9:19:20 AM&quot;,&quot;Expires&quot;:&quot;1/9/2018 9:19:20 AM&quot;,&quot;User&quot;:&quot; dev@staging.com&quot;,&quot;CompanyID&quot;:&quot;d8b0966b-1de0-419c-9e95-7d1dcef377cf&quot;,&quot;UserID&quot;:&quot;ebc564a9-9b09-470b-9119-a5e94722f3ed&quot;,&quot;ProfileUserID&quot;:&quot;fd72b21a-d27f-41ab-9d98-31cc06c3a2ea&quot;,&quot;ProfileType&quot;:&quot;0&quot;,&quot;TechEntityID&quot;:&quot;8eb5215a-9230-4583-9606-f18ade382b81&quot;,&quot;Refresh&quot;:&quot;True&quot;,&quot;RefreshToken&quot;:&quot;D11FD50DF960D4904397DAC56EA96DB91BC90B165B2F09BCB35A828BCDC89E72&quot;,&quot;ServerURL&quot;:&quot;http://fieldedgeserver-staging.azurewebsites.net/&quot;,&quot;WebURL&quot;:&quot;http://fieldedgesite-staging.azurewebsites.net/&quot;,&quot;APIVersion&quot;:27,&quot;DeploymentSlot&quot;:3,&quot;IssuedDateTime&quot;:&quot;\/Date(1515143960000)\/&quot;,&quot;ExpiresDateTime&quot;:&quot;\/Date(1515489560000)\/&quot;,&quot;CanRefresh&quot;:true,&quot;IsExpired&quot;:false,&quot;RequiredRenewal&quot;:false}; DeviceID=17477791-5a07-4799-8009-90394ff9e15b; ASP.NET_SessionId=bkqut21zkdtn1brsbdceubfc; culture=en-us; __RequestVerificationToken=3N2mvJrRaEHajc_ll58WdyqgrmrTP1sNSrEy_bg4BFpPhUA4l-ZtLU05QhIZA2w6XAGJsAweFWBrDQv5PvoONROmW_rwnHEzKz8QA_Ke4jE1; .AspNet.ApplicationCookie=6ipcMcN0egIxnHmIe0vy4YSWXy7GazkbssKyuuhm_peDcqjZRKxx-JRvWmDPmuLPmyffXu8BzcTWMORIqfKofNkHbxNM8kTcYcgN6XSMiNYFuI5o61x7vrd1NANrRHqL8Yn9xncukAtQHU1msUu2_-xbMYfSMBMZjYQyi1lEPov4ELp64tfvrhFso0c9SaV4s51lWaviroT2MT7E1RSxoa8-yDKquxyBdNtUd1pJo0X4V379t2M4sHQqdNtvO34KM1K938WrIq83xM-lCYiusSHWlnj3OcckKW23ITeYPS5ubaUxzuIcX8DUMPwEizKsdPeqS1oAznm6DsvzbsfuCSdgpPqNu2Fj9zQWTcXlahLObGbVNWSrEIUqnfq_LJsiiD1VazJEYgoP_FTBcNrrUdWw7vvWTHRrcIUdXIk0vbu9DkVEM4NboPT8LTte6RFoS5DeOa6EPROSVf7lghvBYA; ai_session=YJMH2|1517508140228|1517508223090.715&#xD;&#xA;HTTP_HOST:localhost:58095&#xD;&#xA;HTTP_USER_AGENT:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36&#xD;&#xA;HTTP_UPGRADE_INSECURE_REQUESTS:1&#xD;&#xA;" />
+    </item>
+    <item name="ALL_RAW">
+      <value string="Connection: keep-alive&#xD;&#xA;Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8&#xD;&#xA;Accept-Encoding: gzip, deflate, br&#xD;&#xA;Accept-Language: en-US,en;q=0.9,es;q=0.8&#xD;&#xA;Cookie: ai_user=g5v97|2018-01-05T06:00:11.890Z; imageURL=https://pendulumstorage.blob.core.windows.net/d8b0966b-1de0-419c-9e95-7d1dcef377cf/employee_small_23b893db-d4df-405d-b625-3b7641a7cb24.jpg; access={&quot;SystemAdministrator&quot;:0,&quot;ProfileType&quot;:0,&quot;BackOffice&quot;:4,&quot;Dashboard&quot;:4,&quot;WorkOrder&quot;:4,&quot;Invoice&quot;:0,&quot;Quote&quot;:0,&quot;Items&quot;:4,&quot;CustomFormsSetup&quot;:4,&quot;SettingsCompany&quot;:4,&quot;SettingsCompanyOwner&quot;:4,&quot;SettingsEmployees&quot;:4,&quot;SettingsAgreements&quot;:4,&quot;SettingsMasterEquipment&quot;:4,&quot;SettingsWorkOrder&quot;:4,&quot;SettingsWorkOrderManager&quot;:4,&quot;TimeEntry&quot;:4,&quot;LicenseLevel&quot;:2,&quot;GoogleMaps&quot;:4,&quot;ArgoTrak&quot;:4,&quot;CustomForms&quot;:4,&quot;FieldApp&quot;:4,&quot;RequireReviewOnComplete&quot;:4,&quot;EnableFinalizingWO&quot;:4,&quot;EnableIsolatedPricebook&quot;:0,&quot;EnableMobileContactInfo&quot;:4,&quot;TwilioTelephone&quot;:4,&quot;TwilioMessaging&quot;:4,&quot;QuoteProfitability&quot;:4,&quot;InvoiceProfitability&quot;:4,&quot;Beta&quot;:true,&quot;RecCount&quot;:0,&quot;APIVersion&quot;:0}; entireToken={&quot;AccessToken&quot;:&quot;Rl4QOjQkbEhNDeXId6ACQ2MfiRp3SV3zkRACCan48dLZnTVTRsajOSQt18F4LCftxIIuQddX3Qh5YCw4RCKa-Z4Icf-SpNstVfYZ9kmSFWLFhzQo9yBkzh--GqLrcMGh3XROYguFhTDG8kECKU6TfXZcBN75bkN4-aFFLZRTjzcOPYALdFsWsrrZlUWlAItGUVfWsYo-0YetL9kB7eOKVLuPI2ycuQLADp5BdF8bZ0-tznqFH8o8XxkdQlkSKPZQ3IxhQ9egbSyKVmqu-Ckd7xmVBRES3t9XiE1XhU4A6c3lHPLGt4BiT2fzzI4t86VD1Egrsg1HMNlha4qheJQ4ETPmnSl5HhuQ5ce4EDjSnTXVA397i4fLwxQrQuBINQR1SO41YnK_oLamVFncVQxQerJUA79YWyvxYZKb8aqPxVoCe0HCmjGxjWHFZ_IQoImt8S6CnMshPQlI5gRWP7hWIe0_H2bV72zRVO22MMJhwvsBAdbjV_aj0gVjxAVWGqHnP5VAqUKH-B1yLLZlpt7q4kz5lvNElyGlfrAJo5op8EGDLpTZ_prthKVA4FgOFcU83an41plw6af7ee_E0L7KlaCsktKaEwJTnL10NvAHb2E&quot;,&quot;TokenType&quot;:&quot;bearer&quot;,&quot;ExpiresIn&quot;:345599,&quot;Issued&quot;:&quot;1/5/2018 9:19:20 AM&quot;,&quot;Expires&quot;:&quot;1/9/2018 9:19:20 AM&quot;,&quot;User&quot;:&quot; dev@staging.com&quot;,&quot;CompanyID&quot;:&quot;d8b0966b-1de0-419c-9e95-7d1dcef377cf&quot;,&quot;UserID&quot;:&quot;ebc564a9-9b09-470b-9119-a5e94722f3ed&quot;,&quot;ProfileUserID&quot;:&quot;fd72b21a-d27f-41ab-9d98-31cc06c3a2ea&quot;,&quot;ProfileType&quot;:&quot;0&quot;,&quot;TechEntityID&quot;:&quot;8eb5215a-9230-4583-9606-f18ade382b81&quot;,&quot;Refresh&quot;:&quot;True&quot;,&quot;RefreshToken&quot;:&quot;D11FD50DF960D4904397DAC56EA96DB91BC90B165B2F09BCB35A828BCDC89E72&quot;,&quot;ServerURL&quot;:&quot;http://fieldedgeserver-staging.azurewebsites.net/&quot;,&quot;WebURL&quot;:&quot;http://fieldedgesite-staging.azurewebsites.net/&quot;,&quot;APIVersion&quot;:27,&quot;DeploymentSlot&quot;:3,&quot;IssuedDateTime&quot;:&quot;\/Date(1515143960000)\/&quot;,&quot;ExpiresDateTime&quot;:&quot;\/Date(1515489560000)\/&quot;,&quot;CanRefresh&quot;:true,&quot;IsExpired&quot;:false,&quot;RequiredRenewal&quot;:false}; DeviceID=17477791-5a07-4799-8009-90394ff9e15b; ASP.NET_SessionId=bkqut21zkdtn1brsbdceubfc; culture=en-us; __RequestVerificationToken=3N2mvJrRaEHajc_ll58WdyqgrmrTP1sNSrEy_bg4BFpPhUA4l-ZtLU05QhIZA2w6XAGJsAweFWBrDQv5PvoONROmW_rwnHEzKz8QA_Ke4jE1; .AspNet.ApplicationCookie=6ipcMcN0egIxnHmIe0vy4YSWXy7GazkbssKyuuhm_peDcqjZRKxx-JRvWmDPmuLPmyffXu8BzcTWMORIqfKofNkHbxNM8kTcYcgN6XSMiNYFuI5o61x7vrd1NANrRHqL8Yn9xncukAtQHU1msUu2_-xbMYfSMBMZjYQyi1lEPov4ELp64tfvrhFso0c9SaV4s51lWaviroT2MT7E1RSxoa8-yDKquxyBdNtUd1pJo0X4V379t2M4sHQqdNtvO34KM1K938WrIq83xM-lCYiusSHWlnj3OcckKW23ITeYPS5ubaUxzuIcX8DUMPwEizKsdPeqS1oAznm6DsvzbsfuCSdgpPqNu2Fj9zQWTcXlahLObGbVNWSrEIUqnfq_LJsiiD1VazJEYgoP_FTBcNrrUdWw7vvWTHRrcIUdXIk0vbu9DkVEM4NboPT8LTte6RFoS5DeOa6EPROSVf7lghvBYA; ai_session=YJMH2|1517508140228|1517508223090.715&#xD;&#xA;Host: localhost:58095&#xD;&#xA;User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36&#xD;&#xA;Upgrade-Insecure-Requests: 1&#xD;&#xA;" />
+    </item>
+    <item name="APPL_MD_PATH">
+      <value string="/LM/W3SVC/3/ROOT" />
+    </item>
+    <item name="APPL_PHYSICAL_PATH">
+      <value string="C:\Users\tcerda.CCCDOMAIN\source\repos\Web\JehovaJireh\src\JehovaJireh.Web.Services\" />
+    </item>
+    <item name="AUTH_TYPE">
+      <value string="" />
+    </item>
+    <item name="AUTH_USER">
+      <value string="" />
+    </item>
+    <item name="AUTH_PASSWORD">
+      <value string="*****" />
+    </item>
+    <item name="LOGON_USER">
+      <value string="" />
+    </item>
+    <item name="REMOTE_USER">
+      <value string="" />
+    </item>
+    <item name="CERT_COOKIE">
+      <value string="" />
+    </item>
+    <item name="CERT_FLAGS">
+      <value string="" />
+    </item>
+    <item name="CERT_ISSUER">
+      <value string="" />
+    </item>
+    <item name="CERT_KEYSIZE">
+      <value string="" />
+    </item>
+    <item name="CERT_SECRETKEYSIZE">
+      <value string="" />
+    </item>
+    <item name="CERT_SERIALNUMBER">
+      <value string="" />
+    </item>
+    <item name="CERT_SERVER_ISSUER">
+      <value string="" />
+    </item>
+    <item name="CERT_SERVER_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="CERT_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="CONTENT_LENGTH">
+      <value string="0" />
+    </item>
+    <item name="CONTENT_TYPE">
+      <value string="" />
+    </item>
+    <item name="GATEWAY_INTERFACE">
+      <value string="CGI/1.1" />
+    </item>
+    <item name="HTTPS">
+      <value string="off" />
+    </item>
+    <item name="HTTPS_KEYSIZE">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SECRETKEYSIZE">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SERVER_ISSUER">
+      <value string="" />
+    </item>
+    <item name="HTTPS_SERVER_SUBJECT">
+      <value string="" />
+    </item>
+    <item name="INSTANCE_ID">
+      <value string="3" />
+    </item>
+    <item name="INSTANCE_META_PATH">
+      <value string="/LM/W3SVC/3" />
+    </item>
+    <item name="LOCAL_ADDR">
+      <value string="::1" />
+    </item>
+    <item name="PATH_INFO">
+      <value string="/bible/Volumes&amp;language_family_code=ENG" />
+    </item>
+    <item name="PATH_TRANSLATED">
+      <value string="C:\Users\tcerda.CCCDOMAIN\source\repos\Web\JehovaJireh\src\JehovaJireh.Web.Services\bible\Volumes&amp;language_family_code=ENG" />
+    </item>
+    <item name="QUERY_STRING">
+      <value string="" />
+    </item>
+    <item name="REMOTE_ADDR">
+      <value string="::1" />
+    </item>
+    <item name="REMOTE_HOST">
+      <value string="::1" />
+    </item>
+    <item name="REMOTE_PORT">
+      <value string="52686" />
+    </item>
+    <item name="REQUEST_METHOD">
+      <value string="GET" />
+    </item>
+    <item name="SCRIPT_NAME">
+      <value string="/bible/Volumes&amp;language_family_code=ENG" />
+    </item>
+    <item name="SERVER_NAME">
+      <value string="localhost" />
+    </item>
+    <item name="SERVER_PORT">
+      <value string="58095" />
+    </item>
+    <item name="SERVER_PORT_SECURE">
+      <value string="0" />
+    </item>
+    <item name="SERVER_PROTOCOL">
+      <value string="HTTP/1.1" />
+    </item>
+    <item name="SERVER_SOFTWARE">
+      <value string="Microsoft-IIS/10.0" />
+    </item>
+    <item name="URL">
+      <value string="/bible/Volumes&amp;language_family_code=ENG" />
+    </item>
+    <item name="HTTP_CONNECTION">
+      <value string="keep-alive" />
+    </item>
+    <item name="HTTP_ACCEPT">
+      <value string="text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8" />
+    </item>
+    <item name="HTTP_ACCEPT_ENCODING">
+      <value string="gzip, deflate, br" />
+    </item>
+    <item name="HTTP_ACCEPT_LANGUAGE">
+      <value string="en-US,en;q=0.9,es;q=0.8" />
+    </item>
+    <item name="HTTP_COOKIE">
+      <value string="ai_user=g5v97|2018-01-05T06:00:11.890Z; imageURL=https://pendulumstorage.blob.core.windows.net/d8b0966b-1de0-419c-9e95-7d1dcef377cf/employee_small_23b893db-d4df-405d-b625-3b7641a7cb24.jpg; access={&quot;SystemAdministrator&quot;:0,&quot;ProfileType&quot;:0,&quot;BackOffice&quot;:4,&quot;Dashboard&quot;:4,&quot;WorkOrder&quot;:4,&quot;Invoice&quot;:0,&quot;Quote&quot;:0,&quot;Items&quot;:4,&quot;CustomFormsSetup&quot;:4,&quot;SettingsCompany&quot;:4,&quot;SettingsCompanyOwner&quot;:4,&quot;SettingsEmployees&quot;:4,&quot;SettingsAgreements&quot;:4,&quot;SettingsMasterEquipment&quot;:4,&quot;SettingsWorkOrder&quot;:4,&quot;SettingsWorkOrderManager&quot;:4,&quot;TimeEntry&quot;:4,&quot;LicenseLevel&quot;:2,&quot;GoogleMaps&quot;:4,&quot;ArgoTrak&quot;:4,&quot;CustomForms&quot;:4,&quot;FieldApp&quot;:4,&quot;RequireReviewOnComplete&quot;:4,&quot;EnableFinalizingWO&quot;:4,&quot;EnableIsolatedPricebook&quot;:0,&quot;EnableMobileContactInfo&quot;:4,&quot;TwilioTelephone&quot;:4,&quot;TwilioMessaging&quot;:4,&quot;QuoteProfitability&quot;:4,&quot;InvoiceProfitability&quot;:4,&quot;Beta&quot;:true,&quot;RecCount&quot;:0,&quot;APIVersion&quot;:0}; entireToken={&quot;AccessToken&quot;:&quot;Rl4QOjQkbEhNDeXId6ACQ2MfiRp3SV3zkRACCan48dLZnTVTRsajOSQt18F4LCftxIIuQddX3Qh5YCw4RCKa-Z4Icf-SpNstVfYZ9kmSFWLFhzQo9yBkzh--GqLrcMGh3XROYguFhTDG8kECKU6TfXZcBN75bkN4-aFFLZRTjzcOPYALdFsWsrrZlUWlAItGUVfWsYo-0YetL9kB7eOKVLuPI2ycuQLADp5BdF8bZ0-tznqFH8o8XxkdQlkSKPZQ3IxhQ9egbSyKVmqu-Ckd7xmVBRES3t9XiE1XhU4A6c3lHPLGt4BiT2fzzI4t86VD1Egrsg1HMNlha4qheJQ4ETPmnSl5HhuQ5ce4EDjSnTXVA397i4fLwxQrQuBINQR1SO41YnK_oLamVFncVQxQerJUA79YWyvxYZKb8aqPxVoCe0HCmjGxjWHFZ_IQoImt8S6CnMshPQlI5gRWP7hWIe0_H2bV72zRVO22MMJhwvsBAdbjV_aj0gVjxAVWGqHnP5VAqUKH-B1yLLZlpt7q4kz5lvNElyGlfrAJo5op8EGDLpTZ_prthKVA4FgOFcU83an41plw6af7ee_E0L7KlaCsktKaEwJTnL10NvAHb2E&quot;,&quot;TokenType&quot;:&quot;bearer&quot;,&quot;ExpiresIn&quot;:345599,&quot;Issued&quot;:&quot;1/5/2018 9:19:20 AM&quot;,&quot;Expires&quot;:&quot;1/9/2018 9:19:20 AM&quot;,&quot;User&quot;:&quot; dev@staging.com&quot;,&quot;CompanyID&quot;:&quot;d8b0966b-1de0-419c-9e95-7d1dcef377cf&quot;,&quot;UserID&quot;:&quot;ebc564a9-9b09-470b-9119-a5e94722f3ed&quot;,&quot;ProfileUserID&quot;:&quot;fd72b21a-d27f-41ab-9d98-31cc06c3a2ea&quot;,&quot;ProfileType&quot;:&quot;0&quot;,&quot;TechEntityID&quot;:&quot;8eb5215a-9230-4583-9606-f18ade382b81&quot;,&quot;Refresh&quot;:&quot;True&quot;,&quot;RefreshToken&quot;:&quot;D11FD50DF960D4904397DAC56EA96DB91BC90B165B2F09BCB35A828BCDC89E72&quot;,&quot;ServerURL&quot;:&quot;http://fieldedgeserver-staging.azurewebsites.net/&quot;,&quot;WebURL&quot;:&quot;http://fieldedgesite-staging.azurewebsites.net/&quot;,&quot;APIVersion&quot;:27,&quot;DeploymentSlot&quot;:3,&quot;IssuedDateTime&quot;:&quot;\/Date(1515143960000)\/&quot;,&quot;ExpiresDateTime&quot;:&quot;\/Date(1515489560000)\/&quot;,&quot;CanRefresh&quot;:true,&quot;IsExpired&quot;:false,&quot;RequiredRenewal&quot;:false}; DeviceID=17477791-5a07-4799-8009-90394ff9e15b; ASP.NET_SessionId=bkqut21zkdtn1brsbdceubfc; culture=en-us; __RequestVerificationToken=3N2mvJrRaEHajc_ll58WdyqgrmrTP1sNSrEy_bg4BFpPhUA4l-ZtLU05QhIZA2w6XAGJsAweFWBrDQv5PvoONROmW_rwnHEzKz8QA_Ke4jE1; .AspNet.ApplicationCookie=6ipcMcN0egIxnHmIe0vy4YSWXy7GazkbssKyuuhm_peDcqjZRKxx-JRvWmDPmuLPmyffXu8BzcTWMORIqfKofNkHbxNM8kTcYcgN6XSMiNYFuI5o61x7vrd1NANrRHqL8Yn9xncukAtQHU1msUu2_-xbMYfSMBMZjYQyi1lEPov4ELp64tfvrhFso0c9SaV4s51lWaviroT2MT7E1RSxoa8-yDKquxyBdNtUd1pJo0X4V379t2M4sHQqdNtvO34KM1K938WrIq83xM-lCYiusSHWlnj3OcckKW23ITeYPS5ubaUxzuIcX8DUMPwEizKsdPeqS1oAznm6DsvzbsfuCSdgpPqNu2Fj9zQWTcXlahLObGbVNWSrEIUqnfq_LJsiiD1VazJEYgoP_FTBcNrrUdWw7vvWTHRrcIUdXIk0vbu9DkVEM4NboPT8LTte6RFoS5DeOa6EPROSVf7lghvBYA; ai_session=YJMH2|1517508140228|1517508223090.715" />
+    </item>
+    <item name="HTTP_HOST">
+      <value string="localhost:58095" />
+    </item>
+    <item name="HTTP_USER_AGENT">
+      <value string="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36" />
+    </item>
+    <item name="HTTP_UPGRADE_INSECURE_REQUESTS">
+      <value string="1" />
+    </item>
+  </serverVariables>
+  <cookies>
+    <item name="ai_user">
+      <value string="g5v97|2018-01-05T06:00:11.890Z" />
+    </item>
+    <item name="imageURL">
+      <value string="https://pendulumstorage.blob.core.windows.net/d8b0966b-1de0-419c-9e95-7d1dcef377cf/employee_small_23b893db-d4df-405d-b625-3b7641a7cb24.jpg" />
+    </item>
+    <item name="access">
+      <value string="{&quot;SystemAdministrator&quot;:0,&quot;ProfileType&quot;:0,&quot;BackOffice&quot;:4,&quot;Dashboard&quot;:4,&quot;WorkOrder&quot;:4,&quot;Invoice&quot;:0,&quot;Quote&quot;:0,&quot;Items&quot;:4,&quot;CustomFormsSetup&quot;:4,&quot;SettingsCompany&quot;:4,&quot;SettingsCompanyOwner&quot;:4,&quot;SettingsEmployees&quot;:4,&quot;SettingsAgreements&quot;:4,&quot;SettingsMasterEquipment&quot;:4,&quot;SettingsWorkOrder&quot;:4,&quot;SettingsWorkOrderManager&quot;:4,&quot;TimeEntry&quot;:4,&quot;LicenseLevel&quot;:2,&quot;GoogleMaps&quot;:4,&quot;ArgoTrak&quot;:4,&quot;CustomForms&quot;:4,&quot;FieldApp&quot;:4,&quot;RequireReviewOnComplete&quot;:4,&quot;EnableFinalizingWO&quot;:4,&quot;EnableIsolatedPricebook&quot;:0,&quot;EnableMobileContactInfo&quot;:4,&quot;TwilioTelephone&quot;:4,&quot;TwilioMessaging&quot;:4,&quot;QuoteProfitability&quot;:4,&quot;InvoiceProfitability&quot;:4,&quot;Beta&quot;:true,&quot;RecCount&quot;:0,&quot;APIVersion&quot;:0}" />
+    </item>
+    <item name="entireToken">
+      <value string="{&quot;AccessToken&quot;:&quot;Rl4QOjQkbEhNDeXId6ACQ2MfiRp3SV3zkRACCan48dLZnTVTRsajOSQt18F4LCftxIIuQddX3Qh5YCw4RCKa-Z4Icf-SpNstVfYZ9kmSFWLFhzQo9yBkzh--GqLrcMGh3XROYguFhTDG8kECKU6TfXZcBN75bkN4-aFFLZRTjzcOPYALdFsWsrrZlUWlAItGUVfWsYo-0YetL9kB7eOKVLuPI2ycuQLADp5BdF8bZ0-tznqFH8o8XxkdQlkSKPZQ3IxhQ9egbSyKVmqu-Ckd7xmVBRES3t9XiE1XhU4A6c3lHPLGt4BiT2fzzI4t86VD1Egrsg1HMNlha4qheJQ4ETPmnSl5HhuQ5ce4EDjSnTXVA397i4fLwxQrQuBINQR1SO41YnK_oLamVFncVQxQerJUA79YWyvxYZKb8aqPxVoCe0HCmjGxjWHFZ_IQoImt8S6CnMshPQlI5gRWP7hWIe0_H2bV72zRVO22MMJhwvsBAdbjV_aj0gVjxAVWGqHnP5VAqUKH-B1yLLZlpt7q4kz5lvNElyGlfrAJo5op8EGDLpTZ_prthKVA4FgOFcU83an41plw6af7ee_E0L7KlaCsktKaEwJTnL10NvAHb2E&quot;,&quot;TokenType&quot;:&quot;bearer&quot;,&quot;ExpiresIn&quot;:345599,&quot;Issued&quot;:&quot;1/5/2018 9:19:20 AM&quot;,&quot;Expires&quot;:&quot;1/9/2018 9:19:20 AM&quot;,&quot;User&quot;:&quot; dev@staging.com&quot;,&quot;CompanyID&quot;:&quot;d8b0966b-1de0-419c-9e95-7d1dcef377cf&quot;,&quot;UserID&quot;:&quot;ebc564a9-9b09-470b-9119-a5e94722f3ed&quot;,&quot;ProfileUserID&quot;:&quot;fd72b21a-d27f-41ab-9d98-31cc06c3a2ea&quot;,&quot;ProfileType&quot;:&quot;0&quot;,&quot;TechEntityID&quot;:&quot;8eb5215a-9230-4583-9606-f18ade382b81&quot;,&quot;Refresh&quot;:&quot;True&quot;,&quot;RefreshToken&quot;:&quot;D11FD50DF960D4904397DAC56EA96DB91BC90B165B2F09BCB35A828BCDC89E72&quot;,&quot;ServerURL&quot;:&quot;http://fieldedgeserver-staging.azurewebsites.net/&quot;,&quot;WebURL&quot;:&quot;http://fieldedgesite-staging.azurewebsites.net/&quot;,&quot;APIVersion&quot;:27,&quot;DeploymentSlot&quot;:3,&quot;IssuedDateTime&quot;:&quot;\/Date(1515143960000)\/&quot;,&quot;ExpiresDateTime&quot;:&quot;\/Date(1515489560000)\/&quot;,&quot;CanRefresh&quot;:true,&quot;IsExpired&quot;:false,&quot;RequiredRenewal&quot;:false}" />
+    </item>
+    <item name="DeviceID">
+      <value string="17477791-5a07-4799-8009-90394ff9e15b" />
+    </item>
+    <item name="ASP.NET_SessionId">
+      <value string="bkqut21zkdtn1brsbdceubfc" />
+    </item>
+    <item name="culture">
+      <value string="en-us" />
+    </item>
+    <item name="__RequestVerificationToken">
+      <value string="3N2mvJrRaEHajc_ll58WdyqgrmrTP1sNSrEy_bg4BFpPhUA4l-ZtLU05QhIZA2w6XAGJsAweFWBrDQv5PvoONROmW_rwnHEzKz8QA_Ke4jE1" />
+    </item>
+    <item name=".AspNet.ApplicationCookie">
+      <value string="6ipcMcN0egIxnHmIe0vy4YSWXy7GazkbssKyuuhm_peDcqjZRKxx-JRvWmDPmuLPmyffXu8BzcTWMORIqfKofNkHbxNM8kTcYcgN6XSMiNYFuI5o61x7vrd1NANrRHqL8Yn9xncukAtQHU1msUu2_-xbMYfSMBMZjYQyi1lEPov4ELp64tfvrhFso0c9SaV4s51lWaviroT2MT7E1RSxoa8-yDKquxyBdNtUd1pJo0X4V379t2M4sHQqdNtvO34KM1K938WrIq83xM-lCYiusSHWlnj3OcckKW23ITeYPS5ubaUxzuIcX8DUMPwEizKsdPeqS1oAznm6DsvzbsfuCSdgpPqNu2Fj9zQWTcXlahLObGbVNWSrEIUqnfq_LJsiiD1VazJEYgoP_FTBcNrrUdWw7vvWTHRrcIUdXIk0vbu9DkVEM4NboPT8LTte6RFoS5DeOa6EPROSVf7lghvBYA" />
+    </item>
+    <item name="ai_session">
+      <value string="YJMH2|1517508140228|1517508223090.715" />
+    </item>
+  </cookies>
+</error>

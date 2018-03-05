@@ -1,0 +1,489 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="About" xml:space="preserve">
+    <value>Sobre nosotros</value>
+  </data>
+  <data name="AccountInfo" xml:space="preserve">
+    <value>Informacion de la cuenta</value>
+  </data>
+  <data name="AccountPhoto" xml:space="preserve">
+    <value>Foto</value>
+  </data>
+  <data name="AdditionalInfo" xml:space="preserve">
+    <value>Informacion adicional</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Dirección</value>
+  </data>
+  <data name="AddressLong" xml:space="preserve">
+    <value>Debe ser menos de 80 caracteres</value>
+  </data>
+  <data name="Age" xml:space="preserve">
+    <value>Edad</value>
+  </data>
+  <data name="AgeRange" xml:space="preserve">
+    <value>Debe ser entre 10 y 130</value>
+  </data>
+  <data name="AgeRequired" xml:space="preserve">
+    <value>Debe ingresar su edad</value>
+  </data>
+  <data name="ApplicationName" xml:space="preserve">
+    <value>Iglesia Jehova Jireh</value>
+  </data>
+  <data name="Biography" xml:space="preserve">
+    <value>Biografía</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>Cambiar</value>
+  </data>
+  <data name="ChangeAccoutSettings" xml:space="preserve">
+    <value>Cambiar configuracion de tu cuenta</value>
+  </data>
+  <data name="ChooseYourLanguage" xml:space="preserve">
+    <value>Eliga su idioma</value>
+  </data>
+  <data name="ChurchAddress" xml:space="preserve">
+    <value>Direccion de la Iglesia</value>
+  </data>
+  <data name="ChurchAddressLong" xml:space="preserve">
+    <value>Debe ser menos de 80 caracteres</value>
+  </data>
+  <data name="ChurchName" xml:space="preserve">
+    <value>Nombre de la Iglesia</value>
+  </data>
+  <data name="ChurchNameLong" xml:space="preserve">
+    <value>Debe ser menos de 50 caracteres</value>
+  </data>
+  <data name="ChurchPastor" xml:space="preserve">
+    <value>Pastor de la Iglesia</value>
+  </data>
+  <data name="ChurchPastorLong" xml:space="preserve">
+    <value>Debe ser menos de  {1} caracteres</value>
+  </data>
+  <data name="ChurchPhone" xml:space="preserve">
+    <value>Telefono de la Iglesia</value>
+  </data>
+  <data name="ChurchPhoneLong" xml:space="preserve">
+    <value>Debe ser menos de 15 caracteres</value>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>Ciudad</value>
+  </data>
+  <data name="CityLong" xml:space="preserve">
+    <value>Debe ser menos de 50 caracteres</value>
+  </data>
+  <data name="Comments" xml:space="preserve">
+    <value>Su opinion es muy importante para nosotros. Por favor dejenos sus commentarios.</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Confirmar contraseña</value>
+  </data>
+  <data name="Contact" xml:space="preserve">
+    <value>Contacto</value>
+  </data>
+  <data name="ContactAddress" xml:space="preserve">
+    <value>DIreccion de contacto</value>
+  </data>
+  <data name="ContactInfo" xml:space="preserve">
+    <value>Infomacion de contacto</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Crear</value>
+  </data>
+  <data name="DragFileHere" xml:space="preserve">
+    <value>Arrastre el archivo aquí</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Correo Eléctronico</value>
+  </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>Email no es valido</value>
+  </data>
+  <data name="EmailRequired" xml:space="preserve">
+    <value>Email es requerido</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Un error ha ocurrido.</value>
+  </data>
+  <data name="FileData" xml:space="preserve">
+    <value>Por favor entre su foto</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>Nombre</value>
+  </data>
+  <data name="FirstNameLong" xml:space="preserve">
+    <value>Debe ser menos de 50 caracteres</value>
+  </data>
+  <data name="FirstNameRequired" xml:space="preserve">
+    <value>Nombre es requerido</value>
+  </data>
+  <data name="Gender" xml:space="preserve">
+    <value>Genero</value>
+  </data>
+  <data name="GenderLong" xml:space="preserve">
+    <value>Debe ser menos de 15 caracteres</value>
+  </data>
+  <data name="Hello" xml:space="preserve">
+    <value>Hola </value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Inicio</value>
+  </data>
+  <data name="HomePage" xml:space="preserve">
+    <value>Página Principal</value>
+  </data>
+  <data name="IsChurchMember" xml:space="preserve">
+    <value>Es Miembre de nuestra iglesia?</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Apellido</value>
+  </data>
+  <data name="LastNameLong" xml:space="preserve">
+    <value>Debe ser menos de 50 caracteres</value>
+  </data>
+  <data name="LastNameRequired" xml:space="preserve">
+    <value>Apellido es requerido</value>
+  </data>
+  <data name="LogIn" xml:space="preserve">
+    <value>Acceder</value>
+  </data>
+  <data name="LogOff" xml:space="preserve">
+    <value>Desconectarse</value>
+  </data>
+  <data name="LogOn" xml:space="preserve">
+    <value>Iniciar sesión</value>
+  </data>
+  <data name="Manage" xml:space="preserve">
+    <value>Administrar</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Nombre</value>
+  </data>
+  <data name="NeedToBeVisited" xml:space="preserve">
+    <value>Necesita ser visitado?</value>
+  </data>
+  <data name="NewAccount" xml:space="preserve">
+    <value>Crear nueva cuenta</value>
+  </data>
+  <data name="PasswordCompare" xml:space="preserve">
+    <value>El password and confirmacion password no coinciden.</value>
+  </data>
+  <data name="PasswordHash" xml:space="preserve">
+    <value>Contraseña</value>
+  </data>
+  <data name="PasswordInvalid" xml:space="preserve">
+    <value>Password no es valido</value>
+  </data>
+  <data name="PasswordLong" xml:space="preserve">
+    <value>Debe ser menos de 100 caracteres</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>Password es requerido</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Teléfono</value>
+  </data>
+  <data name="PhoneInvalid" xml:space="preserve">
+    <value>Telefono no es valido</value>
+  </data>
+  <data name="PhoneLong" xml:space="preserve">
+    <value>Debe ser menos de 15 caracteres</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Registrar nuevo usuario</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>Estado</value>
+  </data>
+  <data name="StateLong" xml:space="preserve">
+    <value>Debe ser menos de 50 caracteres</value>
+  </data>
+  <data name="Support" xml:space="preserve">
+    <value>Soporte técnico</value>
+  </data>
+  <data name="UpdateAccount" xml:space="preserve">
+    <value>Actualizar tu cuenta</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>Usuario</value>
+  </data>
+  <data name="UserNameLong" xml:space="preserve">
+    <value>Debe ser menos de 50 caracteres</value>
+  </data>
+  <data name="UserNameRequired" xml:space="preserve">
+    <value>Nombre de usario es requerido</value>
+  </data>
+  <data name="YourAccoutHasUpdated" xml:space="preserve">
+    <value>Su cuenta ha sido actualizada.</value>
+  </data>
+  <data name="YourPasswordHaschanged" xml:space="preserve">
+    <value>Su contrasena ha sido cambiada.</value>
+  </data>
+  <data name="YourPasswordHasSet" xml:space="preserve">
+    <value>Su contrasena ha sido establecida.</value>
+  </data>
+  <data name="Zip" xml:space="preserve">
+    <value>Código Postal</value>
+  </data>
+  <data name="ZipLong" xml:space="preserve">
+    <value>Debe ser menos de 15 caracteres</value>
+  </data>
+  <data name="PleaseWait" xml:space="preserve">
+    <value>Por favor espere...</value>
+  </data>
+  <data name="MakeADonation" xml:space="preserve">
+    <value>Hacer una Donacion</value>
+  </data>
+  <data name="MakeNewRequest" xml:space="preserve">
+    <value>Requerir un articulo o servicio</value>
+  </data>
+  <data name="ViewDonations" xml:space="preserve">
+    <value>Ver Donaciones</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>Cantidad a donar</value>
+  </data>
+  <data name="C180Long" xml:space="preserve">
+    <value>Debe ser menos de 180 caracteres</value>
+  </data>
+  <data name="C50Long" xml:space="preserve">
+    <value>Debe ser menos de 50 caracteres</value>
+  </data>
+  <data name="DateInvalid" xml:space="preserve">
+    <value>Fecha invalida</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Descripcion</value>
+  </data>
+  <data name="DonationDetails" xml:space="preserve">
+    <value>Detalles de la donacion</value>
+  </data>
+  <data name="DonationStatus" xml:space="preserve">
+    <value>Estatus de la donacion</value>
+  </data>
+  <data name="ExpireOn" xml:space="preserve">
+    <value>Fecha cuando expira la donacion </value>
+  </data>
+  <data name="ImageUrl" xml:space="preserve">
+    <value>Foto</value>
+  </data>
+  <data name="InvalidAmount" xml:space="preserve">
+    <value>Cantidad invalida</value>
+  </data>
+  <data name="IsMoney" xml:space="preserve">
+    <value>Es la donacion en dinero?</value>
+  </data>
+  <data name="ItemType" xml:space="preserve">
+    <value>Tipo de donacion</value>
+  </data>
+  <data name="SchedulerDonation" xml:space="preserve">
+    <value>Agendar una donacion</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Titulo</value>
+  </data>
+  <data name="TitleRequired" xml:space="preserve">
+    <value>El Titulo es requerido</value>
+  </data>
+  <data name="Donations" xml:space="preserve">
+    <value>Donaciones</value>
+  </data>
+  <data name="CreatedOn" xml:space="preserve">
+    <value>Fecha Creacion</value>
+  </data>
+  <data name="ItemName" xml:space="preserve">
+    <value>Nombre</value>
+  </data>
+  <data name="WantThis" xml:space="preserve">
+    <value>Necesito este</value>
+  </data>
+  <data name="UserAlreadyExists" xml:space="preserve">
+    <value>Bienvenido!! Si ya tienes una cuenta solo tienes que poner tu usuario y contraseña debajo.</value>
+  </data>
+  <data name="UserNoRegisterYet" xml:space="preserve">
+    <value>No eres un usuario aun? puedes registrarte aqui.</value>
+  </data>
+  <data name="AddImagesPopup" xml:space="preserve">
+    <value>Agregar Images/Fotos para este item o articulo.</value>
+  </data>
+  <data name="ClickHereToAddImages" xml:space="preserve">
+    <value>Agregar Imagenes</value>
+  </data>
+  <data name="ItemLine" xml:space="preserve">
+    <value>Linea</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Remover</value>
+  </data>
+  <data name="AddImage" xml:space="preserve">
+    <value>Agregar Imagen</value>
+  </data>
+  <data name="AddImageInstructions" xml:space="preserve">
+    <value>Por favor haga click in el boton verde para agregar sus imagenes.</value>
+  </data>
+  <data name="AddItem" xml:space="preserve">
+    <value>Agregar nuevo Item</value>
+  </data>
+  <data name="DescriptionRequired" xml:space="preserve">
+    <value>Descripcion es requerido</value>
+  </data>
+  <data name="YourDonationHasBenCreated" xml:space="preserve">
+    <value>Su Donacion ha sido creada exitosamente.</value>
+  </data>
+  <data name="MyDonations" xml:space="preserve">
+    <value>Mis Donaciones</value>
+  </data>
+  <data name="Photos" xml:space="preserve">
+    <value>Fotos</value>
+  </data>
+  <data name="ExcludeMyDonations" xml:space="preserve">
+    <value>Mostrar todas menos mis donaciones.</value>
+  </data>
+  <data name="ImageUpload" xml:space="preserve">
+    <value>Cargar Image </value>
+  </data>
+  <data name="ExcludeMyRequest" xml:space="preserve">
+    <value>Excluir mis Applicaciones</value>
+  </data>
+  <data name="MyRequest" xml:space="preserve">
+    <value>Mis Solicitudes</value>
+  </data>
+  <data name="Chat" xml:space="preserve">
+    <value>Chat</value>
+  </data>
+  <data name="RequestList" xml:space="preserve">
+    <value>Lista Solicitudes</value>
+  </data>
+  <data name="CreatedBy" xml:space="preserve">
+    <value>Creado por</value>
+  </data>
+  <data name="NeedThis" xml:space="preserve">
+    <value>Necesita esto</value>
+  </data>
+  <data name="SchedulerMessage" xml:space="preserve">
+    <value>Las entragas deben planificarse para fechas igual o mayor a la fecha de hoy.</value>
+  </data>
+  <data name="AddDetails" xml:space="preserve">
+    <value>Deseo Agregar Detalles a esta Donacion.</value>
+  </data>
+  <data name="Bible" xml:space="preserve">
+    <value>La Biblia</value>
+  </data>
+</root>

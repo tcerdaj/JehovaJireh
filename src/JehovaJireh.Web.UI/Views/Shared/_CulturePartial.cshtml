@@ -1,0 +1,28 @@
+﻿@using JehovaJireh.Web.UI.App_GlobalResources
+
+	@{
+		var routeValues = this.ViewContext.RouteData.Values;
+		var controller = routeValues["controller"] as string;
+		var action = routeValues["action"] as string;
+		var culture = System.Threading.Thread.CurrentThread.CurrentUICulture.Name.ToLowerInvariant();
+		string usClass = culture == "en-us" ? "selected" : "", esClass = culture == "es" ? "selected" : "";
+	}
+
+	@helper selected(string c, string culture)
+	{
+		if (c == culture)
+		{
+			@:checked="checked";
+		}
+	}
+	<ul class="nav navbar-nav navbar-right culture">
+		<li>
+			@using (Html.BeginForm(action, controller, FormMethod.Get, new { id = "culture-form", @class = "culture-form" }))
+			{
+				<ul class="nav navbar-nav">
+					<li><a href="#" class="@usClass"><input name="culture" id="en-us" value="en-us" type="radio" @selected("en-us", culture) /> <label for="en-us">English</label></a></li>
+					<li><a href="#" class="@esClass"><input name="culture" id="es" value="es" type="radio" @selected("es", culture) /> <label for="es">Spanish</label></a></li>
+				</ul>
+			}
+		</li>
+	</ul>

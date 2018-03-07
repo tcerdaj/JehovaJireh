@@ -93,24 +93,21 @@
                 }
             });
 
-            $('#ex1').on('slide', function (e) {
-                $(".text-holder").css("zoom", e.value);
-            });
+           
 
             loadingPage = true;
 
             $.when(fillLanguages()).done(function (_langResult) {
                 myParams = readCookie(cookieName);
                 var urlParam = $.urlParam("id");
+                var tagZoom = ".text-holder";
                 if (myParams === undefined && urlParam === null) {
-
+                    tagZoom = ".section-content";
                     for (var i = 0; i < languages.length; i++) {
                         var lang = languages[i];
                         var li = $('<li><a href="/Bible/Volume?lang=' + lang.language_family_code + '">' + lang.language_family_name + '</a></li>');
                         li.appendTo($('#fieldlist'));
                     }
-
-
                     $('.section-content').show();
                     init();
                 }
@@ -178,6 +175,9 @@
                         return;
                     }
                 }
+                $('#ex1').on('slide', function (e) {
+                    $(tagZoom).css("zoom", e.value);
+                });
             });
         });
 
@@ -250,7 +250,6 @@
             $('.section-content').hide();
             init(lang);
         }
-
 
         function init(lang) {
             //container
@@ -413,6 +412,7 @@
 
             loadingPage = false;
         }
+
         var fillLanguages = function () {
             return $.ajax({
                 url: getBaseUrl() + "bible/languages",
@@ -455,7 +455,6 @@
                 }
             });
         }
-
 
         var fillBooks = function (version) {
             return $.ajax({
@@ -519,107 +518,7 @@
                 top: el.top + window.scrollY
             }
         }
-
-          //functions
-        function rememberMySelection(mySelection) {
-            var grid = $("#table").data("kendoGrid");
-            var selectedLanguage = grid.dataItem(grid.select());
-
-            grid = $("#table-version").data("kendoGrid");
-            var selectedVersion = grid.dataItem(grid.select());
-
-            grid = $("#table-book").data("kendoGrid");
-            var selectedBook = grid.dataItem(grid.select());
-            var data = { "lang": selectedLanguage, "version": selectedVersion, "book": selectedBook, "selection": mySelection };
-
-            eraseCookie(cookieName);
-            createCookie(cookieName, JSON.stringify(data), 5);
-
-            //re-direct index
-            var url = '@Html.Raw(@Url.Action("Index", new { @version = "dam_id", @book = "book_id", @chapterid = "chapter_id" }))';
-            var href = url.replace("dam_id", selectedVersion.dam_id).replace("book_id", selectedBook.book_id).replace("chapter_id", mySelection.chapter_id);
-            window.location.href = href;
-        }
-
-
-        function onBookChange(arg) {
-            var selected = $.map(this.select(), function (item) {
-                return $(item).text();
-            });
-            var grid = $("#table-book").data("kendoGrid");
-            var selectedBook = grid.dataItem(grid.select());
-            var chapters = selectedBook.number_of_chapters;
-            var dam_id = selectedBook.dam_id;
-            var book_id = selectedBook.book_id;
-            var prevElem = $('#book');
-            var elem = $('<button id="chapter" type="button" class="btn btn-lg btn-danger">Chapter</button>');
-            var propover = $('.popover.fade.bottom.in');
-
-            if ($('#chapter').length === 0)
-                prevElem.after(elem);
-            else
-                elem = $('#chapter');
-
-            var elemIndex = (propover.length > 0 && propover.length <= 3 ? propover.length - 1 : 2).toString();
-            var langpopover = $('.popover.fade.bottom.in:eq(' + elemIndex + ')');
-            var offset = langpopover.offset();
-            var width = langpopover.width();
-            var height = langpopover.height();
-
-            //container
-            var container = $('<div id="booksContainer"></div>');
-
-            var exist = $("#fieldlist-books").length > 0;
-            var details = $("#fieldlist-books").length === 0 ? $("<ul id='fieldlist-books' style='font-size:25px;'></ul>") : $("#fieldlist-books");
-            $("#fieldlist-books li").remove();
-            $("#fieldlist-books li").empty();
-
-            for (var i = 0; i < parseInt(chapters); i++) {
-                var chapter_id = i + 1;
-                var mySelection = {
-                    'dam_id': dam_id,
-                    'book_id': book_id,
-                    'chapter_id': chapter_id
-                };
-
-                var json = JSON.stringify(mySelection);
-                var li = "<li><a class='chapters' href='#' onclick='rememberMySelection(" + json + ")'>" + chapter_id + "</a></li>";
-                $(li).appendTo(details);
-            }
-
-            if (!exist) {
-                container.append(details);
-                $(elem).popover({
-                    container: 'body',
-                    title: 'Select a chapter',
-                    html: true,
-                    content: container[0].outerHTML,
-                    placement: 'bottom'
-                });
-
-                $(elem).popover('show');
-                elem.css('width', (width - 10));
-            }
-
-            if (chapters <= 40)
-                $("#booksContainer").removeClass("fieldlist-content");
-            else
-                $("#booksContainer").addClass("fieldlist-content");
-
-            $("#fieldlist-books li").css('width', chapters >= 100 ? '50px' : '37px');
-
-            $(elem).on('shown.bs.popover', function (e) {
-                var width = $('.popover.fade.bottom.in:eq(2)').css('width');
-                $(this).css('width', width);
-                $('#chapter').css('width', (width));
-            });
-
-            $('.popover.fade.bottom.in:eq(3)').css('width', width);
-            $('.popover.fade.bottom.in:eq(3)').css('height', height);
-            $('.popover.fade.bottom.in:eq(3)').offset({
-                "top": offset.top, "left": (offset.left + width + 10)
-            });
-        }
+        
         function onVersionChange(arg) {
             var grid = $("#table").data("kendoGrid");
             var _selectedVersion = arg.sender.dataItem(arg.sender.select());
@@ -817,6 +716,7 @@
             var href = url.replace("/_id", ("?id=" + _id));
             window.location.href = href;
         }
+
         function getSelectedItem(tableName) {
             return $("#" + tableName).data("kendoGrid").dataItem($("#" + tableName).data("kendoGrid").select());
         }

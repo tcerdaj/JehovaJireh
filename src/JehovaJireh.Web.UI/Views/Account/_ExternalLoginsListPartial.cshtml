@@ -10,4 +10,16 @@
 			@Html.ActionLink(Resources.Register, "Register")
 		</p>
 	</div>
+    <div>
+        <h2>Social Logins</h2>
+        <input type="button" id="btnGoogleLogin" value="Login with Google" class="btn btn-success" />
+    </div>
 }
+@section scripts{
+ 
+    <script type="text/javascript">
+        $('#btnGoogleLogin').on("click", function (e) {
+            //window.location.href = 
+        });
+    </script>
+ }

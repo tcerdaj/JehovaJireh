@@ -333,6 +333,9 @@
     </Content>
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\knockout-file-bindings.css" />
+    <Content Include="css\bootstrap-slider.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="favicon.ico" />
     <Content Include="Content\flags\blank.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1310,6 +1313,9 @@
     <Content Include="Kendo\Uniform\sprite_2x.png" />
     <Content Include="Kendo\Uniform\sprite_kpi.png" />
     <Content Include="Kendo\Uniform\sprite_kpi_2x.png" />
+    <Content Include="Scripts\bootstrap-slider.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Mvc.sitemap" />

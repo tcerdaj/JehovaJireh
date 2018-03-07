@@ -77,6 +77,15 @@ var getLanguages = function () {
     });
 };
 
+$.urlParam = function (name) {
+    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    if (results === null) {
+        return null;
+    }
+    else {
+        return decodeURI(results[1]) || 0;
+    }
+}
 
 function displayFieldTextByArray(id, array) {
 	var result = null;
@@ -215,4 +224,17 @@ function openDialog(title, htmlMessage) {
     dialog.data("kendoDialog").open();
 }
 
+function loadSocialIcons() {
+    var slide = kendo.fx($("#slide-in-share")).slideIn("left"),
+        visible = true;
 
+    $("#slide-in-handle").click(function (e) {
+        if (visible) {
+            slide.reverse();
+        } else {
+            slide.play();
+        }
+        visible = !visible;
+        e.preventDefault();
+    });
+}

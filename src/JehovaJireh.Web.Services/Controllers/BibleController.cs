@@ -110,6 +110,29 @@ namespace JehovaJireh.Web.Services.Controllers
             return response;
         }
 
+      /// <summary>
+      /// Get Chapters by book id
+      /// </summary>
+      /// <param name="id"></param>
+      /// <returns></returns>
+        [HttpGet]
+        public async Task<HttpResponseMessage> Chapters(string id)
+        {
+            HttpResponseMessage response = null;
+            try
+            {
+                var action = "chapters/" + id + ".js";
+                var param = string.Format("include_marginalia=true");
+                response = await GetAbsAsync(action, param);
+            }
+            catch (System.Exception ex)
+            {
+                response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+            }
+            return response;
+        }
+
+
         /// <summary>
         /// User needs to select a book of the Bible and a chapter. Retrieve a list of books for this Bible.
         /// </summary>
@@ -204,23 +227,23 @@ namespace JehovaJireh.Web.Services.Controllers
         /// <param name="book_id"></param>
         /// <param name="chapter_id"></param>
         /// <returns></returns>
-        [HttpGet]
-        public async Task<HttpResponseMessage> Chapter(string dam_id, string book_id, string chapter_id)
-        {
-            HttpResponseMessage response = null;
-            try
-            {
-                var controller = "text";
-                var action = "verse";
-                var parameters = string.Format("&dam_id={0}&book_id={1}&chapter_id={2}", dam_id, book_id, chapter_id);
-                response = await GetAsync(controller, action, parameters);
-            }
-            catch (System.Exception ex)
-            {
-                response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
-            }
-            return response;
-        }
+        //[HttpGet]
+        //public async Task<HttpResponseMessage> Chapter(string dam_id, string book_id, string chapter_id)
+        //{
+        //    HttpResponseMessage response = null;
+        //    try
+        //    {
+        //        var controller = "text";
+        //        var action = "verse";
+        //        var parameters = string.Format("&dam_id={0}&book_id={1}&chapter_id={2}", dam_id, book_id, chapter_id);
+        //        response = await GetAsync(controller, action, parameters);
+        //    }
+        //    catch (System.Exception ex)
+        //    {
+        //        response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+        //    }
+        //    return response;
+        //}
 
         /// <summary>
         /// Retrieve the Content Delivery Network base location.

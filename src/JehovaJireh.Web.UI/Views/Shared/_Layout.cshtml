@@ -14,6 +14,7 @@
     @Scripts.Render("~/bundles/common")
 </head>
 <body>
+
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -47,7 +48,17 @@
     <div class="container body-content">
 
         @Html.Partial("_PleaseWaitPartial")
-        @RenderBody()
+        <div id="slide-in-content">
+            <div id="slide-in-share">
+                <a id="slide-in-handle" href="#">Share</a>
+                <ul>
+                    <li><a class="share-button share-facebook" href="#">Share in Facebook</a></li>
+                    <li><a class="share-button share-twitter" href="#">Post in Twitter</a></li>
+                    <li><a class="share-button share-tumblr" href="#">Reblog in Tumblr</a></li>
+                </ul>
+            </div>
+            @RenderBody()
+        </div>
         <hr />
         <footer>
             <p>&copy; @DateTime.Now.Year - @Resources.ApplicationName</p>
@@ -61,7 +72,8 @@
                     <span class="lighter-text">Total:</span>
                     <span class="main-color-text">$0.00</span>
                 </div>
-            </div> <!--end shopping-cart-header -->
+            </div>
+            <!--end shopping-cart-header -->
             <ul class="shopping-cart-items"></ul>
             @if (@ViewBag.Title == @Resources.SchedulerDonation)
             {
@@ -110,6 +122,8 @@
             $('.avatar-image-container').click(function (e) {
                 showCart(this);
             });
+
+            loadSocialIcons();
         });
 
         function fixScroll() {
@@ -267,6 +281,8 @@
         }
 
     </script>
+    @Styles.Render("~/bundles/kendo-css")
+    @Scripts.Render("~/bundles/kendo")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
 </body>

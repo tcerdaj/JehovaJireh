@@ -3,16 +3,17 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Bible Study</h2>
 @if (ViewBag.ErrorMessage != null && ViewBag.ErrorMessage != string.Empty)
 {
     <div class="alert alert-danger" role="alert">
         @ViewBag.ErrorMessage
     </div>
 }
-<h3>Juan 5:39 Reina-Valera 1960 (RVR1960)</h3>
-<p>39 Escudriñad las Escrituras; porque a vosotros os parece que en ellas tenéis la vida eterna; y ellas son las que dan testimonio de mí;</p>
-<div class="row">
+
+<div class="content-header">
+    <h2>Bible Study</h2>
+    <h3>Juan 5:39 Reina-Valera 1960 (RVR1960)</h3>
+    <p>39 Escudriñad las Escrituras; porque a vosotros os parece que en ellas tenéis la vida eterna; y ellas son las que dan testimonio de mí;</p>
     <script id="bw-widget-src" src="//es.bibles.org/widget/client"></script>
     <script>
         BIBLESEARCH.widget({
@@ -24,7 +25,7 @@
         });
     </script>
 </div>
-<div class="search-bar">
+<div class="search-bar" style="display:none;">
     <div class="arrow-left" style="display:none">❮</div>
     <div class="arrow-right" style="display:none">❯</div>
     <div class="btn-group" role="group" aria-label="...">
@@ -33,6 +34,7 @@
             <button id="book" type="button" style="display:none;margin-left:15px;" class="btn btn-lg btn-danger">Book</button>
         </div>
     </div>
+    <input id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="10" data-slider-step=".5" data-slider-value="1" />
 </div>
 <div class="section-content" style="display:none">
     <h3>Please pick your prefered language</h3>
@@ -67,15 +69,15 @@
     </ul>
 </div>
 @section Scripts{
-    @Styles.Render("~/bundles/kendo-css")
-    @Scripts.Render("~/bundles/kendo")
+   
     @Scripts.Render("~/bundles/searchable")
 
-    <script type="text/javascript">
+<script type="text/javascript">
         var languages = [];
         var cookieName = "bibleParams";
         var selectedVersion = null;
         var selectedBooks = null;
+        var selectedChapter = null;
         var selectedVerses = null;
         var onChangeVersionAuto = false;
         var myParams = null;
@@ -84,11 +86,23 @@
         var loadingPage = false; isClick = false;
 
         $(document).ready(function () {
+            $('.search-bar').show();
+            var slider = new Slider('#ex1', {
+                formatter: function (value) {
+                    return 'zoom: ' + value;
+                }
+            });
+
+            $('#ex1').on('slide', function (e) {
+                $(".text-holder").css("zoom", e.value);
+            });
+
             loadingPage = true;
 
             $.when(fillLanguages()).done(function (_langResult) {
                 myParams = readCookie(cookieName);
-                if (myParams === null || myParams === undefined || myParams === '') {
+                var urlParam = $.urlParam("id");
+                if (myParams === undefined && urlParam === null) {
 
                     for (var i = 0; i < languages.length; i++) {
                         var lang = languages[i];
@@ -100,22 +114,68 @@
                     $('.section-content').show();
                     init();
                 }
-                else {
+                else if (myParams !== undefined && urlParam !== null) {
                     //build buttons
+                    var version = urlParam.substring(urlParam.indexOf('-') + 1, urlParam.indexOf(':'));
                     var verses = function () { return @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Verses)); }();
+                    var chapters = function () { return @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Chapters)); }();
+                    var books = function () { return @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Books)); }();
                     var data = null;
+
                     try {
                         data = JSON.parse(myParams);
                     } catch (e) {
                         console.log(e);
                     }
-                    //retry call if null
-                    if (verses === null && data !== null) {
-                        $.when(fillVersus(data.id)).done(function (result) {
-                            loadSelectedInfo(data, result.response.verses);
-                        });
-                    } else if (data !== null) {
-                        loadSelectedInfo(data, verses);
+
+                    if (data.id !== urlParam) { //redict to memory book id if are differencts.
+                        var _id = data.id !== undefined && data.id !== null && data.id !== "" ? data.id: urlParam;
+                        var url = '@Html.Raw(@Url.Action("Index", "Bible", new { id = "_id" }))';
+                        var href = url.replace("/_id", ("?id=" + _id));
+                        window.location.href = href;
+                        return;
+                    }
+
+                    data.chapters = chapters;
+                    if (data !== null && (data.id === "" || data.id === undefined))
+                        data.id = urlParam;
+
+                    //retry call if verses null
+                    loadSelectedInfo(data, verses);
+                }
+                else if (urlParam !== null) {
+                    var version = urlParam.substring(urlParam.indexOf('-') + 1, urlParam.indexOf(':'));
+                    var verses = function () { return @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Verses)); }();
+                    var chapters = function () { return @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Chapters)); }();
+                    var books = function () { return @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Books)); }();
+                    var book = getItemById(urlParam.split('.')[0], books);
+                    var data = {
+                        "id": urlParam,
+                        "name": book.name,
+                        "version": version,
+                        "books": {
+                            "response": { "books": books }
+                        },
+                        "chapters": chapters
+                    };
+
+                    loadSelectedInfo(data, verses);
+                }
+                else if (myParams !== undefined) { //redirect.
+                    var data = null;
+
+                    try {
+                        data = JSON.parse(myParams);
+                    } catch (e) {
+                        console.log(e);
+                    }
+
+                    if (data !== null && data.id !== "") {
+                        var _id = data.id;
+                        var url = '@Html.Raw(@Url.Action("Index", "Bible", new { id = "_id" }))';
+                        var href = url.replace("/_id", ("?id=" + _id));
+                        window.location.href = href;
+                        return;
                     }
                 }
             });
@@ -151,23 +211,38 @@
                 var verse = verses[i];
                 $(verse.text).appendTo(divContainer);
             }
-            
+
             var copyright = verses[0].copyright;
             var divFooter = $(kendo.format('<div class="copyright-statement">{0}</div>', copyright));
             divFooter.appendTo(container);
 
             //next previous button
+            if (data.id === '' || data.id === undefined || data.id === null)
+                data.id = $.urlParam('id');
+
             var selectedBook = getItemById(data.id.split('.')[0], selectedBooks.response.books);
 
-            if (selectedBook !== null && selectedBook.next !== null && selectedBook.next.book !== null) {
-                $('.arrow-right').attr("id", selectedBook.next.book.id + ".1");
-                $('.pager .next a').attr("href", "/bible/index?id=" + selectedBook.next.book.id + ".1");
+            if (data.chapters !== null && data.chapters[0].next !== null && data.chapters[0].next.Chapter !== null) {
+                var next = data.chapters[0].next.Chapter;
+                var name = next.Name.substr(0, next.Name.indexOf(' '));
+                $('.arrow-right').attr("id", next.Id);
+                $('.arrow-right').attr("title", "next " + next.Name);
+                $('.arrow-right').attr("onclick", 'gotoVerse("' + next.Id + "," + name + '")');
+                $('.pager .next a').attr("href", "#");
+                $('.pager .next a').attr("onclick", 'gotoVerse("' + next.Id + "," + name + '")');
+                $('.pager .next').attr("title", "next " + next.Name);
                 $('.arrow-right').show();
             }
 
-            if (selectedBook !== null && selectedBook.previous !== null && selectedBook.next.previous !== null) {
-                $('.arrow-left').attr("id", selectedBook.previous.book.id + ".1");
-                $('.pager .previous a').attr("href", "/bible/index?id=" + selectedBook.next.book.id + ".1");
+            if (data.chapters !== null && data.chapters[0].previous !== null && data.chapters[0].previous.Chapter !== null) {
+                var previous = data.chapters[0].previous.Chapter;
+                var name = previous.Name.substr(0, previous.Name.indexOf(' '));
+                $('.arrow-left').attr("id", previous.Id);
+                $('.arrow-left').attr("title", "previous " + previous.Name);
+                $('.arrow-left').attr("onclick", 'gotoVerse("' + previous.Id +"," + name + '")');
+                $('.pager .previous a').attr("href", "#");
+                $('.pager .previous a').attr("onclick", 'gotoVerse("' + previous.Id + "," + name + '")');
+                $('.pager .previous').attr("title", "next " + previous.Name);
                 $('.arrow-left').show();
             }
 
@@ -287,7 +362,7 @@
                     dataBound: function () {
                         var rowCount = grid.table.find("tbody > tr:visible").length;
                         document.getElementById('countVer').innerHTML = rowCount;
-                        
+
                     },
                     change: onVersionChange,
                     columns: [{
@@ -330,7 +405,7 @@
                 }
                 popover.offset({ top: popover.offset().top, left: $(this).offset().left });
                 popover.find(".arrow").css("left", (this.clientWidth / 2));
-                
+
             });
 
             if (selectedVersion !== null && selectedBooks !== null)
@@ -400,6 +475,25 @@
             }).responseJSON;
         }
 
+        var getParamsData = function (id) {
+            var url = '@Url.Action("GetParams", new { id = "_id"})'.replace("/_id", "?id=" + id);
+            return $.ajax({
+                url: url,
+                datatype: "json",
+                type: "GET",
+                async: false,
+                success: function (result) {
+
+                },
+                error: function (xhr, status, error) {
+                    openDialog("Error", generalError);
+                },
+                complete: function (r) {
+
+                }
+            }).responseJSON;
+        }
+
         var fillVersus = function (id) {
             return $.ajax({
                 url: kendo.format("{0}bible/verses?id={1}", getBaseUrl(), id),
@@ -446,7 +540,7 @@
             var href = url.replace("dam_id", selectedVersion.dam_id).replace("book_id", selectedBook.book_id).replace("chapter_id", mySelection.chapter_id);
             window.location.href = href;
         }
-        
+
 
         function onBookChange(arg) {
             var selected = $.map(this.select(), function (item) {
@@ -568,9 +662,13 @@
 
             if (myParams != null) {
                 var _param = JSON.parse(myParams);
+                if (_param.id === '' || _param.id === undefined || _param.id === null)
+                    _param.id = $.urlParam('id');
+
                 var _versionId = _param.id.split(".")[0];
                 _chapterId = _param.id.split(".")[1];
                 defaultValue = getItemById(_versionId, books.response.books);
+                book.text(kendo.format("{0} {1}", defaultValue.name, _chapterId));
             }
 
             if (books && books.response.books) {
@@ -621,7 +719,7 @@
                     var activeElement = $("#fieldlist-books:eq(0) li.active");
                     var firstElement = $("#fieldlist-books:eq(0) li:first()");
                     $('#booksContainer').animate({
-                        scrollTop: activeElement.offset().top - firstElement.offset().top 
+                        scrollTop: activeElement.offset().top - firstElement.offset().top
                     }, 'slow');
 
                     var footerDiv = $(kendo.format('<div class="popover-footer"><div class="f-left">{0} books</div><div class="f-right"></div></>', books.response.books.length));
@@ -636,7 +734,7 @@
                         $(".popover-title").text(kendo.format("{0} Selected", thisElement[0].firstElementChild.text));
 
                         setTimeout(function () {
-                            buildChaptersList(thisElement, chaptersContainer);    
+                            buildChaptersList(thisElement, chaptersContainer);
                         }, 0);
                     });
 
@@ -659,20 +757,20 @@
             for (var i = 0; i < chapters.length; i++) {
                 var chap = chapters[i];
                 var this_verse = chap.id.substr(chap.id.indexOf(':') + 1, (chap.id.indexOf('.')));
-                var selected_verse = myParams !== '' || myParams !== null || myParams !== undefined ? JSON.parse(myParams) : null;
+                var selected_verse = myParams !== '' && myParams !== null && myParams !== undefined ? JSON.parse(myParams) : null;
                 selected_verse = selected_verse !== null ? selected_verse.id.substr(selected_verse.id.indexOf(':') + 1, (selected_verse.id.indexOf('.'))): null;
                 var version = chap.id.split(':')[0], book = json.abbr;
                 var li = kendo.format('<li><a id="{0}" name="{2}" href="#" onclick="gotoVerse(this)">{1}</a></li>', chap.id, chap.chapter, json.name);
 
                 if (this_verse === selected_verse)
                     li = kendo.format('<li class="active"><a id="{0}" name="{2}" href="#" onclick="gotoVerse(this)">{1}</a></li>', chap.id, chap.chapter, json.name);
-                                
+
                 $(li).appendTo(ul);
             }
 
             ul.appendTo(container);
             $(".f-right").text(kendo.format("{0} chapters", chapters.length));
-            
+
             var itemsAllowinscreen = Math.floor(container.css('max-height').replace('px', '') / ul.children().first().height());
             if (chapters.length > itemsAllowinscreen)
                 container.css("width", "20%");
@@ -687,30 +785,42 @@
                     scrollTop: activeElement.offset().top - firstElement.offset().top
                 }, 'slow');
             }
-                        
+
             $('.popover.fade.bottom.in').busyIndicator(false);
 
             $('#fieldlist-chapters li').on('click', function (e) {
-               
+
             });
         }
 
         function gotoVerse(id) {
-            $(id).parent().parent().children().removeClass("active");
-            $(id).parent().addClass("active");
-            var data = { "id": id.id, "name": id.name, "version": selectedVersion, "books": selectedBooks };
+            $(".divsection").busyIndicator(true);
+            var isElement = jQuery.type(id) === "object";
+            var data = {};
+            var _id = "";
+
+            if (isElement) {
+                $(id).parent().parent().children().removeClass("active");
+                $(id).parent().addClass("active");
+                data = { "id": id.id, "name": id.name, "version": selectedVersion, "books": selectedBooks };
+                _id = id.id;
+            } else {
+                _id = id.split(',')[0];
+                data = { "id": _id, "name": id.split(',')[1], "version": selectedVersion, "books": selectedBooks };
+            }
+
             var jsonString = JSON.stringify(data);
             eraseCookie(cookieName);
             createCookie(cookieName, JSON.stringify(data), 5);
             //re-direct index
             var url = '@Html.Raw(@Url.Action("Index", "Bible", new { id = "_id" }))';
-            var href = url.replace("/_id", ("?id=" + id.id));
+            var href = url.replace("/_id", ("?id=" + _id));
             window.location.href = href;
         }
         function getSelectedItem(tableName) {
             return $("#" + tableName).data("kendoGrid").dataItem($("#" + tableName).data("kendoGrid").select());
         }
-    </script>
+</script>
     <style>
         .text-holder .p {
             text-indent: 0.125in;
@@ -925,5 +1035,9 @@
                 z-index: -2;
                 cursor:pointer;
             }
+
+        #ex1Slider .slider-selection {
+            background: #BABABA;
+        }
     </style>
 }

@@ -1,112 +1,325 @@
-USE [master]
+USE [jehovajirehDB]
 GO
-
-/****** Object:  Database [jehovajirehDB]    Script Date: 07/11/2017 1:04:43 AM ******/
-CREATE DATABASE [jehovajirehDB]
- CONTAINMENT = NONE
- ON  PRIMARY 
-( NAME = N'jehovajirehDB', FILENAME = N'c:\Program Files\Microsoft SQL Server\MSSQL11.SQLEXPRESS\MSSQL\DATA\jehovajirehDB.mdf' , SIZE = 3136KB , MAXSIZE = UNLIMITED, FILEGROWTH = 1024KB )
- LOG ON 
-( NAME = N'jehovajirehDB_log', FILENAME = N'c:\Program Files\Microsoft SQL Server\MSSQL11.SQLEXPRESS\MSSQL\DATA\jehovajirehDB_log.ldf' , SIZE = 832KB , MAXSIZE = 2048GB , FILEGROWTH = 10%)
+/****** Object:  Table [dbo].[DonationDetails]    Script Date: 03/07/2018 9:54:06 PM ******/
+SET ANSI_NULLS ON
 GO
-
-ALTER DATABASE [jehovajirehDB] SET COMPATIBILITY_LEVEL = 110
+SET QUOTED_IDENTIFIER ON
 GO
+CREATE TABLE [dbo].[DonationDetails](
+	[ItemId] [uniqueidentifier] NOT NULL,
+	[Line] [int] NOT NULL,
+	[DonationId] [int] NOT NULL,
+	[ItemType] [smallint] NOT NULL,
+	[ItemName] [nvarchar](50) NULL,
+	[RequestedBy] [int] NULL,
+	[DonationStatus] [smallint] NOT NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[ModifiedOn] [datetime] NULL,
+	[CreatedBy] [int] NOT NULL,
+	[ModifiedBy] [int] NULL,
+ CONSTRAINT [PK_DonationDetails] PRIMARY KEY CLUSTERED 
+(
+	[ItemId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
 
-IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
-begin
-EXEC [jehovajirehDB].[dbo].[sp_fulltext_database] @action = 'enable'
-end
 GO
-
-ALTER DATABASE [jehovajirehDB] SET ANSI_NULL_DEFAULT OFF 
+/****** Object:  Table [dbo].[DonationImages]    Script Date: 03/07/2018 9:54:06 PM ******/
+SET ANSI_NULLS ON
 GO
-
-ALTER DATABASE [jehovajirehDB] SET ANSI_NULLS OFF 
+SET QUOTED_IDENTIFIER ON
 GO
+CREATE TABLE [dbo].[DonationImages](
+	[DonationImageId] [int] NOT NULL,
+	[ItemId] [uniqueidentifier] NOT NULL,
+	[ImageUrl] [nvarchar](max) NOT NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[ModifiedOn] [datetime] NULL,
+	[CreatedBy] [int] NOT NULL,
+	[ModifiedBy] [int] NULL,
+ CONSTRAINT [PK_DonationDetailsImages] PRIMARY KEY CLUSTERED 
+(
+	[DonationImageId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
-ALTER DATABASE [jehovajirehDB] SET ANSI_PADDING OFF 
 GO
-
-ALTER DATABASE [jehovajirehDB] SET ANSI_WARNINGS OFF 
+/****** Object:  Table [dbo].[Donations]    Script Date: 03/07/2018 9:54:06 PM ******/
+SET ANSI_NULLS ON
 GO
-
-ALTER DATABASE [jehovajirehDB] SET ARITHABORT OFF 
+SET QUOTED_IDENTIFIER ON
 GO
+CREATE TABLE [dbo].[Donations](
+	[DonationId] [int] NOT NULL,
+	[RequestedBy] [int] NULL,
+	[RequestId] [int] NULL,
+	[Title] [nvarchar](50) NOT NULL,
+	[Description] [nvarchar](180) NULL,
+	[DonatedOn] [datetime] NOT NULL,
+	[LastUpdate] [datetime] NULL,
+	[ExpireOn] [date] NULL,
+	[DonationStatus] [smallint] NOT NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[ModifiedOn] [datetime] NULL,
+	[CreatedBy] [int] NOT NULL,
+	[ModifiedBy] [int] NULL,
+	[Amount] [decimal](10, 2) NULL,
+ CONSTRAINT [PK_Donations] PRIMARY KEY CLUSTERED 
+(
+	[DonationId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
 
-ALTER DATABASE [jehovajirehDB] SET AUTO_CLOSE OFF 
 GO
-
-ALTER DATABASE [jehovajirehDB] SET AUTO_CREATE_STATISTICS ON 
+/****** Object:  Table [dbo].[Request]    Script Date: 03/07/2018 9:54:06 PM ******/
+SET ANSI_NULLS ON
 GO
-
-ALTER DATABASE [jehovajirehDB] SET AUTO_SHRINK OFF 
+SET QUOTED_IDENTIFIER ON
 GO
+CREATE TABLE [dbo].[Request](
+	[RequestId] [int] NOT NULL,
+	[ItemType] [smallint] NOT NULL,
+	[ItemName] [nvarchar](50) NULL,
+	[ImageUrl] [nvarchar](max) NULL,
+	[Title] [nvarchar](50) NULL,
+	[Description] [nvarchar](180) NULL,
+	[RequestStatus] [smallint] NOT NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[ModifiedOn] [datetime] NULL,
+	[CreatedBy] [int] NOT NULL,
+	[ModifiedBy] [int] NULL,
+ CONSTRAINT [PK_Request] PRIMARY KEY CLUSTERED 
+(
+	[RequestId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
-ALTER DATABASE [jehovajirehDB] SET AUTO_UPDATE_STATISTICS ON 
 GO
-
-ALTER DATABASE [jehovajirehDB] SET CURSOR_CLOSE_ON_COMMIT OFF 
+/****** Object:  Table [dbo].[Roles]    Script Date: 03/07/2018 9:54:06 PM ******/
+SET ANSI_NULLS ON
 GO
-
-ALTER DATABASE [jehovajirehDB] SET CURSOR_DEFAULT  GLOBAL 
+SET QUOTED_IDENTIFIER ON
 GO
+CREATE TABLE [dbo].[Roles](
+	[Id] [nvarchar](128) NOT NULL,
+	[Name] [nvarchar](128) NOT NULL,
+ CONSTRAINT [PK_Roles] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
 
-ALTER DATABASE [jehovajirehDB] SET CONCAT_NULL_YIELDS_NULL OFF 
 GO
-
-ALTER DATABASE [jehovajirehDB] SET NUMERIC_ROUNDABORT OFF 
+/****** Object:  Table [dbo].[Scheduler]    Script Date: 03/07/2018 9:54:06 PM ******/
+SET ANSI_NULLS ON
 GO
-
-ALTER DATABASE [jehovajirehDB] SET QUOTED_IDENTIFIER OFF 
+SET QUOTED_IDENTIFIER ON
 GO
+CREATE TABLE [dbo].[Scheduler](
+	[SchedulerId] [int] NOT NULL,
+	[ItemId] [uniqueidentifier] NOT NULL,
+	[ItemName] [nvarchar](50) NULL,
+	[Title] [nvarchar](50) NULL,
+	[ImageUrl] [nvarchar](max) NULL,
+	[Description] [nvarchar](180) NULL,
+	[StartDate] [datetime] NOT NULL,
+	[EndDate] [datetime] NOT NULL,
+	[RecurrenceRule] [nvarchar](50) NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[ModifiedOn] [datetime] NULL,
+	[CreatedBy] [int] NOT NULL,
+	[ModifiedBy] [int] NULL,
+ CONSTRAINT [PK_Scheduler] PRIMARY KEY CLUSTERED 
+(
+	[SchedulerId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
-ALTER DATABASE [jehovajirehDB] SET RECURSIVE_TRIGGERS OFF 
 GO
-
-ALTER DATABASE [jehovajirehDB] SET  ENABLE_BROKER 
+/****** Object:  Table [dbo].[UserClaims]    Script Date: 03/07/2018 9:54:06 PM ******/
+SET ANSI_NULLS ON
 GO
-
-ALTER DATABASE [jehovajirehDB] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+SET QUOTED_IDENTIFIER ON
 GO
+CREATE TABLE [dbo].[UserClaims](
+	[Key] [nvarchar](128) NOT NULL,
+	[UserId] [int] NULL,
+	[ClaimType] [nvarchar](max) NULL,
+	[ClaimValue] [nvarchar](max) NULL,
+ CONSTRAINT [PK_dbo.UserClaims] PRIMARY KEY CLUSTERED 
+(
+	[Key] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
-ALTER DATABASE [jehovajirehDB] SET DATE_CORRELATION_OPTIMIZATION OFF 
 GO
-
-ALTER DATABASE [jehovajirehDB] SET TRUSTWORTHY OFF 
+/****** Object:  Table [dbo].[UserLogins]    Script Date: 03/07/2018 9:54:06 PM ******/
+SET ANSI_NULLS ON
 GO
-
-ALTER DATABASE [jehovajirehDB] SET ALLOW_SNAPSHOT_ISOLATION ON 
+SET QUOTED_IDENTIFIER ON
 GO
+CREATE TABLE [dbo].[UserLogins](
+	[LoginProvider] [nvarchar](128) NOT NULL,
+	[ProviderKey] [nvarchar](128) NOT NULL,
+	[UserId] [int] NULL,
+ CONSTRAINT [PK_dbo.UserLogins] PRIMARY KEY CLUSTERED 
+(
+	[LoginProvider] ASC,
+	[ProviderKey] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
 
-ALTER DATABASE [jehovajirehDB] SET PARAMETERIZATION SIMPLE 
 GO
-
-ALTER DATABASE [jehovajirehDB] SET READ_COMMITTED_SNAPSHOT ON 
+/****** Object:  Table [dbo].[UserRoles]    Script Date: 03/07/2018 9:54:06 PM ******/
+SET ANSI_NULLS ON
 GO
-
-ALTER DATABASE [jehovajirehDB] SET HONOR_BROKER_PRIORITY OFF 
+SET QUOTED_IDENTIFIER ON
 GO
+CREATE TABLE [dbo].[UserRoles](
+	[RoleId] [nvarchar](128) NOT NULL,
+	[UserId] [int] NOT NULL,
+ CONSTRAINT [PK_dbo.UserRoles] PRIMARY KEY CLUSTERED 
+(
+	[RoleId] ASC,
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
 
-ALTER DATABASE [jehovajirehDB] SET RECOVERY FULL 
 GO
-
-ALTER DATABASE [jehovajirehDB] SET  MULTI_USER 
+/****** Object:  Table [dbo].[Users]    Script Date: 03/07/2018 9:54:06 PM ******/
+SET ANSI_NULLS ON
 GO
-
-ALTER DATABASE [jehovajirehDB] SET PAGE_VERIFY CHECKSUM  
+SET QUOTED_IDENTIFIER ON
 GO
+CREATE TABLE [dbo].[Users](
+	[UserId] [int] NOT NULL,
+	[UserName] [nvarchar](255) NULL,
+	[FirstName] [nvarchar](50) NULL,
+	[LastName] [nvarchar](50) NULL,
+	[Email] [nvarchar](255) NULL,
+	[PasswordHash] [nvarchar](max) NULL,
+	[SecurityStamp] [nvarchar](max) NULL,
+	[ImageUrl] [nvarchar](max) NULL,
+	[Address] [nvarchar](100) NULL,
+	[City] [nvarchar](50) NULL,
+	[State] [nvarchar](80) NULL,
+	[Zip] [nvarchar](20) NULL,
+	[Phone] [nvarchar](20) NULL,
+	[Gender] [nvarchar](6) NULL,
+	[ConfirmationToken] [nvarchar](30) NULL,
+	[IsConfirmed] [bit] NULL,
+	[IsChurchMember] [bit] NULL,
+	[Active] [bit] NULL,
+	[LockoutEnabled] [bit] NULL,
+	[TwoFactorEnabled] [bit] NULL,
+	[FailedCount] [int] NULL,
+	[ChurchName] [nvarchar](80) NULL,
+	[ChurchAddress] [nvarchar](120) NULL,
+	[ChurchPhone] [nvarchar](20) NULL,
+	[ChurchPastor] [nvarchar](80) NULL,
+	[NeedToBeVisited] [bit] NULL,
+	[Comments] [text] NULL,
+	[CreatedOn] [datetime] NULL,
+	[ModifiedOn] [datetime] NULL,
+	[CreatedBy] [int] NULL,
+	[ModifiedBy] [int] NULL,
+ CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED 
+(
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
+ CONSTRAINT [UQ_Users_Email] UNIQUE NONCLUSTERED 
+(
+	[Email] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
+ CONSTRAINT [UQ_Users_UserName] UNIQUE NONCLUSTERED 
+(
+	[UserName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
-ALTER DATABASE [jehovajirehDB] SET DB_CHAINING OFF 
 GO
-
-ALTER DATABASE [jehovajirehDB] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+/****** Object:  Table [dbo].[UserSecrets]    Script Date: 03/07/2018 9:54:06 PM ******/
+SET ANSI_NULLS ON
 GO
-
-ALTER DATABASE [jehovajirehDB] SET TARGET_RECOVERY_TIME = 0 SECONDS 
+SET QUOTED_IDENTIFIER ON
 GO
+CREATE TABLE [dbo].[UserSecrets](
+	[UserName] [nvarchar](128) NOT NULL,
+	[Secret] [nvarchar](max) NULL,
+ CONSTRAINT [PK_dbo.UserSecrets] PRIMARY KEY CLUSTERED 
+(
+	[UserName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
-ALTER DATABASE [jehovajirehDB] SET  READ_WRITE 
 GO
-
-
+ALTER TABLE [dbo].[DonationDetails]  WITH NOCHECK ADD  CONSTRAINT [FK_DonationDetails_CreatedBy_Users_UserId] FOREIGN KEY([CreatedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[DonationDetails] CHECK CONSTRAINT [FK_DonationDetails_CreatedBy_Users_UserId]
+GO
+ALTER TABLE [dbo].[DonationDetails]  WITH NOCHECK ADD  CONSTRAINT [FK_DonationDetails_ModifiedBy_Users_UserId] FOREIGN KEY([ModifiedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[DonationDetails] CHECK CONSTRAINT [FK_DonationDetails_ModifiedBy_Users_UserId]
+GO
+ALTER TABLE [dbo].[DonationDetails]  WITH NOCHECK ADD  CONSTRAINT [FK_DonationDetails_RequestedBy_Users_UserId] FOREIGN KEY([RequestedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[DonationDetails] CHECK CONSTRAINT [FK_DonationDetails_RequestedBy_Users_UserId]
+GO
+ALTER TABLE [dbo].[DonationImages]  WITH NOCHECK ADD  CONSTRAINT [FK_DonationImages_DonationDetails_CreatedBy] FOREIGN KEY([CreatedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[DonationImages] CHECK CONSTRAINT [FK_DonationImages_DonationDetails_CreatedBy]
+GO
+ALTER TABLE [dbo].[DonationImages]  WITH NOCHECK ADD  CONSTRAINT [FK_DonationImages_Users_ModifiedBy] FOREIGN KEY([ModifiedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[DonationImages] CHECK CONSTRAINT [FK_DonationImages_Users_ModifiedBy]
+GO
+ALTER TABLE [dbo].[Donations]  WITH NOCHECK ADD  CONSTRAINT [FK_Donations_CreatedBy_Users_UserId] FOREIGN KEY([CreatedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[Donations] CHECK CONSTRAINT [FK_Donations_CreatedBy_Users_UserId]
+GO
+ALTER TABLE [dbo].[Donations]  WITH NOCHECK ADD  CONSTRAINT [FK_Donations_ModifiedBy_Users_UserId] FOREIGN KEY([ModifiedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[Donations] CHECK CONSTRAINT [FK_Donations_ModifiedBy_Users_UserId]
+GO
+ALTER TABLE [dbo].[Donations]  WITH NOCHECK ADD  CONSTRAINT [FK_Donations_RequestedBy_Users_UserId] FOREIGN KEY([RequestedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[Donations] CHECK CONSTRAINT [FK_Donations_RequestedBy_Users_UserId]
+GO
+ALTER TABLE [dbo].[Request]  WITH NOCHECK ADD  CONSTRAINT [FK_Request_CreatedBy_Users_UserId] FOREIGN KEY([CreatedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[Request] CHECK CONSTRAINT [FK_Request_CreatedBy_Users_UserId]
+GO
+ALTER TABLE [dbo].[Request]  WITH NOCHECK ADD  CONSTRAINT [FK_Request_ModifiedBy_Users_UserId] FOREIGN KEY([ModifiedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[Request] CHECK CONSTRAINT [FK_Request_ModifiedBy_Users_UserId]
+GO
+ALTER TABLE [dbo].[Scheduler]  WITH NOCHECK ADD  CONSTRAINT [FK_Scheduler_CreatedBy_Users_UserId] FOREIGN KEY([CreatedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[Scheduler] CHECK CONSTRAINT [FK_Scheduler_CreatedBy_Users_UserId]
+GO
+ALTER TABLE [dbo].[Scheduler]  WITH NOCHECK ADD  CONSTRAINT [FK_Scheduler_ModifiedBy_Users_UserId] FOREIGN KEY([ModifiedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[Scheduler] CHECK CONSTRAINT [FK_Scheduler_ModifiedBy_Users_UserId]
+GO
+ALTER TABLE [dbo].[Users]  WITH NOCHECK ADD  CONSTRAINT [FK_Users_Users_CreatedBy] FOREIGN KEY([CreatedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[Users] CHECK CONSTRAINT [FK_Users_Users_CreatedBy]
+GO
+ALTER TABLE [dbo].[Users]  WITH NOCHECK ADD  CONSTRAINT [FK_Users_Users_ModifiedBy] FOREIGN KEY([ModifiedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[Users] CHECK CONSTRAINT [FK_Users_Users_ModifiedBy]
+GO

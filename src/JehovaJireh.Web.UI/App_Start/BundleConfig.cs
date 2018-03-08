@@ -24,7 +24,7 @@ namespace JehovaJireh.Web.UI
 
 			bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
 					  "~/Scripts/bootstrap.js",
-					  "~/Scripts/respond.js",
+                      "~/Scripts/respond.js",
                       "~/Scripts/bootstrap-slider.min.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/searchable").Include(
@@ -39,7 +39,8 @@ namespace JehovaJireh.Web.UI
 
 			bundles.Add(new StyleBundle("~/Content/css").Include(
 					  "~/Content/bootstrap.css",
-					  "~/Content/site.css",
+                      "~/Content/bootstrap-social.css",
+                      "~/Content/site.css",
 					   "~/Content/knockout-file-bindings.css",
                        "~/css/bootstrap-slider.min.css"));
 

@@ -42,7 +42,7 @@
                         <input type="submit" value="Log in" class="btn btn-default" />
                     </div>
                 </div>
-                
+
                 @* Enable this once you have account confirmation enabled for password reset functionality
                     <p>
                         @Html.ActionLink("Forgot your password?", "ForgotPassword")
@@ -57,19 +57,28 @@
     </div>
 </div>
 
+
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-<script type="text/javascript">
-	$.ajax({
-		beforeSend: function () {
-			// Handle the beforeSend event
-			$('#pleaseWaitDialog').modal('show');
-		},
-		complete: function () {
-			// Handle the complete event
-			$('#pleaseWaitDialog').modal('hide');
-		}
-		// ......
-	});
-</script>
+    @Styles.Render("~/Content/fontawesome")
+
+    <script type="text/javascript">
+        $('#btnGoogleLogin').on("click", function (e) {
+            var href = 
+            window.location.href =
+        });
+
+
+        $.ajax({
+            beforeSend: function () {
+                // Handle the beforeSend event
+                $('#pleaseWaitDialog').modal('show');
+            },
+            complete: function () {
+                // Handle the complete event
+                $('#pleaseWaitDialog').modal('hide');
+            }
+            // ......
+        });
+    </script>
 }

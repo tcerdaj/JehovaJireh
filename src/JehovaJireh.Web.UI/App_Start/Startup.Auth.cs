@@ -8,6 +8,7 @@ using Owin;
 using JehovaJireh.Web.UI.Models;
 using System.Web;
 using JehovaJireh.Core.Entities;
+using System.Configuration;
 
 namespace JehovaJireh.Web.UI
 {
@@ -57,6 +58,7 @@ namespace JehovaJireh.Web.UI
 			// This is similar to the RememberMe option when you log in.
 			app.UseTwoFactorRememberBrowserCookie(DefaultAuthenticationTypes.TwoFactorRememberBrowserCookie);
 
+
             // Uncomment the following lines to enable logging in with third party login providers
             //app.UseMicrosoftAccountAuthentication(
             //    clientId: "",
@@ -69,12 +71,30 @@ namespace JehovaJireh.Web.UI
             //app.UseFacebookAuthentication(
             //   appId: "",
             //   appSecret: "");
-
-            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            #region Google
+            var googleAuthenticationOptions = new GoogleOAuth2AuthenticationOptions()
             {
-                ClientId = "144772644499-91nos8264hrij2u0r2bbg9ve73fkc0cq.apps.googleusercontent.com",
-                ClientSecret = "0CnFiHftQ7tNwhEGqNnggDQk"
-            });
+                ClientId = ConfigurationManager.AppSettings["GglI"],
+                ClientSecret = ConfigurationManager.AppSettings["GglS"],
+                Provider = new GoogleOAuth2AuthenticationProvider()
+                {
+                    OnAuthenticated = async context =>
+                    {
+                        context.Identity.AddClaim(new System.Security.Claims.Claim("GoogleAccessToken",
+                            context.AccessToken));
+                        foreach (var claim in context.User)
+                        {
+                            var claimType = string.Format("urn:google:{0}", claim.Key);
+                            string claimValue = claim.Value.ToString();
+                            if (!context.Identity.HasClaim(claimType, claimValue))
+                                context.Identity.AddClaim(new System.Security.Claims.Claim(claimType,
+                                    claimValue, "XmlSchemaString", "Google"));
+                        }
+                    }
+                }
+            };
+            app.UseGoogleAuthentication(googleAuthenticationOptions);
+            #endregion
         }
 	}
 }

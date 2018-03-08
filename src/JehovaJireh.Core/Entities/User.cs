@@ -14,7 +14,9 @@ namespace JehovaJireh.Core.Entities
 		#region constructor
 		public User()
 		{
-			Roles = new List<Role>().AsQueryable();
+			Roles = new List<Role>();
+            Claims = new List<Claim>();
+            Logins = new List<Login>();
 		}
 		#endregion
 		#region Properties
@@ -45,15 +47,62 @@ namespace JehovaJireh.Core.Entities
 		public virtual bool NeedToBeVisited { get; set; }
 		public virtual string Comments { get; set; }
 		public virtual DateTimeOffset LockoutEndDate { get; set; }
-		public virtual IQueryable<Role> Roles { get; set; }
+        public virtual DateTime LastLogin { get; set; }
+		public virtual IList<Role> Roles { get; set; }
+        public virtual IList<Claim> Claims { get; set; }
+        public virtual IList<Login> Logins { get; set; }
+        public virtual UserSecret Secret { get; set; }
 
-
-		string IUser<string>.Id
+        string IUser<string>.Id
 		{
 			get { return this.Id.ToString(); }
 		}
-		#endregion
-		#region Methods
+        #endregion
+        #region Methods
+
+        public virtual void RemoveLogin(Login login)
+        {
+            if (login == null)
+                throw new ArgumentNullException("login");
+
+            Logins.Remove(login);
+        }
+
+        public virtual void AddLogin(Login login)
+        {
+            if (login == null)
+                throw new ArgumentNullException("login");
+            Logins.Add(login);
+        }
+        public virtual void RemoveClaim(Claim claim)
+        {
+            if (claim == null)
+                throw new ArgumentNullException("claim");
+
+            Claims.Remove(claim);
+        }
+
+        public virtual void AddClaim(Claim claim)
+        {
+            if (claim == null)
+                throw new ArgumentNullException("claim");
+            Claims.Add(claim);
+        }
+
+        public virtual void RemoveRole(Role role)
+        {
+            if (role == null)
+                throw new ArgumentNullException("role");
+
+            Roles.Remove(role);
+        }
+
+        public virtual void AddRole(Role role)
+        {
+            if (role == null)
+                throw new ArgumentNullException("role");
+            Roles.Add(role);
+        }
 		public virtual async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User> manager)
 		{
 			// Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType

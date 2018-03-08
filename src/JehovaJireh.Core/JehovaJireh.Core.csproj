@@ -99,6 +99,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EntitiesDto\ClaimDto.cs" />
     <Compile Include="EntitiesDto\DonationDetailsImageRefDto.cs" />
     <Compile Include="EntitiesDto\DonationDetailsRefDto.cs" />
     <Compile Include="EntitiesDto\DonationDetailsDto.cs" />
@@ -111,11 +112,13 @@
     <Compile Include="EntitiesDto\EntityBaseDto.cs" />
     <Compile Include="EntitiesDto\ItemDto.cs" />
     <Compile Include="EntitiesDto\JsonConverterImageDto.cs" />
+    <Compile Include="EntitiesDto\LoginDto.cs" />
     <Compile Include="EntitiesDto\RequestDto.cs" />
     <Compile Include="EntitiesDto\RequestedByDto.cs" />
     <Compile Include="EntitiesDto\SchedulerDto.cs" />
     <Compile Include="EntitiesDto\UserDto.cs" />
     <Compile Include="EntitiesDto\UserRefDto.cs" />
+    <Compile Include="EntitiesDto\UserSecretDto.cs" />
     <Compile Include="Entities\DonationDetailsImage.cs" />
     <Compile Include="Entities\JsonConverterImage.cs" />
     <Compile Include="Entities\Item.cs" />
@@ -126,9 +129,12 @@
     <Compile Include="Entities\EntityBase.cs" />
     <Compile Include="Entities\Enum.cs" />
     <Compile Include="Entities\IEntityTimestamp.cs" />
+    <Compile Include="Entities\Login.cs" />
     <Compile Include="Entities\Request.cs" />
+    <Compile Include="Entities\Claim.cs" />
     <Compile Include="Entities\Role.cs" />
     <Compile Include="Entities\Scheduler.cs" />
+    <Compile Include="Entities\UserSecret.cs" />
     <Compile Include="Entities\User.cs" />
     <Compile Include="IRepositories\IDonationDetailsRepository.cs" />
     <Compile Include="IRepositories\ISchedulerRepository.cs" />

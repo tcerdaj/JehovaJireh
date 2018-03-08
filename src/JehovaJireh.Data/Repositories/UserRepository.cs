@@ -213,7 +213,11 @@ namespace JehovaJireh.Data.Repositories
 			if (id == string.Empty)
 				throw new ArgumentNullException("Id");
 
-			return Task.FromResult((from u in this.Query() where u.Id == int.Parse(id) select u).SingleOrDefault());
+            Guid guidOutput = Guid.Empty;
+            bool isValid = Guid.TryParse(id, out guidOutput);
+            id = isValid ? "0" : id;
+
+            return Task.FromResult((from u in this.Query() where u.Id == int.Parse(id) select u).SingleOrDefault());
 		}
 
 		public Task AddToRoleAsync(User user, string roleName)

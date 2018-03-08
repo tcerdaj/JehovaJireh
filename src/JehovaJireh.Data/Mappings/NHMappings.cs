@@ -45,7 +45,25 @@ namespace JehovaJireh.Data.Mappings
 			Map(x => x.Comments);
 			Map(x => x.CreatedOn);
 			Map(x => x.ModifiedOn);
-			References(x => x.CreatedBy)
+            Map(x => x.LastLogin)
+                .Column("LastLoginDatetime");
+            HasManyToMany(x => x.Roles)
+                .Cascade.All()
+                .ParentKeyColumn("UserId")
+                .ChildKeyColumn("RoleId")
+                .Table("UserRoles");
+            HasMany(x => x.Logins)
+                .KeyColumn("UserId")
+                .Inverse()
+                .Cascade.All();
+            HasMany(x => x.Claims)
+               .KeyColumn("UserId")
+               .Inverse()
+               .Cascade.All();
+            HasOne(x => x.Secret)
+                .Cascade
+                .All();
+            References(x => x.CreatedBy)
 				.Column("CreatedBy")
 				.ForeignKey("CreatedBy")
                 .Cascade.Delete();
@@ -56,7 +74,64 @@ namespace JehovaJireh.Data.Mappings
         }
 	}
 
-	public class DonationMap : ClassMap<Donation>
+    public class RoleMap : ClassMap<Role>
+    {
+        public RoleMap()
+        {
+            Table("Roles");
+            Id(x => x.Id);
+            Map(x => x.Name);
+            HasManyToMany(x => x.Users)
+                .ParentKeyColumn("RoleId")
+                .ChildKeyColumn("UserId")
+                .Cascade.All()
+                .Inverse()
+                .Table("UserRoles");
+        }
+    }
+
+    public class ClaimMap : ClassMap<Claim>
+    {
+        public ClaimMap()
+        {
+            Table("Claims");
+            Id(x => x.Id).Column("ClaimId");
+            Map(x => x.ClaimType);
+            Map(x => x.ClaimValue);
+            References(x => x.User)
+                .Column("UserId")
+                .ForeignKey();
+        }
+    }
+
+    public class LoginMap : ClassMap<Login>
+    {
+        public LoginMap()
+        {
+            Table("Logins");
+            Id(x=>x.Id)
+                .GeneratedBy
+                .Increment();
+            Map(x => x.LoginProvider);
+            Map(x => x.ProviderKey);
+            References(x => x.User)
+                .Column("UserId")
+                .ForeignKey();
+        }
+    }
+
+    public class UserSecretMap : ClassMap<UserSecret>
+    {
+        public UserSecretMap()
+        {
+            Table("UserSecrets");
+            Id(x => x.Id).Column("UserName").GeneratedBy.Foreign("User");
+            Map(x => x.Secret);
+            HasOne(x => x.User).Constrained();
+        }
+    }
+
+    public class DonationMap : ClassMap<Donation>
 	{
 		public DonationMap()
 		{

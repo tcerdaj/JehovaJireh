@@ -197,6 +197,7 @@ namespace JehovaJireh.Web.UI.Controllers
                     user.CreatedOn = DateTime.Now;
                     user.Active = true;
                     user.ModifiedOn = null;
+                    user.LastLogin = DateTime.Now;
 
                     var result = await UserManager.CreateAsync(user, model.PasswordHash);
                     timespan.Stop();

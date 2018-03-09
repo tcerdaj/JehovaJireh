@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace JehovaJireh.Core.Entities
 {
-    public class UserSecret:EntityBase<string>
+    public class UserSecret:EntityBase<int>
     {
         public virtual string Secret { get; set; }
+        public virtual string UserName { get; set; }
         public virtual User User { get; set; }
     }
 }

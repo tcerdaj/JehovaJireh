@@ -12,9 +12,11 @@ using NHibernate.Linq;
 
 namespace JehovaJireh.Data.Repositories
 {
-	public class UserRepository:NHRepository<User, int>, IUserRepository, IUserStore<User>, IUserPasswordStore<User>, IUserSecurityStampStore<User>, IQueryableUserStore<User>, IUserEmailStore<User>,IUserLockoutStore<User, string>, Microsoft.AspNet.Identity.IUserRoleStore<User, string>, IUserTwoFactorStore<User,string>
-		,IUserPhoneNumberStore<User,string>, IUserLoginStore<User,string>
-	{
+	public class UserRepository:NHRepository<User, int>, IUserRepository, IUserStore<User>, 
+         IUserPasswordStore<User>, IUserSecurityStampStore<User>, IQueryableUserStore<User>, 
+         IUserEmailStore<User>,IUserLockoutStore<User, string>, Microsoft.AspNet.Identity.IUserRoleStore<User, string>, 
+         IUserTwoFactorStore<User,string>,IUserPhoneNumberStore<User,string>, IUserLoginStore<User,string>, IDisposable
+    {
 		ISession session;
 		ILogger log;
 
@@ -228,8 +230,20 @@ namespace JehovaJireh.Data.Repositories
 			if (string.IsNullOrEmpty(roleName))
 				throw new NullReferenceException("roleName");
 
-			//user.AddRole(new Role { Name = roleName });
-
+            try
+            {
+                var isInRole =  IsInRoleAsync(user, roleName);
+                if (!isInRole.Result)
+                {
+                    user.AddRole(new Role { Name = roleName });
+                    Update(user);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                log.Error(ex);
+                throw ex;
+            }
 			return Task.FromResult(roleName);
 		}
 
@@ -238,8 +252,22 @@ namespace JehovaJireh.Data.Repositories
 			if (roles == null)
 				throw new NullReferenceException("roles");
 
-			//user.AddRoles(roles);
+            try
+            {
+                foreach (var role in roles)
+                {
+                    var exist = IsInRoleAsync(user, role);
+                    if (!exist.Result)
+                        user.AddRole(new Role() { Name = role });
+                }
 
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
+
+            Update(user);           
 			return Task.FromResult(roles);
 		}
 
@@ -251,10 +279,10 @@ namespace JehovaJireh.Data.Repositories
 			if (string.IsNullOrEmpty(roleName))
 				throw new NullReferenceException("roleName");
 
-			var role = session.Query<Role>().Where(x => x.Name == roleName).FirstOrDefault();
+            var exist = IsInRoleAsync(user, roleName);
 
-			//if (role != null)
-			//	user.RemoveRole(role);
+            if (exist.Result)
+                user.RemoveRole(user.Roles.FirstOrDefault(x=>x.Name == roleName));
 
 			return Task.FromResult(user);
 		}
@@ -272,7 +300,14 @@ namespace JehovaJireh.Data.Repositories
 			if (user == null)
 				throw new ArgumentNullException("user");
 
-			throw new NotImplementedException();
+            try
+            {
+                return Task.FromResult<bool>(user.Roles.Any(x => x.Name == roleName));
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
 		}
 
 		public Task<DateTimeOffset> GetLockoutEndDateAsync(User user)

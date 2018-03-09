@@ -115,6 +115,7 @@
     <Compile Include="EntitiesDto\LoginDto.cs" />
     <Compile Include="EntitiesDto\RequestDto.cs" />
     <Compile Include="EntitiesDto\RequestedByDto.cs" />
+    <Compile Include="EntitiesDto\RoleDto.cs" />
     <Compile Include="EntitiesDto\SchedulerDto.cs" />
     <Compile Include="EntitiesDto\UserDto.cs" />
     <Compile Include="EntitiesDto\UserRefDto.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="Entities\UserSecret.cs" />
     <Compile Include="Entities\User.cs" />
     <Compile Include="IRepositories\IDonationDetailsRepository.cs" />
+    <Compile Include="IRepositories\IRoleRepository.cs" />
     <Compile Include="IRepositories\ISchedulerRepository.cs" />
     <Compile Include="IRepositories\IDonationRepository.cs" />
     <Compile Include="IRepositories\IImageService.cs" />

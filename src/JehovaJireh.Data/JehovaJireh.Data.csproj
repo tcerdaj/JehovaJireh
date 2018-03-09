@@ -158,6 +158,7 @@
     <Compile Include="Queues\AzureQueue.cs" />
     <Compile Include="Repositories\ATSRepository.cs" />
     <Compile Include="Repositories\DonationDetailsRepository.cs" />
+    <Compile Include="Repositories\RoleRepository.cs" />
     <Compile Include="Repositories\SchedulerRepository.cs" />
     <Compile Include="Repositories\DonationRepository.cs" />
     <Compile Include="Repositories\ImageService.cs" />

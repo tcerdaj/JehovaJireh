@@ -8,7 +8,9 @@ namespace JehovaJireh.Core.EntitiesDto
 {
     public class UserSecretDto
     {
-        public virtual string Id { get; set; }
+        public virtual int Id { get; set; }
+        public virtual string UserName { get; set; }
         public virtual string Secret { get; set; }
+        public virtual UserDto User { get; set; }
     }
 }

@@ -43,10 +43,6 @@ namespace JehovaJireh.Data.Mappings
 			Map(x => x.ChurchPastor);
 			Map(x => x.NeedToBeVisited);
 			Map(x => x.Comments);
-			Map(x => x.CreatedOn);
-			Map(x => x.ModifiedOn);
-            Map(x => x.LastLogin)
-                .Column("LastLoginDatetime");
             HasManyToMany(x => x.Roles)
                 .Cascade.All()
                 .ParentKeyColumn("UserId")
@@ -70,7 +66,11 @@ namespace JehovaJireh.Data.Mappings
 			References(x => x.ModifiedBy)
 				.Column("ModifiedBy")
 				.ForeignKey("ModifiedBy")
-                .Cascade.Delete(); 
+                .Cascade.Delete();
+            Map(x => x.CreatedOn).Default("getdate()");
+            Map(x => x.ModifiedOn).Default("getdate()");
+            Map(x => x.LastLogin)
+                .Column("LastLoginDatetime").Default("getdate()");
         }
 	}
 
@@ -80,7 +80,7 @@ namespace JehovaJireh.Data.Mappings
         {
             Table("Roles");
             Id(x => x.Id);
-            Map(x => x.Name);
+            Map(x => x.Name).Not.Nullable().UniqueKey("UQ_Roles_RoleName");
             HasManyToMany(x => x.Users)
                 .ParentKeyColumn("RoleId")
                 .ChildKeyColumn("UserId")
@@ -94,7 +94,7 @@ namespace JehovaJireh.Data.Mappings
     {
         public ClaimMap()
         {
-            Table("Claims");
+            Table("UserClaims");
             Id(x => x.Id).Column("ClaimId");
             Map(x => x.ClaimType);
             Map(x => x.ClaimValue);
@@ -108,7 +108,7 @@ namespace JehovaJireh.Data.Mappings
     {
         public LoginMap()
         {
-            Table("Logins");
+            Table("UserLogins");
             Id(x=>x.Id)
                 .GeneratedBy
                 .Increment();
@@ -125,9 +125,11 @@ namespace JehovaJireh.Data.Mappings
         public UserSecretMap()
         {
             Table("UserSecrets");
-            Id(x => x.Id).Column("UserName").GeneratedBy.Foreign("User");
+            Id(x => x.Id).Column("UserId");
             Map(x => x.Secret);
-            HasOne(x => x.User).Constrained();
+            References(x => x.User)
+               .Column("UserId")
+               .ForeignKey();
         }
     }
 

@@ -47,7 +47,7 @@ namespace JehovaJireh.Core.Entities
 		public virtual bool NeedToBeVisited { get; set; }
 		public virtual string Comments { get; set; }
 		public virtual DateTimeOffset LockoutEndDate { get; set; }
-        public virtual DateTime LastLogin { get; set; }
+        public virtual DateTime? LastLogin { get; set; }
 		public virtual IList<Role> Roles { get; set; }
         public virtual IList<Claim> Claims { get; set; }
         public virtual IList<Login> Logins { get; set; }

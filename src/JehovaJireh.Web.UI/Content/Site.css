@@ -274,6 +274,7 @@ textarea {
     margin: 0 auto;
     position: relative;
     overflow: hidden;
+    padding: 20px 47px 20px 43px;
 }
 
 #slide-in-share {
@@ -352,3 +353,17 @@ textarea {
     border-color: #2b4865;
 }
 .content-header{margin:15px;}
+
+.state-error {
+    border-color: #721715;
+    background-color: #f4f3f2;
+    color: #f3053c;
+    border-style: ridge;
+}
+
+.state-sucess {
+    border-color: #721715;
+    background-color: #09ec4f;
+    color: #190202;
+    border-style: ridge;
+}

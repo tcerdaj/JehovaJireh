@@ -12,6 +12,7 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jquery.cookie")
     @Scripts.Render("~/bundles/common")
+    @Styles.Render("~/Content/fontawesome")
 </head>
 <body>
 
@@ -40,6 +41,7 @@
                     <li>
                     <li>@Html.ActionLink(Resources.Contact, "Contact", "Home")</li>
                     <li>@Html.ActionLink(Resources.Bible, "Index", "Bible")</li>
+                    <li>@Html.ActionLink("Admin", "Admin", "Home")</li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
@@ -284,6 +286,7 @@
     @Styles.Render("~/bundles/kendo-css")
     @Scripts.Render("~/bundles/kendo")
     @Scripts.Render("~/bundles/bootstrap")
+    
     @RenderSection("scripts", required: false)
 </body>
 </html>

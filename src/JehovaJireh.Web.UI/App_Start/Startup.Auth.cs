@@ -9,18 +9,27 @@ using JehovaJireh.Web.UI.Models;
 using System.Web;
 using JehovaJireh.Core.Entities;
 using System.Configuration;
+using JehovaJireh.Data.Repositories;
+using NHibernate;
+using JehovaJireh.Logging;
+using Microsoft.Practices.EnterpriseLibrary.ExceptionHandling;
+using System.Linq;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace JehovaJireh.Web.UI
 {
     public partial class Startup
     {
+
 		// For more information on configuring authentication, please visit https://go.microsoft.com/fwlink/?LinkId=301864
 		public void ConfigureAuth(IAppBuilder app)
 		{
-			// Configure the db context, user manager and signin manager to use a single instance per request
-			//app.CreatePerOwinContext(ApplicationDbContext.Create);
-			app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
+            // Configure the db context, user manager and signin manager to use a single instance per request
+            //app.CreatePerOwinContext(ApplicationDbContext.Create);
+            app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
 			app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
+            app.CreatePerOwinContext<ApplicationRoleManager>(ApplicationRoleManager.Create);
             app.MapSignalR();
 
             // Check to see if we are running local and if we are set the cookie domain to nothing so authentication works correctly.
@@ -95,6 +104,83 @@ namespace JehovaJireh.Web.UI
             };
             app.UseGoogleAuthentication(googleAuthenticationOptions);
             #endregion
+            //Default Values
+            try
+            {
+                createDefaultRolesandUsers();
+            }
+            catch(System.Exception ex) 
+            {
+                Trace.WriteLine(ex);
+            }
         }
-	}
+        private void createDefaultRolesandUsers()
+        {
+            var container = MvcApplication.BootstrapContainer();
+            var session = container.Resolve<ISession>();
+            var exManager = container.Resolve<ExceptionManager>();
+            var log = container.Resolve<ILogger>();
+
+            var userManager = new UserManager<User>(new UserRepository(session, exManager, log));
+            var roleManager = new RoleManager<Role>(new RoleRepository(session, exManager, log));
+            string defaultRole = "administrators";
+
+            //Create default user
+            var user = userManager.FindByName(ConfigurationManager.AppSettings["adminUserName"]);
+            if (user == null)
+            {
+                user = new User()
+                {
+                    UserName = ConfigurationManager.AppSettings["adminUserName"],
+                    FirstName = ConfigurationManager.AppSettings["adminFirstName"],
+                    LastName = ConfigurationManager.AppSettings["adminLastName"],
+                    Email = ConfigurationManager.AppSettings["adminEmail"],
+                    PasswordHash = ConfigurationManager.AppSettings["adminPassword"],
+                    CreatedOn = DateTime.Now,
+                    ModifiedOn = null,
+                    LastLogin = null
+                };
+
+               var result = userManager.CreateAsync(user, user.PasswordHash);
+            }
+
+            //Create admin role
+            Role role = null;
+            if (!roleManager.RoleExists(defaultRole))
+            {
+                role = new Role()
+                {
+                    Id = ConfigurationManager.AppSettings["adminUserName"],
+                    Name = defaultRole
+                };
+                roleManager.CreateAsync(role);
+            }
+            else
+            {
+                role = roleManager.FindByName(defaultRole);
+            }
+
+            //Create user role
+            if (!roleManager.RoleExists("users"))
+            {
+                var userRole = new Role()
+                {
+                    Id = "users",
+                    Name = "users"
+                };
+                roleManager.CreateAsync(userRole);
+            }
+
+            //Add user to role
+            if (user != null && !user.Roles.Any(x => x.Name == defaultRole))
+            {
+                if (user.Roles == null)
+                {
+                   user.Roles = new List<Role>();
+                }
+                user.Roles.Add(role);
+                userManager.UpdateAsync(user);
+            }
+        }
+    }
 }

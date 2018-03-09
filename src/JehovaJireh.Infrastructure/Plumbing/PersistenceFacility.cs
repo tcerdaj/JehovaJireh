@@ -21,10 +21,19 @@ using NHibernate.Event;
 using JehovaJireh.Exception;
 using JehovaJireh.Logging;
 using Microsoft.Practices.EnterpriseLibrary.ExceptionHandling;
+using System.Diagnostics;
 
 namespace JehovaJireh.Infrastructure.Plumbing
 {
-	public class PersistenceFacility : AbstractFacility
+    public class SqlStatementInterceptor : EmptyInterceptor
+    {
+        public override NHibernate.SqlCommand.SqlString OnPrepareStatement(NHibernate.SqlCommand.SqlString sql)
+        {
+            Trace.WriteLine(sql.ToString());
+            return sql;
+        }
+    }
+    public class PersistenceFacility : AbstractFacility
 	{
         private readonly ILogger log;
         private readonly ExceptionManager exManager;
@@ -62,6 +71,9 @@ namespace JehovaJireh.Infrastructure.Plumbing
 		{
 			NHibernate.Cfg.Configuration cfg = Fluently.Configure()
 				.Database(SetupDatabase)
+                .ExposeConfiguration(x=> {
+                    x.SetInterceptor(new SqlStatementInterceptor());
+                })
 				.Mappings(m => m.FluentMappings.AddFromAssemblyOf<NHUnitOfWork>())
 				.ExposeConfiguration(c =>
 				{

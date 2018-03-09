@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
@@ -12,6 +14,52 @@ namespace JehovaJireh.Web.UI.Models
         public string PhoneNumber { get; set; }
         public bool TwoFactor { get; set; }
         public bool BrowserRemembered { get; set; }
+    }
+
+    public class AddNewRoleViewModel
+    {
+        [DisplayName("Role Id")]
+        [Required]
+        public string Id { get; set; }
+
+        [DisplayName("Role Name")]
+        [Required]
+        public string Name { get; set; }
+        public IList<RoleViewModel> Roles { get; set; }
+    }
+
+
+    public class UserViewModel
+    {
+        [DisplayName("User Id")]
+        public int Id { get; set; }
+        public string UserName { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public DateTime LastLogin { get; set; } 
+        public IList<UserLoginInfo> Logins { get; set; }
+        public IList<ClaimViewModel> Claims { get; set; }
+        public IList<RoleViewModel> Roles { get; set; }
+        public string Secret { get; set; }
+    }
+    public class RoleViewModel
+    {
+        [DisplayName("Role Id")]
+        public string Id { get; set; }
+        [DisplayName("Role Name")]
+        public string Name { get; set; }
+        public IList<UserViewModel> Users { get; set; }
+    }
+
+    public class ClaimViewModel
+    {
+        [DisplayName("Claim Id")]
+        public string ClaimId { get; set; }
+        [DisplayName("Claim Type")]
+        public string ClaimType { get; set; }
+        [DisplayName("Claim Value")]
+        public string ClaimValue { get; set; }
     }
 
     public class ManageLoginsViewModel

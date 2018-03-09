@@ -14,6 +14,9 @@ using JehovaJireh.Data.Mappings;
 using JehovaJireh.Logging;
 using Omu.ValueInjecter;
 using JehovaJireh.Web.UI.App_GlobalResources;
+using System.Collections.Generic;
+using JehovaJireh.Core.EntitiesDto;
+using Newtonsoft.Json;
 
 namespace JehovaJireh.Web.UI.Controllers
 {
@@ -22,7 +25,8 @@ namespace JehovaJireh.Web.UI.Controllers
 	{
 		private ApplicationSignInManager _signInManager;
 		private ApplicationUserManager _userManager;
-		private ILogger log;
+        private ApplicationRoleManager _roleManager;
+        private ILogger log;
         private const string USERSETTINGS = "UserSettings";
 
         public ManageController()
@@ -51,7 +55,19 @@ namespace JehovaJireh.Web.UI.Controllers
 			}
 		}
 
-		public ApplicationUserManager UserManager
+        public ApplicationRoleManager RoleManager
+        {
+            get
+            {
+                return _roleManager ?? HttpContext.GetOwinContext().Get<ApplicationRoleManager>();
+            }
+            private set
+            {
+                _roleManager = value;
+            }
+        }
+
+        public ApplicationUserManager UserManager
 		{
 			get
 			{
@@ -63,9 +79,93 @@ namespace JehovaJireh.Web.UI.Controllers
 			}
 		}
 
-		//
-		// GET: /Manage/Index
-		public async Task<ActionResult> Index(ManageMessageId? message)
+        public ActionResult Roles(AddNewRoleViewModel model,ManageMessageId? message)
+        {
+            ViewBag.StatusMessage =
+                message == ManageMessageId.ChangePasswordSuccess ? Resources.YourPasswordHaschanged
+                : message == ManageMessageId.SetPasswordSuccess ? Resources.YourPasswordHasSet
+                : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
+                : message == ManageMessageId.Error ? Resources.Error
+                : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
+                : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
+                : message == ManageMessageId.UpdateAccountSuccess ? Resources.YourAccoutHasUpdated
+                : message == ManageMessageId.AddNewRoleSuccess ? string.Format("Role {0} added Successfully!!!", model.Name)
+                : "";
+            ViewBag.Message = message.ToString();
+            //TODO:retrieve all roles here...
+            var roles = RoleManager.Roles;
+            if (model.Roles == null)
+                model.Roles = new List<RoleViewModel>();
+
+            foreach (var r in roles)
+            {
+                var role = new RoleViewModel()
+                {
+                    Id = r.Id,
+                    Name = r.Name
+                };
+                if (r.Users != null)
+                {
+                    foreach (var u in r.Users)
+                    {
+                        if (role.Users == null)
+                            role.Users = new List<UserViewModel>();
+                        role.Users.Add(new UserViewModel
+                        {
+                            Id = u.Id,
+                            UserName = u.UserName,
+                            FirstName = u.FirstName,
+                            LastName = u.LastName,
+                            Email = u.Email
+                        });
+                    }
+                }
+            
+                model.Roles.Add(role);
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Roles(AddNewRoleViewModel model)
+        {
+            ViewBag.StatusMessage = "An error ocurred adding Role";
+            IEnumerable<string> errors = new List<string>();
+            
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var result = await RoleManager.CreateAsync(new Role() { Id = model.Id, Name = model.Name });
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("Roles", new { message = ManageMessageId.AddNewRoleSuccess });
+                    }
+                    else
+                    {
+                        errors = result.Errors;
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    errors = new List<string>(new string[] { string.Format("{0} Please check your entry and try again.", ex.Message) });
+                }
+
+                ViewBag.StatusMessage = string.Join(",", errors);
+            }
+
+            return View(model);
+        }
+
+        public ActionResult RoleDetails(RoleViewModel model)
+        {
+            return View(model);
+        }
+
+            //
+            // GET: /Manage/Index
+        public async Task<ActionResult> Index(ManageMessageId? message)
 		{
 			//if (!string.IsNullOrEmpty(culture))
 				//SetCulture(culture);
@@ -463,7 +563,8 @@ namespace JehovaJireh.Web.UI.Controllers
 			RemoveLoginSuccess,
 			RemovePhoneSuccess,
 			Error,
-			UpdateAccountSuccess
+			UpdateAccountSuccess,
+            AddNewRoleSuccess
 		}
 
 		#endregion

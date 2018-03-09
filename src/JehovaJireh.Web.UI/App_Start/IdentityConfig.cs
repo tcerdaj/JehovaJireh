@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -34,14 +35,14 @@ namespace JehovaJireh.Web.UI
 		}
 	}
 
-	// Configure the application user manager used in this application. UserManager is defined in ASP.NET Identity and is used by the application.
-	public class ApplicationUserManager : UserManager<User>
+    #region ApplicationUserManager
+    public class ApplicationUserManager : UserManager<User>
 	{
-		UserRepository userRepository;
-		public ApplicationUserManager(UserRepository store)
-			: base(store)
+		static UserRepository userRepository;
+		public ApplicationUserManager(UserRepository userStore)
+			: base(userStore)
 		{
-			userRepository = store;
+			userRepository = userStore;
 		}
 
 
@@ -51,7 +52,7 @@ namespace JehovaJireh.Web.UI
 			var log = container.Resolve<ILogger>();
 			var session = container.Resolve<ISession>();
 			var errorHandler = container.Resolve<ExceptionManager>();
-			var manager = new ApplicationUserManager(new UserRepository(session, errorHandler, log));
+            var manager = new ApplicationUserManager(new UserRepository(session, errorHandler, log));
 
 			// Configure validation logic for usernames
 			manager.UserValidator = new UserValidator<User>(manager)
@@ -94,7 +95,9 @@ namespace JehovaJireh.Web.UI
 				manager.UserTokenProvider =
 					new DataProtectorTokenProvider<User>(dataProtectionProvider.Create("ASP.NET Identity"));
 			}
-			return manager;
+            
+
+            return manager;
 		}
 
 		public Task<User> UpdatetUserSettingsAsync(User user)
@@ -140,43 +143,73 @@ namespace JehovaJireh.Web.UI
 			return Task.FromResult(result);
 		}
 	}
+    #endregion
 
-	// Configure the application sign-in manager which is used in this application.
-	public class ApplicationSignInManager : SignInManager<User, string>
-	{
-		public ApplicationSignInManager(ApplicationUserManager userManager, IAuthenticationManager authenticationManager)
-			: base(userManager, authenticationManager)
-		{
+    #region ApplicationRoleManager
+    public class ApplicationRoleManager : RoleManager<Role>
+    {
+        RoleRepository roleStore;
+        public ApplicationRoleManager(RoleRepository roleStore)
+        : base(roleStore)
+        {
+            this.roleStore = roleStore;
+        }
+        public static ApplicationRoleManager Create(IdentityFactoryOptions<ApplicationRoleManager> options, IOwinContext context)
+        {
+            var container = MvcApplication.BootstrapContainer();
+            var log = container.Resolve<ILogger>();
+            var session = container.Resolve<ISession>();
+            var errorHandler = container.Resolve<ExceptionManager>();
+            var roleManager = new ApplicationRoleManager(new RoleRepository(session, errorHandler, log));
+            return roleManager;
+        }
 
-		}
+        public override IQueryable<Role> Roles
+        {
+          get  {
+                var roles = (from r in roleStore.Query() select r);
+                return roles;
+            }
+        }
 
-		public override Task<ClaimsIdentity> CreateUserIdentityAsync(User user)
-		{
-			return user.GenerateUserIdentityAsync((ApplicationUserManager)UserManager);
-		}
+    }
+    #endregion
 
-		public static ApplicationSignInManager Create(IdentityFactoryOptions<ApplicationSignInManager> options, IOwinContext context)
-		{
-			return new ApplicationSignInManager(context.GetUserManager<ApplicationUserManager>(), context.Authentication);
-		}
+    #region ApplicationSignInManager
+    public class ApplicationSignInManager : SignInManager<User, string>
+    {
+        public ApplicationSignInManager(ApplicationUserManager userManager, IAuthenticationManager authenticationManager)
+            : base(userManager, authenticationManager)
+        {
 
-		public override async Task<SignInStatus> PasswordSignInAsync(string userName, string password, bool isPersistent, bool shouldLockout)
-		{
-			User user = this.UserManager.FindByName(userName);
-			user = user== null? this.UserManager.FindByEmail(userName) : user;
-			userName = user!=null? user.UserName : userName;
+        }
+        public override Task<ClaimsIdentity> CreateUserIdentityAsync(User user)
+        {
+            return user.GenerateUserIdentityAsync((ApplicationUserManager)UserManager);
+        }
+        public static ApplicationSignInManager Create(IdentityFactoryOptions<ApplicationSignInManager> options, IOwinContext context)
+        {
+            return new ApplicationSignInManager(context.GetUserManager<ApplicationUserManager>(), context.Authentication);
+        }
+        public override async Task<SignInStatus> PasswordSignInAsync(string userName, string password, bool isPersistent, bool shouldLockout)
+        {
+            User user = this.UserManager.FindByName(userName);
+            user = user == null ? this.UserManager.FindByEmail(userName) : user;
+            userName = user != null ? user.UserName : userName;
 
-			if (null != user)
-			{
-				if (false == user.Active)
-				{
-					return (SignInStatus.Failure);
-				}
-			}
+            if (null != user)
+            {
+                if (false == user.Active)
+                {
+                    return (SignInStatus.Failure);
+                }
+            }
 
-			var result = await base.PasswordSignInAsync(userName, password, isPersistent, shouldLockout);
+            var result = await base.PasswordSignInAsync(userName, password, isPersistent, shouldLockout);
 
-			return (result);
-		}
-	}
+            return (result);
+        }
+    }
+    #endregion
+
 }

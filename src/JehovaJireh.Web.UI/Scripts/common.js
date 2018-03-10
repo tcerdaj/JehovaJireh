@@ -190,7 +190,7 @@ Array.prototype.removeIfExist = function (element, comparer) {
 }(jQuery);
 
 
-function openDialog(title, htmlMessage) {
+function openDialog(title, htmlMessage, actions) {
 
     var applySetup = $('.container #dialog').length === 0;
     var dialog;
@@ -210,7 +210,7 @@ function openDialog(title, htmlMessage) {
             closable: true,
             modal: false,
             content: htmlMessage,
-            actions: [
+            actions: actions !== undefined? actions: [
                 { text: 'Ok', primary: true }
             ],
         });

@@ -1,20 +1,20 @@
 ﻿@model JehovaJireh.Web.UI.Models.AddNewRoleViewModel
 
 @{
-    ViewBag.Title = "Add new Role";
+    ViewBag.Title = "Roles";
 }
 
-<h2>@ViewBag.Title</h2>
+<h2>Mange Roles</h2>
 
 @using (Html.BeginForm("Roles", "Manage", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
 
 <div class="form-horizontal">
-    <h4>AddNewRoleViewModel</h4>
+    <h4>Add New Role</h4>
     @if (ViewBag.StatusMessage != string.Empty)
     {
-        if (ViewBag.Message == "AddNewRoleSuccess")
+        if (ViewBag.Success == true)
         {
            <div class="state-sucess">
                <i class="fa fa-exclamation-circle"></i>
@@ -79,15 +79,15 @@
                                 }
                             }
                             <td>
-                                @Html.DisplayFor(x => Model.Roles[i].Id)
+                                @Html.ActionLink(Model.Roles[i].Id, "RoleDetais", new { model = Model.Roles[i] })
                             </td>
                             <td>
-                                @Html.DisplayFor(x => Model.Roles[i].Name)
+                                @Html.ActionLink(Model.Roles[i].Name, "RoleDetais", new { model = Model.Roles[i] })
                             </td>
                             <td>
-                                @Html.ActionLink("Edit", "RoleEdit", new { model = Model.Roles[i] }) |
-                                @Html.ActionLink("Details", "RoleDetails", new { model = Model.Roles[i] }) |
-                                @Html.ActionLink("Delete", "RoleDelete", new { roleId = Model.Roles[i] })
+                                <a href="@Url.Action("EditRole",new { roleId = Model.Roles[i].Id })" title="Edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a> |
+                                <a href="#" title="Delete" onclick="deleteRole('@Model.Roles[i].Id')"><i class="fa fa-trash-o" aria-hidden="true"></i></a> |
+                                <a href="@Url.Action("GoToRole", new { roleId = Model.Roles[i].Id })" title="Go to @Model.Roles[i].Name role Details"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></a>
                             </td>
                         </tr>
                     }
@@ -103,7 +103,26 @@
 }
 @section Scripts{
     
+<script type="text/javascript">
+        var actions = [
+            { text: 'Ok', primary: true, action: onDeleteRole },
+            { text: 'Cancel', action: onCancel }
+        ]
+        function deleteRole(id) {
+            openDialog('Delete Confirmation', '<p id="' + id + '">Are you sure you what delete ' + id +" role?</p>", actions);
+        }
+        function onDeleteRole(e) {
+            var id = $(e.sender.content()).attr("id");
+            console.log('deleting...', id);
+            var url = '@Html.Raw(@Url.Action("DeleteRole", "Manage"))' + '?roleId=' + id;
+            console.log('Url', url);
+            window.location.href = url;
+        }
+        function onCancel(e) {
+            console.log('canceling...', $(e.sender.content()).attr("id"))
+        }
 
+</script>
     <style>
     </style>
 }

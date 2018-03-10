@@ -17,7 +17,7 @@ namespace JehovaJireh.Data.Repositories
     {
         ISession session;
         ILogger log;
-
+        
         public RoleRepository(ISession session, ExceptionManager exManager, ILogger log)
             : base(session, exManager, log)
         {

@@ -2675,8 +2675,9 @@
     <Content Include="Views\Bible\Volume.cshtml" />
     <Content Include="Views\Bible\Version.cshtml" />
     <Content Include="Views\Manage\Roles.cshtml" />
-    <Content Include="Views\Manage\RoleDetails.cshtml" />
+    <Content Include="Views\Manage\GoToRole.cshtml" />
     <Content Include="Views\Home\Admin.cshtml" />
+    <Content Include="Views\Manage\EditRole.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

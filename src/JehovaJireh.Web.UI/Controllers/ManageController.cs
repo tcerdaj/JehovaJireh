@@ -15,8 +15,7 @@ using JehovaJireh.Logging;
 using Omu.ValueInjecter;
 using JehovaJireh.Web.UI.App_GlobalResources;
 using System.Collections.Generic;
-using JehovaJireh.Core.EntitiesDto;
-using Newtonsoft.Json;
+
 
 namespace JehovaJireh.Web.UI.Controllers
 {
@@ -28,6 +27,7 @@ namespace JehovaJireh.Web.UI.Controllers
         private ApplicationRoleManager _roleManager;
         private ILogger log;
         private const string USERSETTINGS = "UserSettings";
+        private const string OPERATION_STATUS = "operationStatus";
 
         public ManageController()
 		{
@@ -79,7 +79,7 @@ namespace JehovaJireh.Web.UI.Controllers
 			}
 		}
 
-        public ActionResult Roles(AddNewRoleViewModel model,ManageMessageId? message)
+        public ActionResult Roles(AddNewRoleViewModel model, ManageMessageId? message)
         {
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? Resources.YourPasswordHaschanged
@@ -89,10 +89,15 @@ namespace JehovaJireh.Web.UI.Controllers
                 : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : message == ManageMessageId.UpdateAccountSuccess ? Resources.YourAccoutHasUpdated
-                : message == ManageMessageId.AddNewRoleSuccess ? string.Format("Role {0} added Successfully!!!", model.Name)
+                : message == ManageMessageId.OperationSuccess ? "Operation has been completed Successfully!!!"
                 : "";
-            ViewBag.Message = message.ToString();
             //TODO:retrieve all roles here...
+            if (message == ManageMessageId.OperationSuccess)
+                ViewBag.Success = true;
+
+            if (TempData[OPERATION_STATUS] != null)
+                ViewBag.StatusMessage = TempData[OPERATION_STATUS];
+
             var roles = RoleManager.Roles;
             if (model.Roles == null)
                 model.Roles = new List<RoleViewModel>();
@@ -140,15 +145,18 @@ namespace JehovaJireh.Web.UI.Controllers
                     var result = await RoleManager.CreateAsync(new Role() { Id = model.Id, Name = model.Name });
                     if (result.Succeeded)
                     {
-                        return RedirectToAction("Roles", new { message = ManageMessageId.AddNewRoleSuccess });
+                        ViewBag.Success = true;
+                        return RedirectToAction("Roles", new { message = ManageMessageId.OperationSuccess });
                     }
                     else
                     {
+                        ViewBag.Success = false;
                         errors = result.Errors;
                     }
                 }
                 catch (System.Exception ex)
                 {
+                    ViewBag.Success = false;
                     errors = new List<string>(new string[] { string.Format("{0} Please check your entry and try again.", ex.Message) });
                 }
 
@@ -158,13 +166,211 @@ namespace JehovaJireh.Web.UI.Controllers
             return View(model);
         }
 
-        public ActionResult RoleDetails(RoleViewModel model)
+        public async Task<ActionResult> DeleteRole(string roleId)
         {
+            ViewBag.StatusMessage = "An error ocurred deleting Role";
+            IEnumerable<string> errors = new List<string>();
+            try
+            {
+                var role = await RoleManager.FindByIdAsync(roleId);
+                var result = await RoleManager.DeleteAsync(role);
+                if (result.Succeeded)
+                {
+                    ViewBag.Success = true;
+                    return RedirectToAction("Roles", new { message = ManageMessageId.OperationSuccess });
+                }
+                else
+                {
+                    ViewBag.Success = false;
+                    errors = result.Errors;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                ViewBag.Success = false;
+                errors = new List<string>(new string[] { string.Format("{0} Please check your entry and try again.", ex.Message) });
+            }
+
+            TempData[OPERATION_STATUS]  = string.Join(",", errors);
+            return RedirectToAction("Roles", new { message = ManageMessageId.Error });
+        }
+
+        public async Task<ActionResult> GoToRole(string roleId, ManageMessageId? message)
+        {
+            ViewBag.StatusMessage =
+                message == ManageMessageId.ChangePasswordSuccess ? Resources.YourPasswordHaschanged
+                : message == ManageMessageId.SetPasswordSuccess ? Resources.YourPasswordHasSet
+                : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
+                : message == ManageMessageId.Error ? Resources.Error
+                : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
+                : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
+                : message == ManageMessageId.UpdateAccountSuccess ? Resources.YourAccoutHasUpdated
+                : message == ManageMessageId.OperationSuccess ? "Operation has been completed Successfully!!!"
+                : "";
+
+            if (string.IsNullOrEmpty(roleId))
+                return RedirectToAction("Roles", new { message = ManageMessageId.Error });
+            //TODO:retrieve all roles here...
+            if (message == ManageMessageId.OperationSuccess)
+                ViewBag.Success = true;
+
+            if (TempData[OPERATION_STATUS] != null)
+                ViewBag.StatusMessage = TempData[OPERATION_STATUS];
+
+            var role = await RoleManager.FindByIdAsync(roleId);
+
+            if (string.IsNullOrEmpty(roleId) || role == null)
+                RedirectToAction("Roles", new { message = ManageMessageId.Error });
+
+
+            var model = new RoleViewModel
+            {
+                Id = role.Id,
+                Name = role.Name,
+                Users = role.Users != null ? role.Users.Select(u => new UserViewModel
+                {
+                    Id = u.Id,
+                    UserName = u.UserName,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email
+                }).ToList<UserViewModel>() : null
+            };
+
+            var users = UserManager.Users.ToList();
+
+            var allUsers = users.Select(u=> new UserViewModel
+            {
+                Id = u.Id,
+                UserName = u.UserName,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                Email = u.Email
+            }).ToList<UserViewModel>();
+
+            model.AllUsers = allUsers.Where(p => !role.Users.Any(p2 => p2.Id == p.Id)).ToList();
+
             return View(model);
         }
 
-            //
-            // GET: /Manage/Index
+        public async Task<ActionResult> EditRole(string roleId, ManageMessageId? message)
+        {
+            ViewBag.StatusMessage =
+               message == ManageMessageId.ChangePasswordSuccess ? Resources.YourPasswordHaschanged
+               : message == ManageMessageId.SetPasswordSuccess ? Resources.YourPasswordHasSet
+               : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
+               : message == ManageMessageId.Error ? Resources.Error
+               : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
+               : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
+               : message == ManageMessageId.UpdateAccountSuccess ? Resources.YourAccoutHasUpdated
+               : message == ManageMessageId.OperationSuccess ? "Operation has been completed Successfully!!!"
+               : "";
+
+            //TODO:retrieve all roles here...
+            if (message == ManageMessageId.OperationSuccess)
+                ViewBag.Success = true;
+
+            if (TempData[OPERATION_STATUS] != null)
+                ViewBag.StatusMessage = TempData[OPERATION_STATUS];
+
+            var role = await RoleManager.FindByIdAsync(roleId);
+
+            if (string.IsNullOrEmpty(roleId) || role == null)
+                RedirectToAction("Roles", new { message = ManageMessageId.Error });
+
+            var model = new RoleViewModel
+            {
+                Id = role.Id,
+                Name = role.Name
+            };
+
+            if (model.Users == null)
+                model.Users = new List<UserViewModel>();
+
+            foreach (var u in role.Users)
+            {
+                model.Users.Add(new UserViewModel
+                {
+                    Id = u.Id,
+                    UserName = u.UserName,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email
+                });
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> EditRole(RoleViewModel model)
+        {
+            ViewBag.StatusMessage = "An error ocurred adding Role";
+            IEnumerable<string> errors = new List<string>();
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var role = await RoleManager.FindByIdAsync(model.Id);
+                    role.Name = model.Name;
+                    var result = await RoleManager.UpdateAsync(role);
+                    if (result.Succeeded)
+                    {
+                        ViewBag.Success = true;
+                        return RedirectToAction("Roles", new { message = ManageMessageId.OperationSuccess });
+                    }
+                    else
+                    {
+                        errors = result.Errors;
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    ViewBag.Success = false;
+                    errors = new List<string>(new string[] { string.Format("{0} Please check your entry and try again.", ex.Message) });
+                }
+
+                ViewBag.StatusMessage = string.Join(",", errors);
+            }
+
+            return View(model);
+        }
+
+        public async Task<ActionResult> RemoveUserFromRole(string roleId, string userId)
+        {
+            IEnumerable<string> errors = new List<string>();
+
+            try
+            {
+                var role = await RoleManager.FindByIdAsync(roleId);
+                var user = await UserManager.FindByIdAsync(userId);
+                if (role != null && user != null && user.Roles != null) {
+                    var index = user.Roles.ToList().FindIndex(x => x.Id == roleId);
+                    user.Roles.RemoveAt(index);
+                    var result = await UserManager.UpdateAsync(user);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("GoToRole", new { roleId = roleId, message = ManageMessageId.OperationSuccess });
+                    }
+                    else
+                    {
+                        errors = result.Errors;
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                ViewBag.Success = false;
+                errors = new List<string>(new string[] { string.Format("{0} Please check your entry and try again.", ex.Message) });
+            }
+
+            TempData[OPERATION_STATUS] = string.Join(",", errors);
+            return RedirectToAction("GoToRole", new {roleId = roleId, message = ManageMessageId.Error });
+        }
+
+        //
+        // GET: /Manage/Index
         public async Task<ActionResult> Index(ManageMessageId? message)
 		{
 			//if (!string.IsNullOrEmpty(culture))
@@ -564,7 +770,7 @@ namespace JehovaJireh.Web.UI.Controllers
 			RemovePhoneSuccess,
 			Error,
 			UpdateAccountSuccess,
-            AddNewRoleSuccess
+            OperationSuccess
 		}
 
 		#endregion

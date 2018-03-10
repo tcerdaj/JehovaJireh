@@ -38,9 +38,9 @@ namespace JehovaJireh.Web.UI.Models
         public string LastName { get; set; }
         public string Email { get; set; }
         public DateTime LastLogin { get; set; } 
-        public IList<UserLoginInfo> Logins { get; set; }
-        public IList<ClaimViewModel> Claims { get; set; }
-        public IList<RoleViewModel> Roles { get; set; }
+        public List<UserLoginInfo> Logins { get; set; }
+        public List<ClaimViewModel> Claims { get; set; }
+        public List<RoleViewModel> Roles { get; set; }
         public string Secret { get; set; }
     }
     public class RoleViewModel
@@ -49,7 +49,8 @@ namespace JehovaJireh.Web.UI.Models
         public string Id { get; set; }
         [DisplayName("Role Name")]
         public string Name { get; set; }
-        public IList<UserViewModel> Users { get; set; }
+        public List<UserViewModel> Users { get; set; }
+        public List<UserViewModel> AllUsers { get; set; }
     }
 
     public class ClaimViewModel

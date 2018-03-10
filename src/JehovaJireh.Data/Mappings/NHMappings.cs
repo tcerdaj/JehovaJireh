@@ -84,7 +84,7 @@ namespace JehovaJireh.Data.Mappings
             HasManyToMany(x => x.Users)
                 .ParentKeyColumn("RoleId")
                 .ChildKeyColumn("UserId")
-                .Cascade.All()
+                .Cascade.SaveUpdate()
                 .Inverse()
                 .Table("UserRoles");
         }

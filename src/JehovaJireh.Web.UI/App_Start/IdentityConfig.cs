@@ -109,7 +109,16 @@ namespace JehovaJireh.Web.UI
 			return Task.FromResult(user);
 		}
 
-		public Task<User> GetUserById(int id)
+        public override IQueryable<User> Users
+        {
+            get
+            {
+                var users = (from r in userRepository.Query() select r);
+                return users;
+            }
+        }
+
+        public Task<User> GetUserById(int id)
 		{
 			var user = userRepository.GetById(id);
 			return Task.FromResult(user);

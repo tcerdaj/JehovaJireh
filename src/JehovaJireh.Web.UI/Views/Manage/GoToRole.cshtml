@@ -1,0 +1,172 @@
+﻿@model JehovaJireh.Web.UI.Models.RoleViewModel
+@{
+    ViewBag.Title = "Role Details";
+}
+
+<h2>Role Details</h2>
+
+<div>
+    <h4>Role @Model.Name</h4>
+    @if (ViewBag.StatusMessage != string.Empty)
+    {
+        if (ViewBag.Success == true)
+        {
+            <div class="state-sucess">
+                <i class="fa fa-exclamation-circle"></i>
+                @ViewBag.StatusMessage
+            </div>
+        }
+        else
+        {
+            <div class="state-error">
+                <i class="fa fa-exclamation-circle"></i>
+                @ViewBag.StatusMessage
+            </div>
+        }
+    }
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+    </dl>
+
+    <div class="user-list">
+
+        @if (Model.Users != null && Model.Users.Count() > 0)
+        {
+        <div class="col-sm-6">
+            <h4>Users in Role</h4>
+            <table class="table">
+                <tr>
+                    <th>
+                        @Html.DisplayName("Id")
+                    </th>
+                    <th>
+                        @Html.DisplayName("UserName")
+                    </th>
+                    <th>
+                        @Html.DisplayName("First Name")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Last Name")
+                    </th>
+                    <th></th>
+                </tr>
+
+                @foreach (var item in Model.Users)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    <input title="Select this User" type="checkbox" class="form-check-input" id="exampleCheck1"> |
+                    @*@Html.ActionLink("Edit", "RoleEdit", new { model = item }) |*@
+                    @*@Html.ActionLink("Details", "RoleDetails", new { model = item }) |*@
+                    <a href="#" title="Delete" onclick="deleteRole('@item.Id')"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                </td>
+            </tr>
+}
+            </table>
+            <input class="btn btn-danger" type="button" value="- Remove Selected Users" />
+        </div>
+        }   
+            <div class="col-sm-6">
+                <h4>All Users</h4>
+                    <table class="table">
+                        <tr>
+                            <th>
+                                @Html.DisplayName("Id")
+                            </th>
+                            <th>
+                                @Html.DisplayName("UserName")
+                            </th>
+                            <th>
+                                @Html.DisplayName("First Name")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Last Name")
+                            </th>
+                            <th></th>
+                        </tr>
+
+                        @foreach (var item in Model.AllUsers)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FirstName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.LastName)
+                    </td>
+                    <td>
+                        <input title="Select this User" type="checkbox" class="form-check-input" id="exampleCheck1"> |
+                        @*@Html.ActionLink("Edit", "RoleEdit", new { model = item }) |*@
+                        @*@Html.ActionLink("Details", "RoleDetails", new { model = item }) |*@
+                        <a  href="#" title="Add" onclick="deleteRole('@item.Id')"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
+                    </td>
+                </tr>
+}
+                    </table>
+                <input class="btn btn-primary"  type="button" value="+ Add Selected Users" />
+                </div>
+            </div>
+</div>
+<p>
+    @Html.ActionLink("Edit", "EditRole", new { roleId = Model.Id }) |
+    @Html.ActionLink("Back to Roles", "Roles")
+</p>
+@section Scripts{
+
+    <script type="text/javascript">
+        var actions = [
+            { text: 'Ok', primary: true, action: onDeleteRole },
+            { text: 'Cancel', action: onCancel }
+        ]
+        function deleteRole(id) {
+            openDialog('Delete Confirmation', '<p id="' + id + '">Are you sure you what delete ' + id +" role?</p>", actions);
+        }
+        function onDeleteRole(e) {
+            var id = $(e.sender.content()).attr("id");
+            console.log('deleting...', id);
+            var url = '@Html.Raw(@Url.Action("RemoveUserFromRole", "Manage"))' + '?roleId=' + '@Model.Id' +'&userId='+ id;
+            console.log('Url', url);
+            window.location.href = url;
+        }
+        function onCancel(e) {
+            console.log('canceling...', $(e.sender.content()).attr("id"))
+        }
+
+    </script>
+    <style>
+        
+    </style>
+}

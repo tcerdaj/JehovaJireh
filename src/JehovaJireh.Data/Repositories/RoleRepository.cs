@@ -128,7 +128,7 @@ namespace JehovaJireh.Data.Repositories
             {
                 this.Update(role);
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
                 throw;
             }

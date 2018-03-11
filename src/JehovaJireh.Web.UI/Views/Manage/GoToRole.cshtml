@@ -44,120 +44,190 @@
     </dl>
 
     <div class="user-list">
-
-        @if (Model.Users != null && Model.Users.Count() > 0)
-        {
-        <div class="col-sm-6">
-            <h4>Users in Role</h4>
-            <table class="table">
-                <tr>
-                    <th>
-                        @Html.DisplayName("Id")
-                    </th>
-                    <th>
-                        @Html.DisplayName("UserName")
-                    </th>
-                    <th>
-                        @Html.DisplayName("First Name")
-                    </th>
-                    <th>
-                        @Html.DisplayName("Last Name")
-                    </th>
-                    <th></th>
-                </tr>
+        <div id="usersInRole" class="col-sm-6" style="display:none">
+            <h4>Users in @Model.Name Role</h4>
+            <div class="col-sm-6" style="margin-bottom:10px;">
+                <input type="search" id="searchUserInRole" value="" class="form-control" placeholder="Search Users in role">
+            </div>
+            <table id="tbUserInRole" class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayName("User Id")
+                        </th>
+                        <th>
+                            @Html.DisplayName("UserName")
+                        </th>
+                        <th>
+                            @Html.DisplayName("First Name")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Last Name")
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
 
                 @foreach (var item in Model.Users)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UserName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.FirstName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LastName)
-                </td>
-                <td>
-                    <input title="Select this User" type="checkbox" class="form-check-input" id="exampleCheck1"> |
-                    @*@Html.ActionLink("Edit", "RoleEdit", new { model = item }) |*@
-                    @*@Html.ActionLink("Details", "RoleDetails", new { model = item }) |*@
-                    <a href="#" title="Delete" onclick="deleteRole('@item.Id')"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-                </td>
-            </tr>
-}
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UserName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FirstName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LastName)
+                        </td>
+                        <td>
+                            <input id="userId_@item.Id" title="Select this User" type="checkbox" class="del-check-input"> |
+                            @*@Html.ActionLink("Edit", "RoleEdit", new { model = item }) |*@
+                            @*@Html.ActionLink("Details", "RoleDetails", new { model = item }) |*@
+                            <a href="#" title="Delete" onclick="delRoleConfirmation('@item.Id')"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                        </td>
+                    </tr>
+                }
             </table>
-            <input class="btn btn-danger" type="button" value="- Remove Selected Users" />
+            <div id="tbUserInRole-no-rows" style="display:none;margin-bottom:20px">No user found.</div>
+            <input onclick="deleteUsersFromRole();" class="btn btn-danger" type="button" value="- Remove Selected Users" />
         </div>
-        }   
-            <div class="col-sm-6">
-                <h4>All Users</h4>
-                    <table class="table">
-                        <tr>
-                            <th>
-                                @Html.DisplayName("Id")
-                            </th>
-                            <th>
-                                @Html.DisplayName("UserName")
-                            </th>
-                            <th>
-                                @Html.DisplayName("First Name")
-                            </th>
-                            <th>
-                                @Html.DisplayName("Last Name")
-                            </th>
-                            <th></th>
-                        </tr>
-
-                        @foreach (var item in Model.AllUsers)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Id)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.UserName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.FirstName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.LastName)
-                    </td>
-                    <td>
-                        <input title="Select this User" type="checkbox" class="form-check-input" id="exampleCheck1"> |
-                        @*@Html.ActionLink("Edit", "RoleEdit", new { model = item }) |*@
-                        @*@Html.ActionLink("Details", "RoleDetails", new { model = item }) |*@
-                        <a  href="#" title="Add" onclick="deleteRole('@item.Id')"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
-                    </td>
-                </tr>
-}
-                    </table>
-                <input class="btn btn-primary"  type="button" value="+ Add Selected Users" />
-                </div>
+        <div id="allUsers" class="col-sm-6" style="display:none;">
+            <h4>All Users</h4>
+            <div class="col-sm-6" style="margin-bottom:10px;">
+                <input type="search" id="searchAllUsers" value="" class="form-control" placeholder="Search Users">
             </div>
+            <table id="tbusers" class="table" style="margin-bottom:0px;">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayName("User Id")
+                        </th>
+                        <th>
+                            @Html.DisplayName("User Name")
+                        </th>
+                        <th>
+                            @Html.DisplayName("First Name")
+                        </th>
+                        <th>
+                            @Html.DisplayName("Last Name")
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                @foreach (var item in Model.AllUsers)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UserName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FirstName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LastName)
+                        </td>
+                        <td>
+                            <input id="userId_@item.Id" title="Select this User" type="checkbox" class="add-check-input"> |
+                            <a href="#" title="Add" onclick="addUsersToRole('@item.Id')"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
+                        </td>
+                    </tr>
+                }
+            </table>
+            <div id="tbusers-no-rows" style="display:none;margin-bottom:20px">No user found.</div>
+            <input onclick="addUsersToRole();" class="btn btn-primary" type="button" value="+ Add Selected Users" />
+        </div>
+    </div>
 </div>
-<p>
-    @Html.ActionLink("Edit", "EditRole", new { roleId = Model.Id }) |
-    @Html.ActionLink("Back to Roles", "Roles")
-</p>
+<div style="padding-top:40px;">
+    <p>
+        @Html.ActionLink("Edit", "EditRole", new { roleId = Model.Id }) |
+        @Html.ActionLink("Back to Roles", "Roles")
+    </p>
+</div>
 @section Scripts{
+    @Scripts.Render("~/bundles/searchable")
 
     <script type="text/javascript">
+    $(document).ready(function () {
+        var countAllUsers ='@Model.AllUsers.Count()';
+        var countUsers = '@Model.Users.Count()';
+        if (countAllUsers === "0") {
+            $('#allUsers').hide();
+            $('#usersInRole').removeClass('col-sm-6').addClass('col-sm-12');
+            $('#usersInRole').show();
+        }
+        else if (countUsers === "0") {
+            $('#usersInRole').hide();
+            $('#allUsers').removeClass('col-sm-6').addClass('col-sm-12');
+            $('#allUsers').show();
+        } else {
+            $('#usersInRole').show();
+            $('#allUsers').show();
+        }
+        $('#tbUserInRole').searchable({
+            striped: true,
+            oddRow: { 'background-color': '#f5f5f5' },
+            evenRow: { 'background-color': '#fff' },
+            searchType: 'fuzzy',
+            searchField: '#searchUserInRole',
+            selector: 'tbody tr',
+            show: function (elem) {
+                elem.slideDown(100);
+            },
+            hide: function (elem) {
+                elem.slideUp(100);
+            }
+        });
+
+        $('#searchUserInRole').on('keyup', function () {
+            if ($('#tbUserInRole tbody tr').length === $('#tbUserInRole tbody tr:hidden').length)
+                $('#tbUserInRole-no-rows').show()
+            else $('#tbUserInRole-no-rows').hide();
+        });
+
+
+        $('#tbusers').searchable({
+            striped: true,
+            oddRow: { 'background-color': '#f5f5f5' },
+            evenRow: { 'background-color': '#fff' },
+            searchType: 'fuzzy',
+            searchField: '#searchAllUsers',
+            selector: 'tbody tr',
+            show: function (elem) {
+                elem.slideDown(100);
+            },
+            hide: function (elem) {
+                elem.slideUp(100);
+            }
+        });
+
+        $('#searchAllUsers').on('keyup', function () {
+            if ($('#tbusers tbody tr').length === $('#tbusers tbody tr:hidden').length)
+                $('#tbusers-no-rows').show()
+            else $('#tbusers-no-rows').hide();
+        });
+
+
+    });
         var actions = [
             { text: 'Ok', primary: true, action: onDeleteRole },
             { text: 'Cancel', action: onCancel }
         ]
-        function deleteRole(id) {
-            openDialog('Delete Confirmation', '<p id="' + id + '">Are you sure you what delete ' + id +" role?</p>", actions);
+        function delRoleConfirmation(id) {
+            openDialog('Delete Confirmation', '<p id="' + id + '">Are you sure you what remove user from role?</p>', actions);
         }
         function onDeleteRole(e) {
             var id = $(e.sender.content()).attr("id");
             console.log('deleting...', id);
-            var url = '@Html.Raw(@Url.Action("RemoveUserFromRole", "Manage"))' + '?roleId=' + '@Model.Id' +'&userId='+ id;
+            var url = '@Html.Raw(@Url.Action("RemoveUsersFromRole", "Manage"))' + '?roleId=' + '@Model.Id' +'&users='+ id +'';
             console.log('Url', url);
             window.location.href = url;
         }
@@ -165,8 +235,45 @@
             console.log('canceling...', $(e.sender.content()).attr("id"))
         }
 
+        function addUsersToRole(id) {
+            var users = [];
+
+            if (id === undefined) {
+                $('.add-check-input:checked').each(function (index, e) {
+                    console.log(index, e);
+                    users.push(e.id.split('_')[1].toString());
+                });
+
+                if (users.length === 0) {
+                    openDialog("Add Selected User", "Please select at least one user.");
+                    return;
+                }
+            }
+            else {
+                users.push(id.toString());
+            }
+
+            var url = '@Html.Raw(@Url.Action("AddUsersToRole", "Manage"))' + '?roleId=' + '@Model.Id' + '&users=' + users.toString();
+            console.log('Url', url);
+            window.location.href = url;
+        }
+
+        function deleteUsersFromRole() {
+            var users = [];
+            $('.del-check-input:checked').each(function (index, e) {
+                console.log(index, e);
+                users.push(e.id.split('_')[1].toString());
+            });
+
+            if (users.length === 0) {
+                openDialog("Remove Selected User", "Please select at least one user.");
+                return;
+            }
+
+            delRoleConfirmation(users.toString());
+        }
+
     </script>
     <style>
-        
     </style>
 }

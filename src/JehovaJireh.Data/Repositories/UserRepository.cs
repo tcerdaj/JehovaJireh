@@ -58,6 +58,37 @@ namespace JehovaJireh.Data.Repositories
 			return (from u in Query() where u.Email == email select u).SingleOrDefault();
 		}
 
+        public async Task<bool> AddToRoleAsync(string userId, string role)
+        {
+            var success = true;
+
+            try
+            {
+                var user = await this.GetById(userId);
+                if (user != null && user.Roles == null)
+                {
+                    user.Roles = new List<Role>();
+                    var _role = session.Query<Role>().Where(x => x.Id == role).FirstOrDefault();
+                    if (_role != null)
+                        user.Roles.Add(_role);
+                }
+                else if (!user.Roles.Any(x => x.Id == role))
+                {
+                    var _role = session.Query<Role>().Where(x => x.Id == role).FirstOrDefault();
+                    if (_role != null)
+                        user.Roles.Add(_role);
+                }
+                if (user != null)
+                    await this.UpdateAsync(user);
+            }
+            catch (System.Exception)
+            {
+                success = false;
+            }
+
+            return success;
+        }
+
 		public User GetByConfirmationToken(string token)
 		{
 			return (from u in Query() where u.ConfirmationToken == token select u).SingleOrDefault();
@@ -222,21 +253,25 @@ namespace JehovaJireh.Data.Repositories
             return Task.FromResult((from u in this.Query() where u.Id == int.Parse(id) select u).SingleOrDefault());
 		}
 
-		public Task AddToRoleAsync(User user, string roleName)
+		public Task AddToRoleAsync(User user, string roleId)
 		{
 			if (user == null)
 				throw new NullReferenceException("user");
 
-			if (string.IsNullOrEmpty(roleName))
-				throw new NullReferenceException("roleName");
+			if (string.IsNullOrEmpty(roleId))
+				throw new NullReferenceException("roleIdoleName");
 
             try
             {
-                var isInRole =  IsInRoleAsync(user, roleName);
+                var isInRole =  IsInRoleAsync(user, roleId);
                 if (!isInRole.Result)
                 {
-                    user.AddRole(new Role { Name = roleName });
-                    Update(user);
+                    var role = Session.Query<Role>().Where(x => x.Id == roleId || x.Name == roleId).FirstOrDefault();
+                    if (role != null)
+                    {
+                        user.AddRole(role);
+                        Update(user);
+                    }
                 }
             }
             catch (System.Exception ex)
@@ -244,45 +279,26 @@ namespace JehovaJireh.Data.Repositories
                 log.Error(ex);
                 throw ex;
             }
-			return Task.FromResult(roleName);
+			return Task.FromResult(roleId);
 		}
 
-		public Task AddToRoles(User user, string[] roles)
-		{
-			if (roles == null)
-				throw new NullReferenceException("roles");
 
-            try
-            {
-                foreach (var role in roles)
-                {
-                    var exist = IsInRoleAsync(user, role);
-                    if (!exist.Result)
-                        user.AddRole(new Role() { Name = role });
-                }
+        public Task RemoveFromRoleAsync(User user, string roleName)
+        {
+            if (user == null)
+                throw new NullReferenceException("user");
 
-            }
-            catch (System.Exception)
-            {
-                throw;
-            }
-
-            Update(user);           
-			return Task.FromResult(roles);
-		}
-
-		public Task RemoveFromRoleAsync(User user, string roleName)
-		{
-			if (user == null)
-				throw new NullReferenceException("user");
-
-			if (string.IsNullOrEmpty(roleName))
-				throw new NullReferenceException("roleName");
+            if (string.IsNullOrEmpty(roleName))
+                throw new NullReferenceException("roleName");
 
             var exist = IsInRoleAsync(user, roleName);
 
             if (exist.Result)
-                user.RemoveRole(user.Roles.FirstOrDefault(x=>x.Name == roleName));
+            {
+                var index = user.Roles.ToList().FindIndex(x => x.Id == roleName || x.Name == roleName);
+                user.Roles.RemoveAt(index);
+                this.UpdateAsync(user);
+            }
 
 			return Task.FromResult(user);
 		}
@@ -302,7 +318,7 @@ namespace JehovaJireh.Data.Repositories
 
             try
             {
-                return Task.FromResult<bool>(user.Roles.Any(x => x.Name == roleName));
+                return Task.FromResult<bool>(user.Roles.Any(x => x.Name == roleName || x.Id ==roleName));
             }
             catch (System.Exception)
             {

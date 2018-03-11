@@ -136,8 +136,8 @@ namespace JehovaJireh.Web.UI
 			return Task.FromResult(user);
 		}
 
-
-		public override Task SendEmailAsync(string userId, string subject, string body)
+        
+        public override Task SendEmailAsync(string userId, string subject, string body)
 		{
 			EmailService email = new EmailService();
 			var destination = this.FindById(userId).Email;

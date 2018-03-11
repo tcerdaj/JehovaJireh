@@ -15,7 +15,7 @@ using JehovaJireh.Logging;
 using Omu.ValueInjecter;
 using JehovaJireh.Web.UI.App_GlobalResources;
 using System.Collections.Generic;
-
+using Newtonsoft.Json;
 
 namespace JehovaJireh.Web.UI.Controllers
 {
@@ -337,35 +337,71 @@ namespace JehovaJireh.Web.UI.Controllers
             return View(model);
         }
 
-        public async Task<ActionResult> RemoveUserFromRole(string roleId, string userId)
+        public async Task<ActionResult> AddUsersToRole(string roleId,string users)
         {
-            IEnumerable<string> errors = new List<string>();
+            IDictionary<string, string[]> errors = 
+                new Dictionary<string, string[]>();
+
+            var userArray = users.Split(',');
 
             try
             {
-                var role = await RoleManager.FindByIdAsync(roleId);
-                var user = await UserManager.FindByIdAsync(userId);
-                if (role != null && user != null && user.Roles != null) {
-                    var index = user.Roles.ToList().FindIndex(x => x.Id == roleId);
-                    user.Roles.RemoveAt(index);
-                    var result = await UserManager.UpdateAsync(user);
-                    if (result.Succeeded)
+                if (!string.IsNullOrEmpty(roleId))
+                {
+                    foreach (var userId in userArray)
+                    {
+                        var result = await UserManager.AddToRoleAsync(userId, roleId);
+                        if (!result.Succeeded)
+                        {
+                            errors.Add("UserId_" + userId, result.Errors.ToArray());
+                        }
+                    }
+
+                    if (errors.Count() == 0)
                     {
                         return RedirectToAction("GoToRole", new { roleId = roleId, message = ManageMessageId.OperationSuccess });
-                    }
-                    else
-                    {
-                        errors = result.Errors;
                     }
                 }
             }
             catch (System.Exception ex)
             {
                 ViewBag.Success = false;
-                errors = new List<string>(new string[] { string.Format("{0} Please check your entry and try again.", ex.Message) });
+                errors.Add("GeneralError", new string[] { ex.Message });
             }
 
-            TempData[OPERATION_STATUS] = string.Join(",", errors);
+            TempData[OPERATION_STATUS] = JsonConvert.SerializeObject(errors);
+            return RedirectToAction("GoToRole", new { roleId = roleId, message = ManageMessageId.Error });
+        }
+
+        public async Task<ActionResult> RemoveUsersFromRole(string roleId, string users)
+        {
+            IDictionary<string, string[]> errors =
+                new Dictionary<string, string[]>();
+            var userArray = users.Split(',');
+
+            try
+            {
+                foreach (var userId in userArray)
+                {
+                    var result = await UserManager.RemoveFromRoleAsync(userId, roleId);
+                    if (!result.Succeeded)
+                    {
+                        errors.Add("userId_"+userId, result.Errors.ToArray<string>());
+                    }
+                }
+
+                if (errors.Count() == 0)
+                {
+                    return RedirectToAction("GoToRole", new { roleId = roleId, message = ManageMessageId.OperationSuccess });
+                }
+            }
+            catch (System.Exception ex)
+            {
+                ViewBag.Success = false;
+                errors.Add("GeneralError", new string[] { ex.Message });
+            }
+
+            TempData[OPERATION_STATUS] = JsonConvert.SerializeObject(errors);
             return RedirectToAction("GoToRole", new {roleId = roleId, message = ManageMessageId.Error });
         }
 

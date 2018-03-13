@@ -10,7 +10,8 @@ namespace JehovaJireh.Web.UI
 		public static void RegisterGlobalFilters(GlobalFilterCollection filters)
 		{
 			filters.Add(new HandleErrorAttribute());
-			//filters.Add(new CultureFilter(defaultCulture: CultureHelper.GetDefaultCulture()));
-		}
+            //filters.Add(new CultureFilter(defaultCulture: CultureHelper.GetDefaultCulture()));
+            filters.Add(new RequireHttpsAttribute());
+        }
 	}
 }

@@ -21,7 +21,9 @@ namespace JehovaJireh.Web.UI
 {
     public partial class Startup
     {
-
+        public Startup()
+        {
+        }
 		// For more information on configuring authentication, please visit https://go.microsoft.com/fwlink/?LinkId=301864
 		public void ConfigureAuth(IAppBuilder app)
 		{
@@ -114,6 +116,14 @@ namespace JehovaJireh.Web.UI
                 Trace.WriteLine(ex);
             }
         }
+
+        //public static OAuthAuthorizationServerOptions OAuthOptions { get; private set; }
+
+        //public static CookieAuthenticationOptions CookieOptions { get; private set; }
+
+        //public static IdentityManagerFactory IdentityManagerFactory { get; set; }
+
+        public static string PublicClientId { get; private set; }
         private void createDefaultRolesandUsers()
         {
             var container = MvcApplication.BootstrapContainer();

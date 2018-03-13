@@ -462,7 +462,9 @@ namespace JehovaJireh.Data.Repositories
 			if (login == null)
 				throw new ArgumentNullException("login");
 
-			throw new NotImplementedException();
+            var loginResult = Session.Query<Login>().Where(x => x.LoginProvider == login.LoginProvider && x.ProviderKey == login.ProviderKey).FirstOrDefault();
+
+            return Task.FromResult(loginResult.User);
 		}
 	}
 }

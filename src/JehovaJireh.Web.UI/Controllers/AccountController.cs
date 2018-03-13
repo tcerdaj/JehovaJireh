@@ -14,6 +14,8 @@ using JehovaJireh.Data.Repositories;
 using JehovaJireh.Logging;
 using Castle.Windsor;
 using System.Diagnostics;
+using Facebook;
+using System.Security.Claims;
 
 namespace JehovaJireh.Web.UI.Controllers
 {
@@ -30,6 +32,9 @@ namespace JehovaJireh.Web.UI.Controllers
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager, ILogger log)
         {
+            if (userManager == null)
+                userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+
             UserManager = userManager;
             SignInManager = signInManager;
             container = MvcApplication.BootstrapContainer();
@@ -39,7 +44,7 @@ namespace JehovaJireh.Web.UI.Controllers
 
         #region Variables
         private ApplicationSignInManager _signInManager;
-        private ApplicationUserManager _userManager;
+        private static ApplicationUserManager _userManager;
         private static IWindsorContainer container;
         private ILogger log;
         private const string USERSETTINGS = "UserSettings";
@@ -51,18 +56,18 @@ namespace JehovaJireh.Web.UI.Controllers
         {
             get
             {
-                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
+                return _signInManager?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>(); 
             }
             private set
             {
                 _signInManager = value;
             }
         }
-        public ApplicationUserManager UserManager
+        public static ApplicationUserManager UserManager
         {
             get
             {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                return _userManager;
             }
             private set
             {
@@ -341,6 +346,15 @@ namespace JehovaJireh.Web.UI.Controllers
         #endregion
 
         #region ExternalLogin
+
+        public ActionResult ExternalLogins(string returnUrl)
+        {
+            // Request a redirect to the external login provider
+            ViewBag.returnUrl = returnUrl;
+            var provider = "";
+            return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl }));
+        }
+
         //
         // POST: /Account/ExternalLogin
         [HttpPost]
@@ -357,22 +371,40 @@ namespace JehovaJireh.Web.UI.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
         {
-            string userid = null;
-            bool custEmailConf = false;
-            string custUserName = null;
+            string userId = null; //get userid;
+            //string confirmationUserName;
+            //bool custEmailConf = false; //to check if email is confirmed;
+            string custUserName = null; //to check if username exist in the database
             var info = await AuthenticationManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
                 return RedirectToAction("Index", "Home");
             }
             string userprokey = info.Login.ProviderKey;
-            
+            var user = await UserManager.FindAsync(info.Login);
+            userId = user != null ? user.Id.ToString(): userId; //get userId
+
+            //if (userId != null)
+            //{
+            //    //check if email is confirmed
+            //    custEmailConf = true;
+            //    //get username
+            //    custUserName = user.UserName;
+            //}
+
+            //Email confirmation handling
+            //if (custEmailConf == false && custUserName != null)
+            //{
+            //    confirmationUserName = custUserName;
+            //    return RedirectToAction("EmailConfirmationFailed", "Account");
+            //}
 
             // Sign in the user with this external login provider if the user already has a login
             var result = await SignInManager.ExternalSignInAsync(info, isPersistent: false);
             switch (result)
             {
                 case SignInStatus.Success:
+                    UpdateUserAuditValues(user);
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -383,8 +415,59 @@ namespace JehovaJireh.Web.UI.Controllers
                     // If the user does not have an account, then prompt the user to create an account
                     ViewBag.ReturnUrl = returnUrl;
                     ViewBag.LoginProvider = info.Login.LoginProvider;
-                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = info.Email });
+
+                    switch (info.Login.LoginProvider)
+                    {
+                        case "Facebook":
+                            var identity = AuthenticationManager.GetExternalIdentity
+                           (DefaultAuthenticationTypes.ExternalCookie);
+                            var access_token = identity.FindFirstValue("FacebookAccessToken");
+                            var fb = new FacebookClient(access_token);
+                            dynamic uEmail = fb.Get("/me?fields=email");
+                            dynamic uBirtDate = fb.Get("/me?fields=birthday");
+                            dynamic uFname = fb.Get("/me?fields=first_name");
+                            dynamic uLname = fb.Get("/me?fields=last_name");
+                            OEmail = uEmail.email;
+                            OBirthday = uBirtDate.birthday;
+                            OFname = uFname.first_name;
+                            OLname = uLname.last_name;
+                            break;
+                        case "Google":
+                            OEmail = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+                            OBirthday = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth").Value;
+                            OFname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname").Value;
+                            OLname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname").Value;
+                            break;
+                        case "Microsoft":
+                            OEmail = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+
+                            string bday = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:birth_day").Value,
+                                   bmonth = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:birth_month").Value, 
+                                   byear = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:birth_year").Value;
+
+                            OBirthday = string.Format("{0}/{1}/{2}", bday, bmonth, byear);
+                            OFname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:first_name").Value;
+                            OLname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:last_name").Value;
+                            break;
+                        default:
+                            OEmail = null;
+                            OBirthday = null;
+                            OFname = null;
+                            OLname = null;
+                            break;
+                    }
+                  
+
+                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = OEmail, ExtFirstName = OFname, ExtLastName = OLname, ExtBirtDate = OBirthday});
             }
+        }
+
+        private async void UpdateUserAuditValues(User user)
+        {
+            if (user == null)
+                throw new ArgumentNullException("user");
+            user.LastLogin = DateTime.Now;
+            await UserManager.UpdateAsync(user);
         }
 
         //
@@ -407,18 +490,47 @@ namespace JehovaJireh.Web.UI.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new User { UserName = model.Email, Email = model.Email };
-                var result = await UserManager.CreateAsync(user);
-                if (result.Succeeded)
+                var userByEmail = await UserManager.FindByEmailAsync(model.Email);
+                var userByUsername = await UserManager.FindByNameAsync(model.Email);
+                DateTime.TryParse(model.ExtBirtDate, out var birthDate);
+
+                var user = new User
                 {
-                    result = await UserManager.AddLoginAsync(user.Id.ToString(), info.Login);
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FirstName = model.ExtFirstName,
+                    LastName = model.ExtLastName,
+                    Country = model.ExtCountry,
+                    BirthDate = birthDate,
+                    LastLogin = DateTime.Now,
+                    CreatedOn = DateTime.Now
+                };
+
+                if (userByEmail == null && userByUsername == null)
+                {
+                    var result = await UserManager.CreateAsync(user);
                     if (result.Succeeded)
                     {
-                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                        return RedirectToLocal(returnUrl);
+                        result = await UserManager.AddLoginAsync(user.Id.ToString(), info.Login);
+                        if (result.Succeeded)
+                        {
+                            await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                            return RedirectToLocal(returnUrl);
+                        }
+                    }
+                    AddErrors(result);
+                }
+                else
+                {
+                    if (userByEmail != null)
+                    {
+                        ModelState.AddModelError("", "Email is already registered.");
+                    }
+                    if(userByUsername != null)
+                    {
+                        ModelState.AddModelError("", string.Format("Username {0} is already taken.", model.ExtUsername));
                     }
                 }
-                AddErrors(result);
             }
 
             ViewBag.ReturnUrl = returnUrl;
@@ -487,6 +599,27 @@ namespace JehovaJireh.Web.UI.Controllers
         #endregion
 
         #region Helpers
+        public static Task<string[]> GetContries()
+        {
+            System.Globalization.CultureInfo[] cinfo = System.Globalization.CultureInfo.GetCultures(System.Globalization.CultureTypes.SpecificCultures & ~System.Globalization.CultureTypes.NeutralCultures);
+
+            string[] response = new string[] { };
+
+            foreach (System.Globalization.CultureInfo cul in cinfo)
+            {
+                var i = cinfo.ToList().IndexOf(cul);
+                var region = new System.Globalization.RegionInfo(cul.Name);
+                response[i] = region.DisplayName;
+            }
+
+            return Task<string[]>.FromResult(response);
+
+        }
+        public static string FindEmail(string oEmail)
+        {
+            var user = UserManager.FindByEmail(oEmail);
+            return user?.Email;
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)

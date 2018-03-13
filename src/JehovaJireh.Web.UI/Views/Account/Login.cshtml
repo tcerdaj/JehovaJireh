@@ -64,8 +64,10 @@
 
     <script type="text/javascript">
         $('#btnGoogleLogin').on("click", function (e) {
-            var href = 
-            window.location.href =
+            var url = "/Account/ExternalLogin?provider=Google&returnUrl=Home%2FIndex";
+            alert(url);
+            $.redirectPost(url, { x: 'example', y: 'abc' });
+            //window.location.href = href;
         });
 
 

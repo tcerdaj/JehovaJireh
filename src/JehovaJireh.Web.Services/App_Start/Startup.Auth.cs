@@ -39,7 +39,7 @@ namespace JehovaJireh.Web.Services
 				TokenEndpointPath = new PathString("/oauth/access_token"),
 				Provider = new ApplicationOAuthProvider(PublicClientId, UserManagerFactory),
 				AuthorizeEndpointPath = new PathString("/oauth/account/enternal_login"),
-				AccessTokenExpireTimeSpan = TimeSpan.FromDays(1),
+				AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),
 				AllowInsecureHttp = true
 			};
 		}

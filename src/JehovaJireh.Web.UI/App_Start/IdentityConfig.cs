@@ -45,8 +45,7 @@ namespace JehovaJireh.Web.UI
 			userRepository = userStore;
 		}
 
-
-		public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)
+        public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)
 		{
 			var container = MvcApplication.BootstrapContainer();
 			var log = container.Resolve<ILogger>();
@@ -118,6 +117,11 @@ namespace JehovaJireh.Web.UI
             }
         }
 
+        public override Task<User> FindAsync(UserLoginInfo login)
+        {
+            return userRepository.FindAsync(login);
+        }
+
         public Task<User> GetUserById(int id)
 		{
 			var user = userRepository.GetById(id);
@@ -136,7 +140,6 @@ namespace JehovaJireh.Web.UI
 			return Task.FromResult(user);
 		}
 
-        
         public override Task SendEmailAsync(string userId, string subject, string body)
 		{
 			EmailService email = new EmailService();

@@ -52,7 +52,8 @@ namespace JehovaJireh.Core.Entities
         public virtual IList<Claim> Claims { get; set; }
         public virtual IList<Login> Logins { get; set; }
         public virtual UserSecret Secret { get; set; }
-
+        public virtual DateTime BirthDate { get; set; }
+        public virtual string Country { get; set; }
         string IUser<string>.Id
 		{
 			get { return this.Id.ToString(); }

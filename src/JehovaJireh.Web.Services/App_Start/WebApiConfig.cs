@@ -21,9 +21,10 @@ namespace JehovaJireh.Web.Services
 			// Configure Web API to use only bearer token authentication.
 			config.SuppressDefaultHostAuthentication();
 			config.Filters.Add(new HostAuthenticationFilter(OAuthDefaults.AuthenticationType));
+            config.Filters.Add(new JehovaJireh.Web.Services.Filters.RequireHttpsAttribute());
 
-			//Configure Raygun for WebApi
-			var raygunSettings = (Mindscape.Raygun4Net.RaygunSettings)ConfigurationManager.GetSection("RaygunSettings");
+            //Configure Raygun for WebApi
+            var raygunSettings = (Mindscape.Raygun4Net.RaygunSettings)ConfigurationManager.GetSection("RaygunSettings");
 			config.Services.Add(typeof(IExceptionLogger), new RaygunExceptionLogger(raygunSettings.ApiKey)); //Add raygun
 
 			//Unhandled exceptions per controller

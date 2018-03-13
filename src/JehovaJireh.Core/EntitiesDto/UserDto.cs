@@ -21,7 +21,8 @@ namespace JehovaJireh.Core.EntitiesDto
 		public virtual string City { get; set; }
 		public virtual string State { get; set; }
 		public virtual string Zip { get; set; }
-		public virtual string PhoneNumber { get; set; }
+        public virtual string Country { get; set; }
+        public virtual string PhoneNumber { get; set; }
 		public virtual bool Active { get; set; }
 		public virtual bool LockoutEnabled { get; set; }
 		public virtual bool TwoFactorEnabled { get; set; }
@@ -40,6 +41,7 @@ namespace JehovaJireh.Core.EntitiesDto
         public virtual UserRefDto CreatedBy { get; set; }
         public virtual UserRefDto ModifiedBy { get; set; }
         public virtual DateTime LastLogin { get; set; }
+        public virtual DateTime BirthDate { get; set; }
 
         #endregion
     }

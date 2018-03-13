@@ -43,6 +43,8 @@ namespace JehovaJireh.Data.Mappings
 			Map(x => x.ChurchPastor);
 			Map(x => x.NeedToBeVisited);
 			Map(x => x.Comments);
+            Map(x => x.BirthDate);
+            Map(x => x.Country);
             HasManyToMany(x => x.Roles)
                 .Cascade.All()
                 .ParentKeyColumn("UserId")

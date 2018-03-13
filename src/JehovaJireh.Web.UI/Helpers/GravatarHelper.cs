@@ -163,11 +163,29 @@ public static class CheckBoxListExtensions
                 builder.MergeAttributes<string, object>(htmlAttributes);
                 builder.MergeAttribute("type", "checkbox");
                 builder.MergeAttribute("value", info.Value);
-                builder.MergeAttribute("name", name);
+                builder.MergeAttribute("name", info.Value);
+                builder.MergeAttribute("id", info.Value);
                 sb.Append(builder.ToString(TagRenderMode.Normal));
- 
+
+                TagBuilder builderHidden = new TagBuilder("input");
+                if (info.Selected)
+                {
+                    builderHidden.MergeAttribute("checked", "checked");
+                    builderHidden.MergeAttribute("value", "true");
+                }
+                else
+                {
+                    builderHidden.MergeAttribute("value", "false");
+                }
+
+                builderHidden.MergeAttributes<string, object>(htmlAttributes);
+                builderHidden.MergeAttribute("type", "hidden");
+                builderHidden.MergeAttribute("data-val", "true");
+                builderHidden.MergeAttribute("name", info.Value);
+                sb.Append(builderHidden.ToString(TagRenderMode.Normal));
+
                 TagBuilder labelBuilder = new TagBuilder("label");
-                labelBuilder.MergeAttribute("for", name);
+                labelBuilder.MergeAttribute("for", info.Value);
                 labelBuilder.InnerHtml = info.Text;
                 sb.Append(labelBuilder.ToString(TagRenderMode.Normal));
  

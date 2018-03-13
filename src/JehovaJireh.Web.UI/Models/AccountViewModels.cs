@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Web;
 using JehovaJireh.Web.UI.App_GlobalResources;
@@ -302,11 +303,23 @@ namespace JehovaJireh.Web.UI.Models
 
 		[Display(Name = "Comments", ResourceType = typeof(Resources))]
 		public string Comments { get; set; }
+        public List<AccountRoleViewModel> Roles { get; set; }
+        [Display(Name ="Roles")]
+        public List<System.Web.Mvc.SelectListItem> AllRoles { get; set; }
+
+    }
+
+    public class AccountRoleViewModel
+    {
+        [DisplayName("Role Id")]
+        public string Id { get; set; }
+        [DisplayName("Role Name")]
+        public string Name { get; set; }
+        
+    }
 
 
-	}
-
-	public class ResetPasswordViewModel
+    public class ResetPasswordViewModel
     {
         [Required]
         [EmailAddress]

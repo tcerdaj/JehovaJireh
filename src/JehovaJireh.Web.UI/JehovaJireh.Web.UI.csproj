@@ -2678,6 +2678,7 @@
     <Content Include="Views\Manage\GoToRole.cshtml" />
     <Content Include="Views\Home\Admin.cshtml" />
     <Content Include="Views\Manage\EditRole.cshtml" />
+    <Content Include="Views\Manage\Users.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

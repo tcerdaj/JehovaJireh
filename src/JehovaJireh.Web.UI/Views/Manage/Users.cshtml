@@ -1,0 +1,87 @@
+﻿@model IEnumerable<JehovaJireh.Web.UI.Models.UpdateAccountViewModel>
+
+@{
+    ViewBag.Title = "Users";
+}
+
+<h2>Users</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UserName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ImageUrl)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FirstName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LastName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Gender)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Address)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PhoneNumber)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Email)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UserName)
+        </td>
+        <td>
+            @if (string.IsNullOrEmpty(item.ImageUrl))
+    {
+        <img class="avatar-image-container" src="~/Img/no-photo.png" />
+}
+else
+{
+        <img class="avatar-image-container" src="@item.ImageUrl" />
+}
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FileDataChange)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FirstName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LastName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Gender)
+        </td>
+        <td>
+            @Html.DisplayNameFor(model => model.Address),
+            @Html.DisplayNameFor(model => model.City),
+            @Html.DisplayNameFor(model => model.State),
+            @Html.DisplayNameFor(model => model.Zip)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.PhoneNumber)
+        </td>
+        <td>
+            <a href="#" title="Delete"><i class="fa fa-trash-o" aria-hidden="true"></i></a> |
+            <a href="@Url.Action("UpdateAccount", new { userId = item.Id, returnUrl="/Manage/users" })" title="Go to @item.UserName user Details"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></a> |
+        </td>
+    </tr>
+}
+
+</table>

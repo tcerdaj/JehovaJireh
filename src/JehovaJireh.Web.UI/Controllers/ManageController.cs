@@ -166,6 +166,31 @@ namespace JehovaJireh.Web.UI.Controllers
             return View(model);
         }
 
+        public ActionResult Users(ManageMessageId? message)
+        {
+            ViewBag.StatusMessage =
+                 message == ManageMessageId.ChangePasswordSuccess ? Resources.YourPasswordHaschanged
+                 : message == ManageMessageId.SetPasswordSuccess ? Resources.YourPasswordHasSet
+                 : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
+                 : message == ManageMessageId.Error ? Resources.Error
+                 : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
+                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
+                 : message == ManageMessageId.UpdateAccountSuccess ? Resources.YourAccoutHasUpdated
+                 : message == ManageMessageId.OperationSuccess ? "Operation has been completed Successfully!!!"
+                 : "";
+
+            var users = UserManager.Users.ToList();
+            var model = new List<UpdateAccountViewModel>();
+
+            foreach (var user in users)
+            {
+                var _user = (UpdateAccountViewModel)new UpdateAccountViewModel().InjectFrom<DeepCloneInjection>(user);
+                model.Add(_user);
+            }
+           
+            return View(model);
+        }
+
         public async Task<ActionResult> DeleteRole(string roleId)
         {
             ViewBag.StatusMessage = "An error ocurred deleting Role";
@@ -582,18 +607,28 @@ namespace JehovaJireh.Web.UI.Controllers
 		}
 		
 		// GET: /Manage/UpdateAccount
-		public ActionResult UpdateAccount()
+		public ActionResult UpdateAccount(string userId = null, string returnUrl = null)
 		{
-			var user = UserManager.FindById(User.Identity.GetUserId());
-			var model = (UpdateAccountViewModel)new UpdateAccountViewModel().InjectFrom<DeepCloneInjection>(user);
+            var user = UserManager.FindById(User.Identity.GetUserId());
+            ViewBag.returnUrl = returnUrl;
+            if (!string.IsNullOrEmpty(userId))
+            {
+                if (!(user.Roles != null && user.Roles.Any(x => x.Name.ToLower() == "administrators")))
+                    return RedirectToAction("Index", "Home");
+
+                user = UserManager.FindById(userId);
+            }
+
+            var model = (UpdateAccountViewModel)new UpdateAccountViewModel().InjectFrom<DeepCloneInjection>(user);
+            model.AllRoles = RoleManager.Roles.ToList<Role>().Select(x => new SelectListItem { Text = x.Name, Value = x.Id, Selected = model.Roles.Any(r => r.Id == x.Id) }).ToList<SelectListItem>();
 			return View(model);
 		}
 
-		//
-		// POST: /Manage/UpdateAccount
-		[HttpPost]
+        //
+        // POST: /Manage/UpdateAccount
+        [HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> UpdateAccount(UpdateAccountViewModel model)
+		public async Task<ActionResult> UpdateAccount(UpdateAccountViewModel model, string returnUrl=null)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -615,7 +650,7 @@ namespace JehovaJireh.Web.UI.Controllers
 			user.Comments = model.Comments;
 			user.ModifiedOn = DateTime.UtcNow;
             user.ModifiedBy = new Core.Entities.User { Id = model.Id };
-
+            user.Roles = model.AllRoles.Where(x => x.Selected == true).Select(r => new Role { Id = r.Value, Name = r.Text }).ToList<Role>();
 			if (model.FileData != null)
 			{
 				ImageService imageService = new ImageService(log);
@@ -629,8 +664,11 @@ namespace JehovaJireh.Web.UI.Controllers
 			if (result.Succeeded)
 			{
 				Session["UserSettings"] = user.ToJson();
-				return RedirectToAction("Index", new { Message = ManageMessageId.UpdateAccountSuccess });
-			}
+                if (string.IsNullOrEmpty(returnUrl))
+                    return RedirectToAction("Index", new { Message = ManageMessageId.UpdateAccountSuccess });
+                else
+                    return Redirect(returnUrl);
+            }
 
             AddErrors(result);
 			return View(model);

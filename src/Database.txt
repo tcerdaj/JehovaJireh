@@ -1,6 +1,33 @@
 USE [jehovajirehDB]
 GO
-/****** Object:  Table [dbo].[DonationDetails]    Script Date: 03/08/2018 1:13:55 AM ******/
+/****** Object:  User [IIS APPPOOL\DefaultAppPool]    Script Date: 3/12/2018 10:28:28 PM ******/
+CREATE USER [IIS APPPOOL\DefaultAppPool] FOR LOGIN [IIS APPPOOL\DefaultAppPool] WITH DEFAULT_SCHEMA=[dbo]
+GO
+ALTER ROLE [db_datareader] ADD MEMBER [IIS APPPOOL\DefaultAppPool]
+GO
+ALTER ROLE [db_datawriter] ADD MEMBER [IIS APPPOOL\DefaultAppPool]
+GO
+/****** Object:  Table [dbo].[DonationDetailImages]    Script Date: 3/12/2018 10:28:28 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[DonationDetailImages](
+	[DonationImageId] [int] NOT NULL,
+	[ItemId] [uniqueidentifier] NOT NULL,
+	[ImageUrl] [nvarchar](max) NOT NULL,
+	[CreatedOn] [datetime] NOT NULL,
+	[ModifiedOn] [datetime] NULL,
+	[CreatedBy] [int] NOT NULL,
+	[ModifiedBy] [int] NULL,
+ CONSTRAINT [PK_DonationDetailsImages] PRIMARY KEY CLUSTERED 
+(
+	[DonationImageId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+GO
+/****** Object:  Table [dbo].[DonationDetails]    Script Date: 3/12/2018 10:28:28 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -24,27 +51,27 @@ CREATE TABLE [dbo].[DonationDetails](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[DonationImages]    Script Date: 03/08/2018 1:13:55 AM ******/
+/****** Object:  Table [dbo].[DonationImages]    Script Date: 3/12/2018 10:28:28 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[DonationImages](
 	[DonationImageId] [int] NOT NULL,
-	[ItemId] [uniqueidentifier] NOT NULL,
+	[DonationId] [int] NOT NULL,
 	[ImageUrl] [nvarchar](max) NOT NULL,
 	[CreatedOn] [datetime] NOT NULL,
 	[ModifiedOn] [datetime] NULL,
 	[CreatedBy] [int] NOT NULL,
 	[ModifiedBy] [int] NULL,
- CONSTRAINT [PK_DonationDetailsImages] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_DonationImages] PRIMARY KEY CLUSTERED 
 (
 	[DonationImageId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Donations]    Script Date: 03/08/2018 1:13:55 AM ******/
+/****** Object:  Table [dbo].[Donations]    Script Date: 3/12/2018 10:28:28 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -54,16 +81,15 @@ CREATE TABLE [dbo].[Donations](
 	[RequestedBy] [int] NULL,
 	[RequestId] [int] NULL,
 	[Title] [nvarchar](50) NOT NULL,
+	[Amount] [decimal](10, 2) NULL,
 	[Description] [nvarchar](180) NULL,
 	[DonatedOn] [datetime] NOT NULL,
-	[LastUpdate] [datetime] NULL,
 	[ExpireOn] [date] NULL,
 	[DonationStatus] [smallint] NOT NULL,
 	[CreatedOn] [datetime] NOT NULL,
 	[ModifiedOn] [datetime] NULL,
 	[CreatedBy] [int] NOT NULL,
 	[ModifiedBy] [int] NULL,
-	[Amount] [decimal](10, 2) NULL,
  CONSTRAINT [PK_Donations] PRIMARY KEY CLUSTERED 
 (
 	[DonationId] ASC
@@ -71,7 +97,7 @@ CREATE TABLE [dbo].[Donations](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Request]    Script Date: 03/08/2018 1:13:55 AM ******/
+/****** Object:  Table [dbo].[Request]    Script Date: 3/12/2018 10:28:28 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -95,7 +121,7 @@ CREATE TABLE [dbo].[Request](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Roles]    Script Date: 03/08/2018 1:13:55 AM ******/
+/****** Object:  Table [dbo].[Roles]    Script Date: 3/12/2018 10:28:28 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -110,33 +136,43 @@ CREATE TABLE [dbo].[Roles](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Scheduler]    Script Date: 03/08/2018 1:13:55 AM ******/
+/****** Object:  Table [dbo].[Scheduler]    Script Date: 3/12/2018 10:28:28 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Scheduler](
 	[SchedulerId] [int] NOT NULL,
-	[ItemId] [uniqueidentifier] NOT NULL,
-	[ItemName] [nvarchar](50) NULL,
+	[DonationId] [int] NOT NULL,
+	[ItemId] [uniqueidentifier] NULL,
 	[Title] [nvarchar](50) NULL,
 	[ImageUrl] [nvarchar](max) NULL,
 	[Description] [nvarchar](180) NULL,
-	[StartDate] [datetime] NOT NULL,
-	[EndDate] [datetime] NOT NULL,
+	[StartDate] [datetime] NULL,
+	[EndDate] [datetime] NULL,
 	[RecurrenceRule] [nvarchar](50) NULL,
-	[CreatedOn] [datetime] NOT NULL,
+	[RecurrenceId] [int] NULL,
+	[RecurrenceException] [nvarchar](50) NULL,
+	[StartTimezone] [nvarchar](80) NULL,
+	[EndTimezone] [nvarchar](80) NULL,
+	[IsAllDay] [bit] NULL,
+	[CreatedOn] [datetime] NULL,
 	[ModifiedOn] [datetime] NULL,
-	[CreatedBy] [int] NOT NULL,
+	[CreatedBy] [int] NULL,
 	[ModifiedBy] [int] NULL,
  CONSTRAINT [PK_Scheduler] PRIMARY KEY CLUSTERED 
 (
 	[SchedulerId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
+ CONSTRAINT [FK_Scheduler_UQ_DonationId_ItemId] UNIQUE NONCLUSTERED 
+(
+	[DonationId] ASC,
+	[ItemId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[UserClaims]    Script Date: 03/08/2018 1:13:55 AM ******/
+/****** Object:  Table [dbo].[UserClaims]    Script Date: 3/12/2018 10:28:28 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -153,7 +189,7 @@ CREATE TABLE [dbo].[UserClaims](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[UserLogins]    Script Date: 03/08/2018 1:13:55 AM ******/
+/****** Object:  Table [dbo].[UserLogins]    Script Date: 3/12/2018 10:28:28 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -171,7 +207,7 @@ CREATE TABLE [dbo].[UserLogins](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[UserRoles]    Script Date: 03/08/2018 1:13:55 AM ******/
+/****** Object:  Table [dbo].[UserRoles]    Script Date: 3/12/2018 10:28:28 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -187,7 +223,7 @@ CREATE TABLE [dbo].[UserRoles](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 03/08/2018 1:13:55 AM ******/
+/****** Object:  Table [dbo].[Users]    Script Date: 3/12/2018 10:28:28 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -240,25 +276,97 @@ CREATE TABLE [dbo].[Users](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[UserSecrets]    Script Date: 03/08/2018 1:13:55 AM ******/
+/****** Object:  Table [dbo].[UserSecrets]    Script Date: 3/12/2018 10:28:28 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[UserSecrets](
+	[UserId] [int] NOT NULL,
 	[UserName] [nvarchar](255) NOT NULL,
 	[Secret] [nvarchar](max) NULL,
  CONSTRAINT [PK_dbo.UserSecrets] PRIMARY KEY CLUSTERED 
 (
-	[UserName] ASC
+	[UserId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
+GO
+/****** Object:  View [dbo].[vw_DonationRequested]    Script Date: 3/12/2018 10:28:28 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE VIEW [dbo].[vw_DonationRequested]
+AS 
+SELECT T1.*
+FROM
+(SELECT ROW_NUMBER() OVER(ORDER BY D.DonationId, DD.ItemId) as ID, ISNULL(DD.ItemName,D.Title) as Title, D.[Description],
+       ISNULL(DD.DonationStatus, D.DonationStatus) AS DonationStatus,ISNULL(DD.RequestedBy, D.RequestedBy) AS RequestedBy, D.DonationId,DD.ItemId,
+	   U.FirstName, U.LastName, U.Email, U.Phone,U.ImageUrl AS UserImageUrl,
+	   ISNULL((SELECT '['  + STUFF((SELECT ',{"ImageUrl":' +'"'+ ImageUrl +'"'+ '}'
+		FROM DonationDetailImages
+		WHERE ItemId = DD.ItemId
+		FOR XML PATH(''), TYPE).value('.','NVARCHAR(MAX)'),1,1,'') + ']'),
+	   (SELECT '['  + STUFF((SELECT ',{"ImageUrl":' +'"'+ ImageUrl +'"'+ '}'
+		FROM DonationImages
+		WHERE DonationId = D.DonationId
+		FOR XML PATH(''), TYPE).value('.','NVARCHAR(MAX)'),1,1,'') + ']')) AS ImageUrl,
+       ISNULL(DD.CreatedOn,D.CreatedOn) AS CreatedOn,
+	   ISNULL(DD.CreatedBy,D.CreatedBy) AS CreatedBy
+FROM Donations D
+LEFT JOIN DonationDetails DD 
+ON d.DonationId = dd.DonationId
+LEFT JOIN
+(
+   SELECT UserId, FirstName, LastName, Email, ImageUrl, Phone
+   FROM Users
+) AS U ON ISNULL(DD.CreatedBy,D.CreatedBy) = U.UserId
+LEFT JOIN
+(SELECT DonationId, MAX(ImageUrl) AS ImageUrl
+  FROM DonationImages
+  GROUP BY DonationId 
+) AS DI ON D.DonationId = DI.DonationId
+LEFT JOIN
+( SELECT ItemId, MAX(ImageUrl) AS ImageUrl
+  FROM DonationDetailImages
+  GROUP BY ItemId 
+) AS DDI ON DDI.ItemId = DD.ItemId) AS T1 
+
+WHERE CONCAT(T1.DonationId,T1.ItemId) NOT IN
+(SELECT CONCAT(DonationId, ItemId) from Scheduler)
+
+
+
+
+
+GO
+ALTER TABLE [dbo].[Donations] ADD  CONSTRAINT [DF_Donations_CreatedOn]  DEFAULT (getdate()) FOR [CreatedOn]
+GO
+ALTER TABLE [dbo].[DonationDetailImages]  WITH CHECK ADD  CONSTRAINT [FK_DonationDetailImages_DonationDetails] FOREIGN KEY([ItemId])
+REFERENCES [dbo].[DonationDetails] ([ItemId])
+GO
+ALTER TABLE [dbo].[DonationDetailImages] CHECK CONSTRAINT [FK_DonationDetailImages_DonationDetails]
+GO
+ALTER TABLE [dbo].[DonationDetailImages]  WITH NOCHECK ADD  CONSTRAINT [FK_DonationDetailImages_Users_CreatedBy] FOREIGN KEY([CreatedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[DonationDetailImages] CHECK CONSTRAINT [FK_DonationDetailImages_Users_CreatedBy]
+GO
+ALTER TABLE [dbo].[DonationDetailImages]  WITH NOCHECK ADD  CONSTRAINT [FK_DonationDetailImages_Users_ModifiedBy] FOREIGN KEY([ModifiedBy])
+REFERENCES [dbo].[Users] ([UserId])
+GO
+ALTER TABLE [dbo].[DonationDetailImages] CHECK CONSTRAINT [FK_DonationDetailImages_Users_ModifiedBy]
 GO
 ALTER TABLE [dbo].[DonationDetails]  WITH NOCHECK ADD  CONSTRAINT [FK_DonationDetails_CreatedBy_Users_UserId] FOREIGN KEY([CreatedBy])
 REFERENCES [dbo].[Users] ([UserId])
 GO
 ALTER TABLE [dbo].[DonationDetails] CHECK CONSTRAINT [FK_DonationDetails_CreatedBy_Users_UserId]
+GO
+ALTER TABLE [dbo].[DonationDetails]  WITH NOCHECK ADD  CONSTRAINT [FK_DonationDetails_Donations] FOREIGN KEY([DonationId])
+REFERENCES [dbo].[Donations] ([DonationId])
+GO
+ALTER TABLE [dbo].[DonationDetails] CHECK CONSTRAINT [FK_DonationDetails_Donations]
 GO
 ALTER TABLE [dbo].[DonationDetails]  WITH NOCHECK ADD  CONSTRAINT [FK_DonationDetails_ModifiedBy_Users_UserId] FOREIGN KEY([ModifiedBy])
 REFERENCES [dbo].[Users] ([UserId])
@@ -270,10 +378,15 @@ REFERENCES [dbo].[Users] ([UserId])
 GO
 ALTER TABLE [dbo].[DonationDetails] CHECK CONSTRAINT [FK_DonationDetails_RequestedBy_Users_UserId]
 GO
-ALTER TABLE [dbo].[DonationImages]  WITH NOCHECK ADD  CONSTRAINT [FK_DonationImages_DonationDetails_CreatedBy] FOREIGN KEY([CreatedBy])
+ALTER TABLE [dbo].[DonationImages]  WITH NOCHECK ADD  CONSTRAINT [FK_DonationImages_Donations] FOREIGN KEY([DonationId])
+REFERENCES [dbo].[Donations] ([DonationId])
+GO
+ALTER TABLE [dbo].[DonationImages] CHECK CONSTRAINT [FK_DonationImages_Donations]
+GO
+ALTER TABLE [dbo].[DonationImages]  WITH NOCHECK ADD  CONSTRAINT [FK_DonationImages_Users_CreatedBy] FOREIGN KEY([CreatedBy])
 REFERENCES [dbo].[Users] ([UserId])
 GO
-ALTER TABLE [dbo].[DonationImages] CHECK CONSTRAINT [FK_DonationImages_DonationDetails_CreatedBy]
+ALTER TABLE [dbo].[DonationImages] CHECK CONSTRAINT [FK_DonationImages_Users_CreatedBy]
 GO
 ALTER TABLE [dbo].[DonationImages]  WITH NOCHECK ADD  CONSTRAINT [FK_DonationImages_Users_ModifiedBy] FOREIGN KEY([ModifiedBy])
 REFERENCES [dbo].[Users] ([UserId])
@@ -289,6 +402,11 @@ ALTER TABLE [dbo].[Donations]  WITH NOCHECK ADD  CONSTRAINT [FK_Donations_Modifi
 REFERENCES [dbo].[Users] ([UserId])
 GO
 ALTER TABLE [dbo].[Donations] CHECK CONSTRAINT [FK_Donations_ModifiedBy_Users_UserId]
+GO
+ALTER TABLE [dbo].[Donations]  WITH NOCHECK ADD  CONSTRAINT [FK_Donations_Request] FOREIGN KEY([RequestId])
+REFERENCES [dbo].[Request] ([RequestId])
+GO
+ALTER TABLE [dbo].[Donations] CHECK CONSTRAINT [FK_Donations_Request]
 GO
 ALTER TABLE [dbo].[Donations]  WITH NOCHECK ADD  CONSTRAINT [FK_Donations_RequestedBy_Users_UserId] FOREIGN KEY([RequestedBy])
 REFERENCES [dbo].[Users] ([UserId])
@@ -309,6 +427,16 @@ ALTER TABLE [dbo].[Scheduler]  WITH NOCHECK ADD  CONSTRAINT [FK_Scheduler_Create
 REFERENCES [dbo].[Users] ([UserId])
 GO
 ALTER TABLE [dbo].[Scheduler] CHECK CONSTRAINT [FK_Scheduler_CreatedBy_Users_UserId]
+GO
+ALTER TABLE [dbo].[Scheduler]  WITH NOCHECK ADD  CONSTRAINT [FK_Scheduler_DonationDetails] FOREIGN KEY([ItemId])
+REFERENCES [dbo].[DonationDetails] ([ItemId])
+GO
+ALTER TABLE [dbo].[Scheduler] CHECK CONSTRAINT [FK_Scheduler_DonationDetails]
+GO
+ALTER TABLE [dbo].[Scheduler]  WITH NOCHECK ADD  CONSTRAINT [FK_Scheduler_Donations] FOREIGN KEY([DonationId])
+REFERENCES [dbo].[Donations] ([DonationId])
+GO
+ALTER TABLE [dbo].[Scheduler] CHECK CONSTRAINT [FK_Scheduler_Donations]
 GO
 ALTER TABLE [dbo].[Scheduler]  WITH NOCHECK ADD  CONSTRAINT [FK_Scheduler_ModifiedBy_Users_UserId] FOREIGN KEY([ModifiedBy])
 REFERENCES [dbo].[Users] ([UserId])
@@ -344,9 +472,4 @@ ALTER TABLE [dbo].[Users]  WITH NOCHECK ADD  CONSTRAINT [FK_Users_Users_Modified
 REFERENCES [dbo].[Users] ([UserId])
 GO
 ALTER TABLE [dbo].[Users] CHECK CONSTRAINT [FK_Users_Users_ModifiedBy]
-GO
-ALTER TABLE [dbo].[UserSecrets]  WITH NOCHECK ADD  CONSTRAINT [FK_UserSecrets_UserSecrets] FOREIGN KEY([UserName])
-REFERENCES [dbo].[UserSecrets] ([UserName])
-GO
-ALTER TABLE [dbo].[UserSecrets] CHECK CONSTRAINT [FK_UserSecrets_UserSecrets]
 GO

@@ -79,10 +79,10 @@
                                 }
                             }
                             <td>
-                                @Html.ActionLink(Model.Roles[i].Id, "RoleDetais", new { model = Model.Roles[i] })
+                                @Html.ActionLink(Model.Roles[i].Id, "GoToRole", new { roleId = Model.Roles[i].Id })
                             </td>
                             <td>
-                                @Html.ActionLink(Model.Roles[i].Name, "RoleDetais", new { model = Model.Roles[i] })
+                                @Html.ActionLink(Model.Roles[i].Name, "GoToRole", new { roleId = Model.Roles[i].Id })
                             </td>
                             <td>
                                 <a href="@Url.Action("EditRole",new { roleId = Model.Roles[i].Id })" title="Edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a> |

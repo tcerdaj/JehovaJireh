@@ -70,26 +70,25 @@
 
                 @foreach (var item in Model.Users)
                 {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Id)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.UserName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.FirstName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.LastName)
-                        </td>
-                        <td>
-                            <input id="userId_@item.Id" title="Select this User" type="checkbox" class="del-check-input"> |
-                            @*@Html.ActionLink("Edit", "RoleEdit", new { model = item }) |*@
-                            @*@Html.ActionLink("Details", "RoleDetails", new { model = item }) |*@
-                            <a href="#" title="Delete" onclick="delRoleConfirmation('@item.Id')"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-                        </td>
-                    </tr>
+                <tr>
+                    <td>
+                        @Html.ActionLink(item.Id.ToString(), "UpdateAccount", new { userId = item.Id, returnUrl="/Manage/GotoRole?roleId="+Model.Id })
+                    </td>
+                    <td>
+                        @Html.ActionLink(item.UserName, "UpdateAccount", new { userId = item.Id, returnUrl = "/Manage/GotoRole?roleId=" + Model.Id })
+                    </td>
+                    <td>
+                        @Html.ActionLink(item.FirstName, "UpdateAccount", new { userId = item.Id, returnUrl = "/Manage/GotoRole?roleId=" + Model.Id })
+                    </td>
+                    <td>
+                        @Html.ActionLink(item.LastName, "UpdateAccount", new { userId = item.Id, returnUrl = "/Manage/GotoRole?roleId=" + Model.Id })
+                    </td>
+                    <td>
+                        <input id="userId_@item.Id" title="Select this User" type="checkbox" class="del-check-input"> |
+                        <a href="#" title="Delete" onclick="delRoleConfirmation('@item.Id')"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                        <a href="@Url.Action("UpdateAccount", new { userId = item.Id, returnUrl="/Manage/GotoRole?roleId="+Model.Id })" title="Go to @item.UserName user Details"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></a>
+                    </td>
+                </tr>
                 }
             </table>
             <div id="tbUserInRole-no-rows" style="display:none;margin-bottom:20px">No user found.</div>
@@ -123,20 +122,21 @@
                 {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Id)
+                            @Html.ActionLink(item.Id.ToString(), "UpdateAccount", new { userId = item.Id, returnUrl = "/Manage/GotoRole?roleId=" + Model.Id })
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.UserName)
+                            @Html.ActionLink(item.UserName, "UpdateAccount", new { userId= item.Id, returnUrl = "/Manage/GotoRole?roleId=" + Model.Id })
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.FirstName)
+                            @Html.ActionLink(item.FirstName, "UpdateAccount", new { userId = item.Id, returnUrl = "/Manage/GotoRole?roleId=" + Model.Id })
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.LastName)
+                            @Html.ActionLink(item.LastName, "UpdateAccount", new { userId = item.Id, returnUrl = "/Manage/GotoRole?roleId=" + Model.Id })
                         </td>
                         <td>
                             <input id="userId_@item.Id" title="Select this User" type="checkbox" class="add-check-input"> |
                             <a href="#" title="Add" onclick="addUsersToRole('@item.Id')"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
+                            <a href="@Url.Action("UpdateAccount", new { userId = item.Id, returnUrl="/Manage/GotoRole?roleId="+Model.Id })" title="Go to @item.UserName user Details"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></a>
                         </td>
                     </tr>
                 }

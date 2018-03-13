@@ -135,6 +135,14 @@ namespace JehovaJireh.Core.Entities
 		{
 			return JsonConvert.SerializeObject(this, Formatting.Indented, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects });
 		}
-		#endregion
-	}
+
+        public virtual async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User> manager, string defaultAuthenticationType)
+        {
+            // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
+            var userIdentity = await manager.CreateIdentityAsync(this, defaultAuthenticationType);
+            // Add custom user claims here
+            return userIdentity;
+        }
+        #endregion
+    }
 }

@@ -119,7 +119,16 @@ namespace JehovaJireh.Web.UI
 
         public override Task<User> FindAsync(UserLoginInfo login)
         {
-            return userRepository.FindAsync(login);
+            try
+            {
+                return userRepository.FindAsync(login);
+            }
+            catch (System.Exception ex)
+            {
+
+                throw;
+            }
+            
         }
 
         public Task<User> GetUserById(int id)

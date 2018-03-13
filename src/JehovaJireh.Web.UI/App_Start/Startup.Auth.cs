@@ -16,6 +16,8 @@ using Microsoft.Practices.EnterpriseLibrary.ExceptionHandling;
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.Owin.Security.OAuth;
+using JehovaJireh.Web.UI.Providers;
 
 namespace JehovaJireh.Web.UI
 {
@@ -23,6 +25,25 @@ namespace JehovaJireh.Web.UI
     {
         public Startup()
         {
+            PublicClientId = "self";
+            var container = MvcApplication.BootstrapContainer();
+            var session = container.Resolve<ISession>();
+            var exManager = container.Resolve<ExceptionManager>();
+            var log = container.Resolve<ILogger>();
+
+            UserManagerFactory = new UserManager<User>(new UserRepository(session, exManager, log));
+            RoleManagerFactory = new RoleManager<Role>(new RoleRepository(session, exManager, log));
+
+            CookieOptions = new CookieAuthenticationOptions();
+
+            OAuthOptions = new OAuthAuthorizationServerOptions
+            {
+                TokenEndpointPath = new PathString("/Token"),
+                Provider = new ApplicationOAuthProvider(PublicClientId, ()=> UserManagerFactory),
+                AuthorizeEndpointPath = new PathString("/api/Account/ExternalLogin"),
+                AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),
+                AllowInsecureHttp = true
+            };
         }
 		// For more information on configuring authentication, please visit https://go.microsoft.com/fwlink/?LinkId=301864
 		public void ConfigureAuth(IAppBuilder app)
@@ -68,7 +89,7 @@ namespace JehovaJireh.Web.UI
 			// Once you check this option, your second step of verification during the login process will be remembered on the device where you logged in from.
 			// This is similar to the RememberMe option when you log in.
 			app.UseTwoFactorRememberBrowserCookie(DefaultAuthenticationTypes.TwoFactorRememberBrowserCookie);
-
+            app.UseOAuthBearerTokens(OAuthOptions);
 
             // Uncomment the following lines to enable logging in with third party login providers
             //app.UseMicrosoftAccountAuthentication(
@@ -117,22 +138,18 @@ namespace JehovaJireh.Web.UI
             }
         }
 
-        //public static OAuthAuthorizationServerOptions OAuthOptions { get; private set; }
+        public static OAuthAuthorizationServerOptions OAuthOptions { get; private set; }
 
-        //public static CookieAuthenticationOptions CookieOptions { get; private set; }
+        public static CookieAuthenticationOptions CookieOptions { get; private set; }
 
-        //public static IdentityManagerFactory IdentityManagerFactory { get; set; }
+        public static UserManager<User> UserManagerFactory { get; set; }
+        public static RoleManager<Role> RoleManagerFactory { get; set; }
 
         public static string PublicClientId { get; private set; }
         private void createDefaultRolesandUsers()
         {
-            var container = MvcApplication.BootstrapContainer();
-            var session = container.Resolve<ISession>();
-            var exManager = container.Resolve<ExceptionManager>();
-            var log = container.Resolve<ILogger>();
-
-            var userManager = new UserManager<User>(new UserRepository(session, exManager, log));
-            var roleManager = new RoleManager<Role>(new RoleRepository(session, exManager, log));
+            var userManager = UserManagerFactory;
+            var roleManager = RoleManagerFactory;
             string defaultRole = "administrators";
 
             //Create default user

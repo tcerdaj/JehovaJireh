@@ -16,6 +16,7 @@ using Castle.Windsor;
 using System.Diagnostics;
 using Facebook;
 using System.Security.Claims;
+using System.Collections.Generic;
 
 namespace JehovaJireh.Web.UI.Controllers
 {
@@ -32,13 +33,21 @@ namespace JehovaJireh.Web.UI.Controllers
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager, ILogger log)
         {
-            if (userManager == null)
-                userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-
+           
             UserManager = userManager;
             SignInManager = signInManager;
             container = MvcApplication.BootstrapContainer();
             log = container.Resolve<ILogger>();
+        }
+        #endregion
+        #region Authorize
+        [HttpGet]
+        public ActionResult Authorize()
+        {
+            var claims = new ClaimsPrincipal(User).Claims.ToArray();
+            var identity = new ClaimsIdentity(claims, "Bearer");
+            AuthenticationManager.SignIn(identity);
+            return new EmptyResult();
         }
         #endregion
 
@@ -52,6 +61,7 @@ namespace JehovaJireh.Web.UI.Controllers
         public static string OBirthday { get; set; }
         public static string OFname { get; set; }
         public static string OLname { get; set; }
+        public static string ImageUrl { get; set; }
         public ApplicationSignInManager SignInManager
         {
             get
@@ -67,7 +77,7 @@ namespace JehovaJireh.Web.UI.Controllers
         {
             get
             {
-                return _userManager;
+                return _userManager ?? System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>(); 
             }
             private set
             {
@@ -381,6 +391,10 @@ namespace JehovaJireh.Web.UI.Controllers
                 return RedirectToAction("Index", "Home");
             }
             string userprokey = info.Login.ProviderKey;
+
+            if (_userManager == null)
+                _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+
             var user = await UserManager.FindAsync(info.Login);
             userId = user != null ? user.Id.ToString(): userId; //get userId
 
@@ -427,14 +441,18 @@ namespace JehovaJireh.Web.UI.Controllers
                             dynamic uBirtDate = fb.Get("/me?fields=birthday");
                             dynamic uFname = fb.Get("/me?fields=first_name");
                             dynamic uLname = fb.Get("/me?fields=last_name");
+                            dynamic uLimage = fb.Get("/me?fields=image");
                             OEmail = uEmail.email;
                             OBirthday = uBirtDate.birthday;
                             OFname = uFname.first_name;
                             OLname = uLname.last_name;
+                            ImageUrl = uLimage.image;
                             break;
                         case "Google":
                             OEmail = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
-                            OBirthday = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth").Value;
+                            //OBirthday = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth").Value;
+                            dynamic image = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:google:image");
+                            ImageUrl = image.url;
                             OFname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname").Value;
                             OLname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname").Value;
                             break;
@@ -603,16 +621,16 @@ namespace JehovaJireh.Web.UI.Controllers
         {
             System.Globalization.CultureInfo[] cinfo = System.Globalization.CultureInfo.GetCultures(System.Globalization.CultureTypes.SpecificCultures & ~System.Globalization.CultureTypes.NeutralCultures);
 
-            string[] response = new string[] { };
+           List<string> response = new List<string>();
 
             foreach (System.Globalization.CultureInfo cul in cinfo)
             {
                 var i = cinfo.ToList().IndexOf(cul);
                 var region = new System.Globalization.RegionInfo(cul.Name);
-                response[i] = region.DisplayName;
+                response.Add(region.DisplayName);
             }
 
-            return Task<string[]>.FromResult(response);
+            return Task<string[]>.FromResult(response.ToArray());
 
         }
         public static string FindEmail(string oEmail)

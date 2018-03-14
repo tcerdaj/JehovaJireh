@@ -32,10 +32,13 @@ namespace JehovaJireh.Web.UI.Models
         [Display(Name = "Country")]
         public string ExtCountry { get; set; }
 
-        [Required]
+        
         [DataType(DataType.Date)]
         [Display(Name = "BirtDate (MM/dd/yyyy)")]
         public string ExtBirtDate { get; set; }
+
+        [Display(Name = "Profile photo")]
+        public string ExtProfilePhoto { get; set; }
 
     }
 

@@ -17,6 +17,7 @@ using System.Diagnostics;
 using Facebook;
 using System.Security.Claims;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace JehovaJireh.Web.UI.Controllers
 {
@@ -61,7 +62,7 @@ namespace JehovaJireh.Web.UI.Controllers
         public static string OBirthday { get; set; }
         public static string OFname { get; set; }
         public static string OLname { get; set; }
-        public static string ImageUrl { get; set; }
+        public static string OProfilePhoto { get; set; }
         public ApplicationSignInManager SignInManager
         {
             get
@@ -357,14 +358,6 @@ namespace JehovaJireh.Web.UI.Controllers
 
         #region ExternalLogin
 
-        public ActionResult ExternalLogins(string returnUrl)
-        {
-            // Request a redirect to the external login provider
-            ViewBag.returnUrl = returnUrl;
-            var provider = "";
-            return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl }));
-        }
-
         //
         // POST: /Account/ExternalLogin
         [HttpPost]
@@ -446,13 +439,13 @@ namespace JehovaJireh.Web.UI.Controllers
                             OBirthday = uBirtDate.birthday;
                             OFname = uFname.first_name;
                             OLname = uLname.last_name;
-                            ImageUrl = uLimage.image;
+                            OProfilePhoto = uLimage.image;
                             break;
                         case "Google":
                             OEmail = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
                             //OBirthday = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth").Value;
-                            dynamic image = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:google:image");
-                            ImageUrl = image.url;
+                            dynamic image =  JsonConvert.DeserializeObject(info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:google:image").Value);
+                            OProfilePhoto = image.url;
                             OFname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname").Value;
                             OLname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname").Value;
                             break;
@@ -472,11 +465,12 @@ namespace JehovaJireh.Web.UI.Controllers
                             OBirthday = null;
                             OFname = null;
                             OLname = null;
+                            OProfilePhoto = null;
                             break;
                     }
                   
 
-                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = OEmail, ExtFirstName = OFname, ExtLastName = OLname, ExtBirtDate = OBirthday});
+                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = OEmail, ExtFirstName = OFname, ExtLastName = OLname, ExtBirtDate = OBirthday, ExtProfilePhoto = OProfilePhoto});
             }
         }
 
@@ -520,6 +514,7 @@ namespace JehovaJireh.Web.UI.Controllers
                     LastName = model.ExtLastName,
                     Country = model.ExtCountry,
                     BirthDate = birthDate,
+                    ImageUrl = model.ExtProfilePhoto,
                     LastLogin = DateTime.Now,
                     CreatedOn = DateTime.Now
                 };
@@ -617,20 +612,23 @@ namespace JehovaJireh.Web.UI.Controllers
         #endregion
 
         #region Helpers
-        public static Task<string[]> GetContries()
+        public static Task<List<SelectListItem>> GetContries()
         {
             System.Globalization.CultureInfo[] cinfo = System.Globalization.CultureInfo.GetCultures(System.Globalization.CultureTypes.SpecificCultures & ~System.Globalization.CultureTypes.NeutralCultures);
 
-           List<string> response = new List<string>();
+           List<SelectListItem> response = new List<SelectListItem>();
 
             foreach (System.Globalization.CultureInfo cul in cinfo)
             {
-                var i = cinfo.ToList().IndexOf(cul);
                 var region = new System.Globalization.RegionInfo(cul.Name);
-                response.Add(region.DisplayName);
+                if (!cul.IsNeutralCulture && !response.Any(x => x.Text == region.DisplayName))
+                {
+                    response.Add(new SelectListItem { Text = region.DisplayName, Value = region.DisplayName });
+                }
             }
 
-            return Task<string[]>.FromResult(response.ToArray());
+            response = new List<SelectListItem>(response.OrderBy(x=>x.Text));
+            return Task<List<SelectListItem>>.FromResult(response);
 
         }
         public static string FindEmail(string oEmail)

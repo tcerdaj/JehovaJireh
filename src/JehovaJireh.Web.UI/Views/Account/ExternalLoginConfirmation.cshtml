@@ -19,6 +19,58 @@
         Please enter a user name for this site below and click the Register button to finish
         logging in.
     </p>
+    //profile photo
+    {
+        if (AccountController.OProfilePhoto != null)
+        {
+
+            ViewBag.OProfilePhoto = AccountController.OProfilePhoto;
+            <div class="form-group">
+                @Html.LabelFor(m => m.ExtProfilePhoto, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    <div class="avatar-image-container">
+                        <img class="item-avatar img-circle" src="@ViewBag.OProfilePhoto"/>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.ExtProfilePhoto, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+    }
+
+    //username
+    {
+        if (AccountController.OFname != null &&
+            AccountController.OLname != null)
+        {
+            ViewBag.Username = AccountController.OFname.Substring(0, 1).ToLower() +
+                AccountController.OLname.ToLower();
+            <div class="form-group">
+                @Html.LabelFor(m => m.ExtUsername, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.ExtFirstName, new
+                    {
+                        @class = "form-control",
+                        @Value = ViewBag.Username
+                    })
+                    @Html.ValidationMessageFor(m => m.ExtUsername, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.ExtUsername, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.ExtUsername, new
+                    {
+                        @class = "form-control"
+                    })
+                    @Html.ValidationMessageFor(m => m.ExtUsername, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+    }
+    //First name
     {
         if (AccountController.OFname != null)
         {
@@ -52,40 +104,41 @@
             </div>
         }
     }
-
+    //Last name
     {
-        if (AccountController.OFname != null &&
-            AccountController.OLname != null)
+        if (AccountController.OLname != null)
         {
-            ViewBag.Username = AccountController.OFname.Substring(0, 1).ToLower() +
-                AccountController.OLname.ToLower();
+            ViewBag.OLname = AccountController.OLname;
             <div class="form-group">
-                @Html.LabelFor(m => m.ExtFirstName, new { @class = "col-md-2 control-label" })
+                @Html.LabelFor(m => m.ExtLastName, new { @class = "col-md-2 control-label" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(m => m.ExtFirstName, new
+                    @Html.TextBoxFor(m => m.ExtLastName, new
                     {
                         @class = "form-control",
-                        @Value = ViewBag.Username
+                        @Value = ViewBag.OLname,
+                        @readonly = "readonly",
+                        @style = "text-transform: capitalize"
                     })
-                    @Html.ValidationMessageFor(m => m.ExtUsername, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(m => m.ExtLastName, "", new { @class = "text-danger" })
                 </div>
             </div>
         }
         else
         {
             <div class="form-group">
-                @Html.LabelFor(m => m.ExtUsername, new { @class = "col-md-2 control-label" })
+                @Html.LabelFor(m => m.ExtLastName, new { @class = "col-md-2 control-label" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(m => m.ExtUsername, new
+                    @Html.TextBoxFor(m => m.ExtLastName, new
                     {
-                        @class = "form-control"
+                        @class = "form-control",
+                        @style = "text-transform: capitalize"
                     })
-                    @Html.ValidationMessageFor(m => m.ExtUsername, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(m => m.ExtLastName, "", new { @class = "text-danger" })
                 </div>
             </div>
         }
     }
-
+    //Email
     {
         if (AccountController.OEmail != null &&
             AccountController.FindEmail(AccountController.OEmail) == null)
@@ -115,6 +168,7 @@
             </div>
         }
     }
+    //Birthday
     {
         if (AccountController.OBirthday != null)
         {
@@ -144,15 +198,16 @@
             </div>
         }
     }
-
+    //Coutries
     {
-        ViewBag.ExtCountry = AccountController.GetContries();
+        ViewBag.Countries = AccountController.GetContries();
     }
 
     <div class="form-group">
         @Html.LabelFor(m => m.ExtCountry, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.ExtCountry, new { @class = "form-control" })
+            @*@Html.TextBoxFor(m => m.ExtCountry, new { @class = "form-control" })*@
+            @Html.DropDownListFor(m => m.ExtCountry, new System.Collections.Generic.List<SelectListItem>(ViewBag.Countries.Result), "Select Contry...", new { @class = "form-control" })
             @Html.ValidationMessageFor(m => m.ExtCountry, "", new { @class = "text-danger" })
         </div>
     </div>

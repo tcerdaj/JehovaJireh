@@ -10,13 +10,11 @@
             @Html.ActionLink(Resources.Register, "Register")
         </p>
     </div>
-    <div>
-        <h2>Social Logins</h2>
-        <a class="btn btn-block btn-social btn-google" id="btnGoogleLogin" href="#"><i class="fa fa-google"></i>Sign in with Google</a>
-    </div>
 }
 
 <h4>Use another service to log in.</h4>
+<h2>Social Logins</h2>
+
 <hr />
 @{
     var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
@@ -38,7 +36,7 @@
                 <p>
                     @foreach (AuthenticationDescription p in loginProviders)
                     {
-                        <button type="submit" class="btn btn-block btn-social btn-google" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account"><i class="fa fa-google"></i>@p.AuthenticationType</button>
+                        <button type="submit" class="btn btn-block btn-social btn-@p.AuthenticationType.ToLower()" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account"><i class="fa fa-@p.AuthenticationType.ToLower()"></i>Continue with @p.AuthenticationType</button>
                     }
                 </p>
             </div>
@@ -46,8 +44,4 @@
     }
 }
 
-@section Scripts{
-    <script type="text/javascript">
-             //Here not work, please move to login view.
-    </script>
-}
+

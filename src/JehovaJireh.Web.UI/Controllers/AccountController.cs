@@ -135,7 +135,6 @@ namespace JehovaJireh.Web.UI.Controllers
         }
         #endregion
 
-
         #region VerifyCode
         //
         // GET: /Account/VerifyCode
@@ -505,10 +504,12 @@ namespace JehovaJireh.Web.UI.Controllers
                 var userByEmail = await UserManager.FindByEmailAsync(model.Email);
                 var userByUsername = await UserManager.FindByNameAsync(model.Email);
                 DateTime.TryParse(model.ExtBirtDate, out var birthDate);
+                var identity = (ClaimsIdentity)User.Identity;
+                IEnumerable<System.Security.Claims.Claim> claims = identity.Claims;
 
                 var user = new User
                 {
-                    UserName = model.Email,
+                    UserName = model.ExtUsername,
                     Email = model.Email,
                     FirstName = model.ExtFirstName,
                     LastName = model.ExtLastName,
@@ -516,8 +517,10 @@ namespace JehovaJireh.Web.UI.Controllers
                     BirthDate = birthDate,
                     ImageUrl = model.ExtProfilePhoto,
                     LastLogin = DateTime.Now,
-                    CreatedOn = DateTime.Now
-                };
+                    CreatedOn = DateTime.Now,
+                    Logins = new List<Login>() { new Login { ProviderKey = info.Login.ProviderKey, LoginProvider = info.Login.LoginProvider } },
+                    Claims = claims.Select(x => new Core.Entities.Claim { ClaimType = x.ValueType, ClaimValue = x.Value }).ToList<JehovaJireh.Core.Entities.Claim>(), 
+1                };
 
                 if (userByEmail == null && userByUsername == null)
                 {

@@ -1,13 +1,13 @@
 USE [jehovajirehDB]
 GO
-/****** Object:  User [IIS APPPOOL\DefaultAppPool]    Script Date: 3/12/2018 10:28:28 PM ******/
+/****** Object:  User [IIS APPPOOL\DefaultAppPool]    Script Date: 3/17/2018 2:05:25 PM ******/
 CREATE USER [IIS APPPOOL\DefaultAppPool] FOR LOGIN [IIS APPPOOL\DefaultAppPool] WITH DEFAULT_SCHEMA=[dbo]
 GO
 ALTER ROLE [db_datareader] ADD MEMBER [IIS APPPOOL\DefaultAppPool]
 GO
 ALTER ROLE [db_datawriter] ADD MEMBER [IIS APPPOOL\DefaultAppPool]
 GO
-/****** Object:  Table [dbo].[DonationDetailImages]    Script Date: 3/12/2018 10:28:28 PM ******/
+/****** Object:  Table [dbo].[DonationDetailImages]    Script Date: 3/17/2018 2:05:25 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -27,7 +27,7 @@ CREATE TABLE [dbo].[DonationDetailImages](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[DonationDetails]    Script Date: 3/12/2018 10:28:28 PM ******/
+/****** Object:  Table [dbo].[DonationDetails]    Script Date: 3/17/2018 2:05:25 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -51,7 +51,7 @@ CREATE TABLE [dbo].[DonationDetails](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[DonationImages]    Script Date: 3/12/2018 10:28:28 PM ******/
+/****** Object:  Table [dbo].[DonationImages]    Script Date: 3/17/2018 2:05:25 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -71,7 +71,7 @@ CREATE TABLE [dbo].[DonationImages](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Donations]    Script Date: 3/12/2018 10:28:28 PM ******/
+/****** Object:  Table [dbo].[Donations]    Script Date: 3/17/2018 2:05:25 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -97,7 +97,7 @@ CREATE TABLE [dbo].[Donations](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Request]    Script Date: 3/12/2018 10:28:28 PM ******/
+/****** Object:  Table [dbo].[Request]    Script Date: 3/17/2018 2:05:25 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -121,7 +121,7 @@ CREATE TABLE [dbo].[Request](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Roles]    Script Date: 3/12/2018 10:28:28 PM ******/
+/****** Object:  Table [dbo].[Roles]    Script Date: 3/17/2018 2:05:25 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -136,7 +136,7 @@ CREATE TABLE [dbo].[Roles](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Scheduler]    Script Date: 3/12/2018 10:28:28 PM ******/
+/****** Object:  Table [dbo].[Scheduler]    Script Date: 3/17/2018 2:05:25 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -172,7 +172,7 @@ CREATE TABLE [dbo].[Scheduler](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[UserClaims]    Script Date: 3/12/2018 10:28:28 PM ******/
+/****** Object:  Table [dbo].[UserClaims]    Script Date: 3/17/2018 2:05:25 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -189,7 +189,7 @@ CREATE TABLE [dbo].[UserClaims](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[UserLogins]    Script Date: 3/12/2018 10:28:28 PM ******/
+/****** Object:  Table [dbo].[UserLogins]    Script Date: 3/17/2018 2:05:25 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -207,7 +207,7 @@ CREATE TABLE [dbo].[UserLogins](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[UserRoles]    Script Date: 3/12/2018 10:28:28 PM ******/
+/****** Object:  Table [dbo].[UserRoles]    Script Date: 3/17/2018 2:05:25 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -223,7 +223,7 @@ CREATE TABLE [dbo].[UserRoles](
 ) ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 3/12/2018 10:28:28 PM ******/
+/****** Object:  Table [dbo].[Users]    Script Date: 3/17/2018 2:05:25 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -241,6 +241,7 @@ CREATE TABLE [dbo].[Users](
 	[City] [nvarchar](50) NULL,
 	[State] [nvarchar](80) NULL,
 	[Zip] [nvarchar](20) NULL,
+	[Country] [nvarchar](128) NULL,
 	[Phone] [nvarchar](20) NULL,
 	[Gender] [nvarchar](6) NULL,
 	[ConfirmationToken] [nvarchar](30) NULL,
@@ -261,6 +262,7 @@ CREATE TABLE [dbo].[Users](
 	[CreatedBy] [int] NULL,
 	[ModifiedBy] [int] NULL,
 	[LastLoginDatetime] [datetime] NULL,
+	[BirthDate] [date] NULL,
  CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED 
 (
 	[UserId] ASC
@@ -276,7 +278,7 @@ CREATE TABLE [dbo].[Users](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  Table [dbo].[UserSecrets]    Script Date: 3/12/2018 10:28:28 PM ******/
+/****** Object:  Table [dbo].[UserSecrets]    Script Date: 3/17/2018 2:05:25 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -292,7 +294,7 @@ CREATE TABLE [dbo].[UserSecrets](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-/****** Object:  View [dbo].[vw_DonationRequested]    Script Date: 3/12/2018 10:28:28 PM ******/
+/****** Object:  View [dbo].[vw_DonationRequested]    Script Date: 3/17/2018 2:05:25 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON

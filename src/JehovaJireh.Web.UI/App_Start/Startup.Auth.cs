@@ -150,7 +150,7 @@ namespace JehovaJireh.Web.UI
         {
             var userManager = UserManagerFactory;
             var roleManager = RoleManagerFactory;
-            string defaultRole = "administrators";
+            string defaultRole = "Administrators";
 
             //Create default user
             var user = userManager.FindByName(ConfigurationManager.AppSettings["adminUserName"]);
@@ -165,7 +165,8 @@ namespace JehovaJireh.Web.UI
                     PasswordHash = ConfigurationManager.AppSettings["adminPassword"],
                     CreatedOn = DateTime.Now,
                     ModifiedOn = null,
-                    LastLogin = null
+                    LastLogin = null,
+                    BirthDate = null
                 };
 
                var result = userManager.CreateAsync(user, user.PasswordHash);
@@ -185,6 +186,11 @@ namespace JehovaJireh.Web.UI
             else
             {
                 role = roleManager.FindByName(defaultRole);
+            }
+
+            if (!roleManager.RoleExists("externallogin"))
+            {
+                roleManager.CreateAsync(new Role { Id = "externallogin", Name = "ExternalLogin" });
             }
 
             //Create user role

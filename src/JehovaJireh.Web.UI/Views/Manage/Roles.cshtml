@@ -10,100 +10,105 @@
 {
     @Html.AntiForgeryToken()
 
-<div class="form-horizontal">
-    <h4>Add New Role</h4>
-    @if (ViewBag.StatusMessage != string.Empty)
-    {
-        if (ViewBag.Success == true)
+    <div class="form-horizontal">
+        <h4>Add New Role</h4>
+        @if (ViewBag.StatusMessage != string.Empty)
         {
-           <div class="state-sucess">
-               <i class="fa fa-exclamation-circle"></i>
-               @ViewBag.StatusMessage
-           </div>
+            if (ViewBag.Success == true)
+            {
+                <div class="state-sucess">
+                    <i class="fa fa-exclamation-circle"></i>
+                    @ViewBag.StatusMessage
+                </div>
+            }
+            else
+            {
+                <div class="state-error">
+                    <i class="fa fa-exclamation-circle"></i>
+                    @ViewBag.StatusMessage
+                </div>
+            }
         }
-        else
-        {
-           <div class="state-error">
-               <i class="fa fa-exclamation-circle"></i>
-               @ViewBag.StatusMessage
-           </div>
-        }
-    }
-    <hr />
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    <div class="form-group">
-        <div class="row">
-            @Html.Label("Role Info", htmlAttributes: new { @class = "control-label col-xs-6 col-sm-2" })
-            <div class="col-xs-6 col-sm-2">
-                @Html.EditorFor(model => model.Id, new { htmlAttributes = new { @class = "form-control", placeholder = "Role" } })
-                @Html.ValidationMessageFor(model => model.Id, "", new { @class = "text-danger" })
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            <div class="row">
+                @Html.Label("Role Info", htmlAttributes: new { @class = "control-label col-xs-6 col-sm-2" })
+                <div class="col-xs-6 col-sm-2">
+                    @Html.EditorFor(model => model.Id, new { htmlAttributes = new { @class = "form-control", placeholder = "Role" } })
+                    @Html.ValidationMessageFor(model => model.Id, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-xs-6 col-sm-3" style="padding-left:0">
+                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", placeholder = "Name" } })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-xs-6 col-sm-3" style="padding-left:0">
+                    <input type="submit" value="Create" class="btn btn-default" />
+                </div>
             </div>
-            <div class="col-xs-6 col-sm-3" style="padding-left:0">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", placeholder = "Name" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-            </div>
-            <div class="col-xs-6 col-sm-3" style="padding-left:0">
-                <input type="submit" value="Create" class="btn btn-default" />
-            </div>
+
+            @if (Model.Roles != null)
+            {
+                <div class="role-list" style="margin-top:20px;">
+                    <table class="table">
+                        <tr>
+                            <th>
+                                @Html.DisplayName("Role")
+                            </th>
+                            <th>
+                                @Html.DisplayName("Name")
+                            </th>
+                            <th></th>
+                        </tr>
+
+                        @for (var i = 0; i < Model.Roles.Count(); i++)
+                        {
+                            <tr>
+                                @Html.HiddenFor(x => Model.Roles[i].Id)
+                                @Html.HiddenFor(x => Model.Roles[i].Name)
+                                @if (Model.Roles[i].Users != null)
+                                {
+                                    for (int j = 0; j < Model.Roles[i].Users.Count(); j++)
+                                    {
+                                        @Html.HiddenFor(x => Model.Roles[i].Users[j].Id)
+                                        @Html.HiddenFor(x => Model.Roles[i].Users[j].UserName)
+                                        @Html.HiddenFor(x => Model.Roles[i].Users[j].FirstName)
+                                        @Html.HiddenFor(x => Model.Roles[i].Users[j].LastName)
+                                        @Html.HiddenFor(x => Model.Roles[i].Users[j].Secret)
+                                        @Html.HiddenFor(x => Model.Roles[i].Users[j].LastLogin)
+                                    }
+                                }
+                                <td>
+                                    @Html.ActionLink(Model.Roles[i].Id, "GoToRole", new { roleId = Model.Roles[i].Id })
+                                </td>
+                                <td>
+                                    @Html.ActionLink(Model.Roles[i].Name, "GoToRole", new { roleId = Model.Roles[i].Id })
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("EditRole",new { roleId = Model.Roles[i].Id })" title="Edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a> |
+                                    <a href="#" title="Delete" onclick="deleteRole('@Model.Roles[i].Id')"><i class="fa fa-trash-o" aria-hidden="true"></i></a> |
+                                    <a href="@Url.Action("GoToRole", new { roleId = Model.Roles[i].Id })" title="Go to @Model.Roles[i].Name role Details"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </table>
+
+                </div>
+            }
         </div>
 
-        @if (Model.Roles != null)
-        {
-            <div class="role-list" style="margin-top:20px;">
-                <table class="table">
-                    <tr>
-                        <th>
-                            @Html.DisplayName("Role")
-                        </th>
-                        <th>
-                            @Html.DisplayName("Name")
-                        </th>
-                        <th></th>
-                    </tr>
 
-                    @for (var i = 0; i < Model.Roles.Count(); i++)
-                    {
-                        <tr>
-                            @Html.HiddenFor(x => Model.Roles[i].Id)
-                            @Html.HiddenFor(x => Model.Roles[i].Name)
-                            @if (Model.Roles[i].Users != null)
-                            {
-                                for (int j = 0; j < Model.Roles[i].Users.Count(); j++)
-                                {
-                                    @Html.HiddenFor(x => Model.Roles[i].Users[j].Id)
-                                    @Html.HiddenFor(x => Model.Roles[i].Users[j].UserName)
-                                    @Html.HiddenFor(x => Model.Roles[i].Users[j].FirstName)
-                                    @Html.HiddenFor(x => Model.Roles[i].Users[j].LastName)
-                                    @Html.HiddenFor(x => Model.Roles[i].Users[j].Secret)
-                                    @Html.HiddenFor(x => Model.Roles[i].Users[j].LastLogin)
-                                }
-                            }
-                            <td>
-                                @Html.ActionLink(Model.Roles[i].Id, "GoToRole", new { roleId = Model.Roles[i].Id })
-                            </td>
-                            <td>
-                                @Html.ActionLink(Model.Roles[i].Name, "GoToRole", new { roleId = Model.Roles[i].Id })
-                            </td>
-                            <td>
-                                <a href="@Url.Action("EditRole",new { roleId = Model.Roles[i].Id })" title="Edit"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a> |
-                                <a href="#" title="Delete" onclick="deleteRole('@Model.Roles[i].Id')"><i class="fa fa-trash-o" aria-hidden="true"></i></a> |
-                                <a href="@Url.Action("GoToRole", new { roleId = Model.Roles[i].Id })" title="Go to @Model.Roles[i].Name role Details"><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></a>
-                            </td>
-                        </tr>
-                    }
-                </table>
-
-            </div>
-        }
     </div>
-
-
-</div>
+    <div style="padding-top:40px;">
+        <p>
+            @Html.ActionLink("Back to Admin", "Admin", "Home") 
+        </p>
+    </div>
 
 }
 @section Scripts{
-    
-<script type="text/javascript">
+
+    <script type="text/javascript">
         var actions = [
             { text: 'Ok', primary: true, action: onDeleteRole },
             { text: 'Cancel', action: onCancel }
@@ -122,7 +127,7 @@
             console.log('canceling...', $(e.sender.content()).attr("id"))
         }
 
-</script>
+    </script>
     <style>
     </style>
 }

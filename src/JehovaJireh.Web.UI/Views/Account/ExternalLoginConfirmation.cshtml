@@ -29,7 +29,8 @@
                 @Html.LabelFor(m => m.ExtProfilePhoto, new { @class = "col-md-2 control-label" })
                 <div class="col-md-10">
                     <div class="" title="Profile photo">
-                        <img class="" src="@ViewBag.OProfilePhoto"/>
+                        @Html.HiddenFor(m=>m.ExtProfilePhoto)
+                        <img class="" src="@ViewBag.OProfilePhoto" />
                     </div>
                     @Html.ValidationMessageFor(m => m.ExtProfilePhoto, "", new { @class = "text-danger" })
                 </div>
@@ -47,7 +48,7 @@
             <div class="form-group">
                 @Html.LabelFor(m => m.ExtUsername, new { @class = "col-md-2 control-label" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(m => m.ExtFirstName, new
+                    @Html.TextBoxFor(m => m.ExtUsername, new
                     {
                         @class = "form-control",
                         @Value = ViewBag.Username
@@ -194,6 +195,36 @@
                 <div class="col-md-10">
                     @Html.TextBoxFor(m => m.ExtBirtDate, new { @class = "form-control", @type = "date" })
                     @Html.ValidationMessageFor(m => m.ExtBirtDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+    }
+    //Gender
+    {
+        if (AccountController.OGender != null)
+        {
+            ViewBag.OGender = AccountController.OGender;
+            <div class="form-group">
+                @Html.LabelFor(m => m.ExtGender, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.ExtGender, new
+                    {
+                        @class = "form-control",
+                        @Value = @ViewBag.OGender,
+                        @readonly = "readonly",
+                        @type = "string"
+                    })
+                    @Html.ValidationMessageFor(m => m.ExtGender, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="form-group">
+                @Html.LabelFor(m => m.ExtGender, new { @class = "col-md-2 control-label" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(m => m.ExtGender, new { @class = "form-control", @type = "string" })
+                    @Html.ValidationMessageFor(m => m.ExtGender, "", new { @class = "text-danger" })
                 </div>
             </div>
         }

@@ -16,6 +16,7 @@ using Omu.ValueInjecter;
 using JehovaJireh.Web.UI.App_GlobalResources;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using JehovaJireh.Web.UI.CustomAttributes;
 
 namespace JehovaJireh.Web.UI.Controllers
 {
@@ -607,6 +608,7 @@ namespace JehovaJireh.Web.UI.Controllers
 		}
 		
 		// GET: /Manage/UpdateAccount
+        [CustomAuthorizeAttribute(Roles = "Administrators")]
 		public ActionResult UpdateAccount(string userId = null, string returnUrl = null)
 		{
             var user = UserManager.FindById(User.Identity.GetUserId());
@@ -614,7 +616,9 @@ namespace JehovaJireh.Web.UI.Controllers
             if (!string.IsNullOrEmpty(userId))
             {
                 if (!(user.Roles != null && user.Roles.Any(x => x.Name.ToLower() == "administrators")))
+                {
                     return RedirectToAction("Index", "Home");
+                }
 
                 user = UserManager.FindById(userId);
             }

@@ -99,7 +99,36 @@ namespace JehovaJireh.Web.UI
             return manager;
 		}
 
-		public Task<User> UpdatetUserSettingsAsync(User user)
+        public Task<IdentityResult> AddLoginAsync(User user, UserLoginInfo login)
+        {
+            var errors = new List<string>();
+            var result = new IdentityResult(errors);
+            
+            try
+            {
+                if (user == null)
+                    throw new ArgumentNullException("user");
+
+                if (login == null)
+                    throw new ArgumentNullException("login");
+
+                    if (user.Logins == null)
+                        user.Logins = new List<Login>();
+                    user.AddLogin(new Login { ProviderKey = login.ProviderKey, LoginProvider = login.LoginProvider });
+                    this.Update(user);
+
+                    result = IdentityResult.Success;
+            }
+            catch (System.Exception ex)
+            {
+                errors.Add(ex.Message);
+                result = IdentityResult.Failed(errors.ToArray());
+            }
+
+            return Task.FromResult(result);
+        }
+
+        public Task<User> UpdatetUserSettingsAsync(User user)
 		{
 			if (user == null)
 				throw new ArgumentNullException("user");

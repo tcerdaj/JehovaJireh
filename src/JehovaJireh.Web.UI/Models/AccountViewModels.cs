@@ -39,7 +39,8 @@ namespace JehovaJireh.Web.UI.Models
 
         [Display(Name = "Profile photo")]
         public string ExtProfilePhoto { get; set; }
-
+        [Display(Name = "Gender")]
+        public string ExtGender { get; internal set; }
     }
 
     public class ExternalLoginListViewModel

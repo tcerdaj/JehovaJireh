@@ -35,7 +35,8 @@ namespace JehovaJireh.Web.UI.Helpers
 				var container = MvcApplication.BootstrapContainer();
 				var userRepository = container.Resolve<IUserRepository>();
 				user = userRepository.GetByUserName(HttpContext.Current.User.Identity.Name);
-				HttpContext.Current.Session["UserSettings"] = user.ToJson();
+                if (user != null)
+                    HttpContext.Current.Session["UserSettings"] = user.ToJson();
 			}
 
 			if (!string.IsNullOrEmpty(options.CssClass))
@@ -44,12 +45,16 @@ namespace JehovaJireh.Web.UI.Helpers
 			}
 
 			var imageUrl = user != null && !string.IsNullOrEmpty(user.ImageUrl) ? user.ImageUrl : "/img/no-photo.png";
-			imgTag.Attributes.Add("src", string.Format("{0}?width={1}&height={2}",
-				imageUrl,
-				50,
-				50
-				)
-			);
+            var format = string.Format("{0}?width={1}&height={2}",
+                imageUrl,
+                50,
+                50
+                );
+
+            if (imageUrl.Contains("?sz"))
+                format = imageUrl;
+
+			imgTag.Attributes.Add("src", format);
 
 			imgTag.MergeAttribute("width", "50px");
 			imgTag.MergeAttribute("height", "50px");

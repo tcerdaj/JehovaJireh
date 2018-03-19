@@ -21,7 +21,12 @@ namespace JehovaJireh.Web.UI.Controllers
 			return View();
 		}
 
-		public ActionResult E401()
+        public ActionResult Error()
+        {
+            return View();
+        }
+
+        public ActionResult E401()
 		{
 			Response.StatusCode = 401;
 			return View();

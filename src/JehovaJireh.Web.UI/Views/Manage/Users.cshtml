@@ -6,9 +6,6 @@
 
 <h2>Users</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
 <table class="table">
     <tr>
         <th>
@@ -46,15 +43,15 @@
         <td>
             @Html.DisplayFor(modelItem => item.UserName)
         </td>
-        <td>
+        <td class="imageUrl">
             @if (string.IsNullOrEmpty(item.ImageUrl))
-    {
-        <img class="avatar-image-container" src="~/Img/no-photo.png" />
-}
-else
-{
-        <img class="avatar-image-container" src="@item.ImageUrl" />
-}
+             {
+                <img class="avatar-image-container" src="~/Img/no-photo.png" />
+             }
+             else
+             {
+                <img class="avatar-image-container" src="@item.ImageUrl" />
+             }
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.FileDataChange)
@@ -85,3 +82,21 @@ else
 }
 
 </table>
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.table tr td .avatar-image-container').each(function (index, e) {
+                console.log(this.src);
+                if (this.src.indexOf("?sz") > -1)
+                    this.src = this.src.replace("?sz=50", "?sz=90");
+
+            });
+        });
+    </script>
+<style>
+    
+    .imageUrl {
+        text-align: -webkit-center;
+    }
+    </style>    
+ }

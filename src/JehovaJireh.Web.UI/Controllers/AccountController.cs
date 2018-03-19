@@ -35,8 +35,8 @@ namespace JehovaJireh.Web.UI.Controllers
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager, ILogger log)
         {
            
-            UserManager = userManager;
-            SignInManager = signInManager;
+            _UserManager = userManager;
+            _SignInManager = signInManager;
             container = MvcApplication.BootstrapContainer();
             log = container.Resolve<ILogger>();
         }
@@ -55,6 +55,7 @@ namespace JehovaJireh.Web.UI.Controllers
         #region Variables
         private ApplicationSignInManager _signInManager;
         private static ApplicationUserManager _userManager;
+        private static ApplicationRoleManager _roleManager;
         private static IWindsorContainer container;
         private ILogger log;
         private const string USERSETTINGS = "UserSettings";
@@ -63,7 +64,8 @@ namespace JehovaJireh.Web.UI.Controllers
         public static string OFname { get; set; }
         public static string OLname { get; set; }
         public static string OProfilePhoto { get; set; }
-        public ApplicationSignInManager SignInManager
+        public static string OGender { get; set; }
+        public ApplicationSignInManager _SignInManager
         {
             get
             {
@@ -74,7 +76,7 @@ namespace JehovaJireh.Web.UI.Controllers
                 _signInManager = value;
             }
         }
-        public static ApplicationUserManager UserManager
+        public static ApplicationUserManager _UserManager
         {
             get
             {
@@ -83,6 +85,17 @@ namespace JehovaJireh.Web.UI.Controllers
             private set
             {
                 _userManager = value;
+            }
+        }
+        public static ApplicationRoleManager _RoleManager
+        {
+            get
+            {
+                return _roleManager ?? System.Web.HttpContext.Current.GetOwinContext().Get<ApplicationRoleManager>(); 
+            }
+            private set
+            {
+                _roleManager = value;
             }
         }
         #endregion
@@ -114,13 +127,13 @@ namespace JehovaJireh.Web.UI.Controllers
             log.LoginStarted(model.UserName);
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, change to shouldLockout: true
-            var result = await SignInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, shouldLockout: false);
+            var result = await _SignInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, shouldLockout: false);
             timespan.Stop();
             log.LoginFinished(model.UserName, result.ToString(), timespan.Elapsed);
             switch (result)
             {
                 case SignInStatus.Success:
-                    var user = UserManager.FindByName(model.UserName);
+                    var user = _UserManager.FindByName(model.UserName);
                     Session[USERSETTINGS] = user.ToJson();
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
@@ -142,7 +155,7 @@ namespace JehovaJireh.Web.UI.Controllers
         public async Task<ActionResult> VerifyCode(string provider, string returnUrl, bool rememberMe)
         {
             // Require that the user has already logged in via username/password or external login
-            if (!await SignInManager.HasBeenVerifiedAsync())
+            if (!await _SignInManager.HasBeenVerifiedAsync())
             {
                 return View("Error");
             }
@@ -165,7 +178,7 @@ namespace JehovaJireh.Web.UI.Controllers
             // If a user enters incorrect codes for a specified amount of time then the user account 
             // will be locked out for a specified amount of time. 
             // You can configure the account lockout settings in IdentityConfig
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser);
+            var result = await _SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -202,7 +215,7 @@ namespace JehovaJireh.Web.UI.Controllers
                 try
                 {
                     Stopwatch timespan = Stopwatch.StartNew();
-                    var confirmationToken = await UserManager.CreateConfirmationTokenAsync();
+                    var confirmationToken = await _UserManager.CreateConfirmationTokenAsync();
                     ImageService imageService = new ImageService(log);
 
                     var user = (User)new User().InjectFrom<DeepCloneInjection>(model);
@@ -214,13 +227,13 @@ namespace JehovaJireh.Web.UI.Controllers
                     user.ModifiedOn = null;
                     user.LastLogin = DateTime.Now;
 
-                    var result = await UserManager.CreateAsync(user, model.PasswordHash);
+                    var result = await _UserManager.CreateAsync(user, model.PasswordHash);
                     timespan.Stop();
                     log.SaveFinished(user, timespan.Elapsed);
 
                     if (result.Succeeded)
                     {
-                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                        await _SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                         // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                         // Send an email with this link
                         // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
@@ -260,7 +273,7 @@ namespace JehovaJireh.Web.UI.Controllers
             {
                 return View("Error");
             }
-            var result = await UserManager.ConfirmEmailAsync(userId, code);
+            var result = await _UserManager.ConfirmEmailAsync(userId, code);
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
         #endregion
@@ -283,8 +296,8 @@ namespace JehovaJireh.Web.UI.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await UserManager.FindByNameAsync(model.Email);
-                if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id.ToString())))
+                var user = await _UserManager.FindByNameAsync(model.Email);
+                if (user == null || !(await _UserManager.IsEmailConfirmedAsync(user.Id.ToString())))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
                     return View("ForgotPasswordConfirmation");
@@ -331,13 +344,13 @@ namespace JehovaJireh.Web.UI.Controllers
             {
                 return View(model);
             }
-            var user = await UserManager.FindByNameAsync(model.Email);
+            var user = await _UserManager.FindByNameAsync(model.Email);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
             }
-            var result = await UserManager.ResetPasswordAsync(user.Id.ToString(), model.Code, model.Password);
+            var result = await _UserManager.ResetPasswordAsync(user.Id.ToString(), model.Code, model.Password);
             if (result.Succeeded)
             {
                 return RedirectToAction("ResetPasswordConfirmation", "Account");
@@ -383,12 +396,21 @@ namespace JehovaJireh.Web.UI.Controllers
                 return RedirectToAction("Index", "Home");
             }
             string userprokey = info.Login.ProviderKey;
+            User user = null;
 
-            if (_userManager == null)
-                _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            try
+            {
+                if (_userManager == null)
+                    _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
 
-            var user = await UserManager.FindAsync(info.Login);
-            userId = user != null ? user.Id.ToString(): userId; //get userId
+                user = await _UserManager.FindAsync(info.Login);
+                userId = user != null ? user.Id.ToString() : userId; //get userId
+            }
+            catch (System.Exception ex)
+            {
+                throw;
+            }
+          
 
             //if (userId != null)
             //{
@@ -406,11 +428,12 @@ namespace JehovaJireh.Web.UI.Controllers
             //}
 
             // Sign in the user with this external login provider if the user already has a login
-            var result = await SignInManager.ExternalSignInAsync(info, isPersistent: false);
+            var result = await _SignInManager.ExternalSignInAsync(info, isPersistent: false);
             switch (result)
             {
                 case SignInStatus.Success:
-                    UpdateUserAuditValues(user);
+                    if (user != null)
+                        UpdateUserAuditValues(user);
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -434,11 +457,13 @@ namespace JehovaJireh.Web.UI.Controllers
                             dynamic uFname = fb.Get("/me?fields=first_name");
                             dynamic uLname = fb.Get("/me?fields=last_name");
                             dynamic uLimage = fb.Get("/me?fields=image");
+                            dynamic uGender = fb.Get("/me?fields=gender");
                             OEmail = uEmail.email;
                             OBirthday = uBirtDate.birthday;
+                            OProfilePhoto = uLimage.image;
                             OFname = uFname.first_name;
                             OLname = uLname.last_name;
-                            OProfilePhoto = uLimage.image;
+                            OGender = uGender;
                             break;
                         case "Google":
                             OEmail = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
@@ -447,6 +472,7 @@ namespace JehovaJireh.Web.UI.Controllers
                             OProfilePhoto = image.url;
                             OFname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname").Value;
                             OLname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname").Value;
+                            OGender = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:google:gender").Value;
                             break;
                         case "Microsoft":
                             OEmail = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
@@ -458,6 +484,8 @@ namespace JehovaJireh.Web.UI.Controllers
                             OBirthday = string.Format("{0}/{1}/{2}", bday, bmonth, byear);
                             OFname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:first_name").Value;
                             OLname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:last_name").Value;
+                            OProfilePhoto = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:image").Value;
+                            OGender = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:google:gender").Value;
                             break;
                         default:
                             OEmail = null;
@@ -465,11 +493,12 @@ namespace JehovaJireh.Web.UI.Controllers
                             OFname = null;
                             OLname = null;
                             OProfilePhoto = null;
+                            OGender = null;
                             break;
                     }
                   
 
-                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = OEmail, ExtFirstName = OFname, ExtLastName = OLname, ExtBirtDate = OBirthday, ExtProfilePhoto = OProfilePhoto});
+                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = OEmail, ExtFirstName = OFname, ExtLastName = OLname, ExtBirtDate = OBirthday, ExtProfilePhoto = OProfilePhoto, ExtGender = OGender});
             }
         }
 
@@ -478,7 +507,7 @@ namespace JehovaJireh.Web.UI.Controllers
             if (user == null)
                 throw new ArgumentNullException("user");
             user.LastLogin = DateTime.Now;
-            await UserManager.UpdateAsync(user);
+            await _UserManager.UpdateAsync(user);
         }
 
         //
@@ -501,11 +530,29 @@ namespace JehovaJireh.Web.UI.Controllers
                 {
                     return View("ExternalLoginFailure");
                 }
-                var userByEmail = await UserManager.FindByEmailAsync(model.Email);
-                var userByUsername = await UserManager.FindByNameAsync(model.Email);
+                var userByEmail = await _UserManager.FindByEmailAsync(model.Email);
+                var userByUsername = await _UserManager.FindByNameAsync(model.Email);
                 DateTime.TryParse(model.ExtBirtDate, out var birthDate);
                 var identity = (ClaimsIdentity)User.Identity;
+                if (model.ExtUsername != null)
+                    identity.AddClaim(new System.Security.Claims.Claim(nameof(model.ExtUsername), model.ExtUsername));
+                if (model.Email != null)
+                    identity.AddClaim(new System.Security.Claims.Claim(nameof(model.Email), model.Email));
+                if (model.ExtFirstName != null)
+                    identity.AddClaim(new System.Security.Claims.Claim(nameof(model.ExtFirstName), model.ExtFirstName));
+                if (model.ExtLastName != null)
+                    identity.AddClaim(new System.Security.Claims.Claim(nameof(model.ExtLastName), model.ExtLastName));
+                if (model.ExtCountry != null)
+                    identity.AddClaim(new System.Security.Claims.Claim(nameof(model.ExtCountry), model.ExtCountry));
+                if (model.ExtBirtDate != null)
+                    identity.AddClaim(new System.Security.Claims.Claim(nameof(model.ExtBirtDate), birthDate.ToString()));
+                if (model.ExtProfilePhoto != null)
+                    identity.AddClaim(new System.Security.Claims.Claim(nameof(model.ExtProfilePhoto), model.ExtProfilePhoto));
+                if (model.ExtGender != null)
+                    identity.AddClaim(new System.Security.Claims.Claim(nameof(model.ExtGender), model.ExtGender));
+
                 IEnumerable<System.Security.Claims.Claim> claims = identity.Claims;
+                //var defaulRole = await RoleManager.FindByNameAsync("externallogin");
 
                 var user = new User
                 {
@@ -516,23 +563,23 @@ namespace JehovaJireh.Web.UI.Controllers
                     Country = model.ExtCountry,
                     BirthDate = birthDate,
                     ImageUrl = model.ExtProfilePhoto,
+                    Gender = model.ExtGender,
                     LastLogin = DateTime.Now,
-                    CreatedOn = DateTime.Now,
-                    Logins = new List<Login>() { new Login { ProviderKey = info.Login.ProviderKey, LoginProvider = info.Login.LoginProvider } },
-                    Claims = claims.Select(x => new Core.Entities.Claim { ClaimType = x.ValueType, ClaimValue = x.Value }).ToList<JehovaJireh.Core.Entities.Claim>(), 
-1                };
+                    CreatedOn = DateTime.Now
+                };
+
+                user.AddRole(new Role { Id = "externallogin", Name = "ExternalLogin" });
+                user.AddLogin(new Login { ProviderKey = info.Login.ProviderKey, LoginProvider = info.Login.LoginProvider });
+                user.AddClaim(claims.Select(x => new Core.Entities.Claim { ClaimType = x.Type, ClaimValue = x.Value }).ToList<JehovaJireh.Core.Entities.Claim>());
 
                 if (userByEmail == null && userByUsername == null)
                 {
-                    var result = await UserManager.CreateAsync(user);
+                    var result = await _UserManager.CreateAsync(user);
                     if (result.Succeeded)
                     {
-                        result = await UserManager.AddLoginAsync(user.Id.ToString(), info.Login);
-                        if (result.Succeeded)
-                        {
-                            await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                            return RedirectToLocal(returnUrl);
-                        }
+                        await _SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                        Session[USERSETTINGS] = user.ToJson();
+                        return RedirectToAction("Index", "Home");
                     }
                     AddErrors(result);
                 }
@@ -569,12 +616,12 @@ namespace JehovaJireh.Web.UI.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe)
         {
-            var userId = await SignInManager.GetVerifiedUserIdAsync();
+            var userId = await _SignInManager.GetVerifiedUserIdAsync();
             if (userId == null)
             {
                 return View("Error");
             }
-            var userFactors = await UserManager.GetValidTwoFactorProvidersAsync(userId);
+            var userFactors = await _UserManager.GetValidTwoFactorProvidersAsync(userId);
             var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
             return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
         }
@@ -592,7 +639,7 @@ namespace JehovaJireh.Web.UI.Controllers
             }
 
             // Generate the token and send it
-            if (!await SignInManager.SendTwoFactorCodeAsync(model.SelectedProvider))
+            if (!await _SignInManager.SendTwoFactorCodeAsync(model.SelectedProvider))
             {
                 return View("Error");
             }
@@ -636,7 +683,7 @@ namespace JehovaJireh.Web.UI.Controllers
         }
         public static string FindEmail(string oEmail)
         {
-            var user = UserManager.FindByEmail(oEmail);
+            var user = _UserManager.FindByEmail(oEmail);
             return user?.Email;
         }
         protected override void Dispose(bool disposing)

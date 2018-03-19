@@ -14,7 +14,7 @@ namespace JehovaJireh.Data.Mappings
 		public UserMap()
 		{
 			Table("Users");
-			Id(x => x.Id)
+            Id(x => x.Id)
 				.Column("UserId")
 				.GeneratedBy.Increment();
 			Map(x => x.ImageUrl);
@@ -51,13 +51,15 @@ namespace JehovaJireh.Data.Mappings
                 .ChildKeyColumn("RoleId")
                 .Table("UserRoles");
             HasMany(x => x.Logins)
-                .KeyColumn("UserId")
+                .Cascade
+                .AllDeleteOrphan()
                 .Inverse()
-                .Cascade.All();
+                .KeyColumn("UserId");
             HasMany(x => x.Claims)
-               .KeyColumn("UserId")
-               .Inverse()
-               .Cascade.All();
+               .Cascade
+                .AllDeleteOrphan()
+                .Inverse()
+                .KeyColumn("UserId");
             HasOne(x => x.Secret)
                 .Cascade
                 .All();
@@ -97,12 +99,13 @@ namespace JehovaJireh.Data.Mappings
         public ClaimMap()
         {
             Table("UserClaims");
-            Id(x => x.Id).Column("ClaimId");
+            Id(x => x.Id).Column("ClaimId")
+                .GeneratedBy
+                .Increment();
             Map(x => x.ClaimType);
             Map(x => x.ClaimValue);
             References(x => x.User)
-                .Column("UserId")
-                .ForeignKey();
+                .Column("UserId");
         }
     }
 
@@ -111,14 +114,13 @@ namespace JehovaJireh.Data.Mappings
         public LoginMap()
         {
             Table("UserLogins");
-            Id(x=>x.Id)
-                .GeneratedBy
-                .Increment();
+            Id(x => x.Id)
+              .Column("LoginId")
+              .GeneratedBy
+              .Increment(); 
             Map(x => x.LoginProvider);
             Map(x => x.ProviderKey);
-            References(x => x.User)
-                .Column("UserId")
-                .ForeignKey();
+            References(x => x.User).Column("UserId");
         }
     }
 

@@ -52,7 +52,7 @@ namespace JehovaJireh.Core.Entities
         public virtual IList<Claim> Claims { get; set; }
         public virtual IList<Login> Logins { get; set; }
         public virtual UserSecret Secret { get; set; }
-        public virtual DateTime BirthDate { get; set; }
+        public virtual DateTime? BirthDate { get; set; }
         public virtual string Country { get; set; }
         string IUser<string>.Id
 		{
@@ -73,6 +73,7 @@ namespace JehovaJireh.Core.Entities
         {
             if (login == null)
                 throw new ArgumentNullException("login");
+            login.User = this;
             Logins.Add(login);
         }
         public virtual void RemoveClaim(Claim claim)
@@ -87,7 +88,21 @@ namespace JehovaJireh.Core.Entities
         {
             if (claim == null)
                 throw new ArgumentNullException("claim");
+
+            claim.User = this;
             Claims.Add(claim);
+        }
+
+        public virtual void AddClaim(List<Claim> claims)
+        {
+            if (claims == null)
+                throw new ArgumentNullException("claims");
+
+            foreach (var claim in claims)
+            {
+                claim.User = this;
+                Claims.Add(claim);
+            }
         }
 
         public virtual void RemoveRole(Role role)

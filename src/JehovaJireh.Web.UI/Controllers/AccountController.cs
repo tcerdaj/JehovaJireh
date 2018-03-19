@@ -21,7 +21,6 @@ using Newtonsoft.Json;
 
 namespace JehovaJireh.Web.UI.Controllers
 {
-	[Authorize]
 	public class AccountController : BaseController
 	{
 

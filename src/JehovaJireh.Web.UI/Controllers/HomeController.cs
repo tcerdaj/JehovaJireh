@@ -8,31 +8,34 @@ using MvcSiteMapProvider;
 using MvcSiteMapProvider.Web.Mvc.Filters;
 using JehovaJireh.Core.IRepositories;
 using JehovaJireh.Web.UI.Models;
+using JehovaJireh.Web.UI.CustomAttributes;
 
 namespace JehovaJireh.Web.UI.Controllers
 {
 
-	public class HomeController : BaseController
+    public class HomeController : BaseController
 	{
+        [AllowAnonymous]
         public ActionResult Index()
 		{
             IndexViewModel m = new IndexViewModel();
             return View(m);
 		}
 
-        [Authorize]
+        [CustomAuthorizeAttribute(Roles = "Administrators")]
         public ActionResult Admin()
         {
             return View();
         }
 
-		public ActionResult About()
+        [AllowAnonymous]
+        public ActionResult About()
 		{
 			ViewBag.Message = "Your application description page.";
 			return View();
 		}
-
-		public ActionResult Contact()
+        [AllowAnonymous]
+        public ActionResult Contact()
 		{
 			ViewBag.Message = "Your contact page.";
 			return View();

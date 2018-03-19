@@ -205,7 +205,7 @@ namespace JehovaJireh.Web.UI
             }
 
             //Add user to role
-            if (user != null && !user.Roles.Any(x => x.Name == defaultRole))
+            if (user != null && !user.Roles.Any(x=>x.Name.Equals(defaultRole, StringComparison.CurrentCultureIgnoreCase )))
             {
                 if (user.Roles == null)
                 {

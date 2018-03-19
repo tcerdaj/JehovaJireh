@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -22,13 +21,19 @@ namespace JehovaJireh.Web.UI.CustomAttributes
         {
             validationStatus = OnCacheAuthorization(new HttpContextWrapper(context));
         }
+
         public override void OnAuthorization(AuthorizationContext filterContext)
         {
             if (filterContext == null)
             {
                 throw new ArgumentNullException("filterContext");
             }
+            bool skipAuthorization = filterContext.ActionDescriptor.IsDefined(typeof(AllowAnonymousAttribute), true)
+                         || filterContext.ActionDescriptor.ControllerDescriptor.IsDefined(typeof(AllowAnonymousAttribute), true);
 
+            if (skipAuthorization)
+                return;
+            
             if (AuthorizeCore(filterContext.HttpContext))
             {
                 SetCachePolicy(filterContext);

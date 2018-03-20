@@ -50,7 +50,7 @@ namespace JehovaJireh.Web.UI
             }
 
             return container = new WindsorContainer()
-                .Install(FromAssembly.This(), FromAssembly.Containing<Infrastructure.Installers.RepositoryInstaller>());
+                .Install(FromAssembly.This(), FromAssembly.Containing<JehovaJireh.Infrastructure.Installers.RepositoryInstaller>());
         }
 
         protected void Application_End()

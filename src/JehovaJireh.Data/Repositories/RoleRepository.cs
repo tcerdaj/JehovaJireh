@@ -26,7 +26,7 @@ namespace JehovaJireh.Data.Repositories
         public RoleRepository(ISession session)
             : base(session)
         {
-
+            this.session = session;
         }
 
         public RoleRepository()
@@ -128,7 +128,7 @@ namespace JehovaJireh.Data.Repositories
             {
                 this.Update(role);
             }
-            catch (System.Exception ex)
+            catch (System.Exception)
             {
                 throw;
             }

@@ -22,6 +22,12 @@ namespace JehovaJireh.Web.UI.Controllers
             return View(m);
 		}
 
+        
+        public ActionResult signinfacebook()
+        {
+            return View();
+        }
+
         [CustomAuthorizeAttribute(Roles = "Administrators")]
         public ActionResult Admin()
         {

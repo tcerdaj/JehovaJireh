@@ -18,6 +18,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Owin.Security.OAuth;
 using JehovaJireh.Web.UI.Providers;
+using Microsoft.Owin.Security.Facebook;
+using JehovaJireh.Web.UI.Facebook;
 
 namespace JehovaJireh.Web.UI
 {
@@ -99,10 +101,28 @@ namespace JehovaJireh.Web.UI
             //app.UseTwitterAuthentication(
             //   consumerKey: "",
             //   consumerSecret: "");
+            #region Facebook
+            var facebookAuthenticationOptions = new FacebookAuthenticationOptions()
+            {
+                AppId = ConfigurationManager.AppSettings["FaceI"],
+                AppSecret = ConfigurationManager.AppSettings["FaceS"],
+                Provider = new FacebookAuthenticationProvider()
+                {
+                    OnAuthenticated = async context =>
+                    {
+                        context.Identity.AddClaim(new System.Security.Claims.Claim("FacebookAccessToken",
+                            context.AccessToken));
+                    }
+                },
+                //BackchannelHttpHandler = new FacebookchannelHttpHandler(),
+                //UserInformationEndpoint = "https://graph.facebook.com/v2.12/428960084194493?fields=id,email,publuc_profile,user_birth_day"
+            };
 
-            //app.UseFacebookAuthentication(
-            //   appId: "",
-            //   appSecret: "");
+            facebookAuthenticationOptions.Scope.Add("public_profile");
+            facebookAuthenticationOptions.Scope.Add("email");
+            facebookAuthenticationOptions.Scope.Add("user_birthday");
+            app.UseFacebookAuthentication(facebookAuthenticationOptions);
+            #endregion
             #region Google
             var googleAuthenticationOptions = new GoogleOAuth2AuthenticationOptions()
             {

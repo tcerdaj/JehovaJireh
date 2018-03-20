@@ -314,6 +314,7 @@
     <Compile Include="CustomAttributes\CultureAwareControllerActivator.cs" />
     <Compile Include="Extentions\EnumExtensions.cs" />
     <Compile Include="Extentions\FIleExptentions.cs" />
+    <Compile Include="Facebook\FacebookchannelHttpHandler.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

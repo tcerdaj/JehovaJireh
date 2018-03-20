@@ -608,7 +608,6 @@ namespace JehovaJireh.Web.UI.Controllers
 		}
 		
 		// GET: /Manage/UpdateAccount
-        [CustomAuthorizeAttribute(Roles = "Administrators")]
 		public ActionResult UpdateAccount(string userId = null, string returnUrl = null)
 		{
             var user = UserManager.FindById(User.Identity.GetUserId());
@@ -617,7 +616,7 @@ namespace JehovaJireh.Web.UI.Controllers
             {
                 if (!(user.Roles != null && user.Roles.Any(x => x.Name.ToLower() == "administrators")))
                 {
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("E401", "Errors");
                 }
 
                 user = UserManager.FindById(userId);
@@ -654,7 +653,13 @@ namespace JehovaJireh.Web.UI.Controllers
 			user.Comments = model.Comments;
 			user.ModifiedOn = DateTime.UtcNow;
             user.ModifiedBy = new Core.Entities.User { Id = model.Id };
-            user.Roles = model.AllRoles.Where(x => x.Selected == true).Select(r => new Role { Id = r.Value, Name = r.Text }).ToList<Role>();
+            
+
+            if (UserManager.IsInRole(user.Id.ToString(), "administrators"))
+            {
+                user.Roles = model.AllRoles.Where(x => x.Selected == true).Select(r => new Role { Id = r.Value, Name = r.Text }).ToList<Role>();
+            }
+
 			if (model.FileData != null)
 			{
 				ImageService imageService = new ImageService(log);

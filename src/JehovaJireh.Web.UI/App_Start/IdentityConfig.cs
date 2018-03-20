@@ -152,7 +152,7 @@ namespace JehovaJireh.Web.UI
             {
                 return userRepository.FindAsync(login);
             }
-            catch (System.Exception ex)
+            catch (System.Exception )
             {
 
                 throw;

@@ -99,7 +99,7 @@ namespace JehovaJireh.Web.UI.Controllers
                     var list = JsonConvert.DeserializeObject<List<BookViewModels>>(jo.ToString());
                     return list;
                 }
-                catch (System.Exception ex)
+                catch (System.Exception)
                 {
 
                     throw;

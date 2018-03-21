@@ -15,11 +15,11 @@ namespace JehovaJireh.Web.UI.Controllers
 			return View();
 		}
 
-		public ActionResult Error(System.Exception ex)
-		{
-			ModelState.AddModelError("", ex);
-			return View();
-		}
+		//public ActionResult Error(System.Exception ex)
+		//{
+		//	ModelState.AddModelError("", ex);
+		//	return View();
+		//}
 
         public ActionResult Error(string error = null)
         {

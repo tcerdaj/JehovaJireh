@@ -64,6 +64,7 @@ namespace JehovaJireh.Web.UI.Controllers
         public static string OLname { get; set; }
         public static string OProfilePhoto { get; set; }
         public static string OGender { get; set; }
+        public static string OCountry { get; set; }
         public ApplicationSignInManager _SignInManager
         {
             get
@@ -447,61 +448,69 @@ namespace JehovaJireh.Web.UI.Controllers
                     // If the user does not have an account, then prompt the user to create an account
                     ViewBag.ReturnUrl = returnUrl;
                     ViewBag.LoginProvider = info.Login.LoginProvider;
-
-                    switch (info.Login.LoginProvider)
+                    try
                     {
-                        case "Facebook":
-                            var identity = AuthenticationManager.GetExternalIdentity
-                           (DefaultAuthenticationTypes.ExternalCookie);
-                            var access_token = identity.FindFirstValue("FacebookAccessToken");
-                            var fb = new FacebookClient(access_token);
-                            dynamic uEmail = fb.Get("/me?fields=email");
-                            dynamic uBirtDate = fb.Get("/me?fields=birthday");
-                            dynamic uFname = fb.Get("/me?fields=first_name");
-                            dynamic uLname = fb.Get("/me?fields=last_name");
-                            dynamic uLimage = fb.Get("/me?fields=image");
-                            dynamic uGender = fb.Get("/me?fields=gender");
-                            OEmail = uEmail.email;
-                            OBirthday = uBirtDate.birthday;
-                            OProfilePhoto = uLimage.image;
-                            OFname = uFname.first_name;
-                            OLname = uLname.last_name;
-                            OGender = uGender;
-                            break;
-                        case "Google":
-                            OEmail = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
-                            //OBirthday = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth").Value;
-                            dynamic image =  JsonConvert.DeserializeObject(info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:google:image").Value);
-                            OProfilePhoto = image.url;
-                            OFname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname").Value;
-                            OLname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname").Value;
-                            OGender = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:google:gender").Value;
-                            break;
-                        case "Microsoft":
-                            OEmail = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+                        switch (info.Login.LoginProvider)
+                        {
+                            case "Facebook":
+                                var identity = AuthenticationManager.GetExternalIdentity
+                               (DefaultAuthenticationTypes.ExternalCookie);
+                                var access_token = identity.FindFirstValue("FacebookAccessToken");
+                                var fb = new FacebookClient(access_token);
+                                dynamic uEmail = fb.Get("/me?fields=email");
+                                dynamic uBirtDate = fb.Get("/me?fields=birthday");
+                                dynamic uFname = fb.Get("/me?fields=first_name");
+                                dynamic uLname = fb.Get("/me?fields=last_name");
+                                dynamic uLimage = fb.Get("/me?fields=picture");
+                                dynamic uPicture = uLimage.picture.data.url;
+                                dynamic uGender = fb.Get("/me?fields=gender");
+                                dynamic uCountry = fb.Get("/me?fields=hometown");
+                                OEmail = uEmail.email;
+                                OBirthday = uBirtDate.birthday;
+                                OFname = uFname.first_name;
+                                OLname = uLname.last_name;
+                                OGender = uGender.gender;
+                                OProfilePhoto = uPicture;
+                                OCountry = uCountry.hometown.name;
+                                break;
+                            case "Google":
+                                OEmail = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+                                //OBirthday = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/dateofbirth").Value;
+                                dynamic image = JsonConvert.DeserializeObject(info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:google:image").Value);
+                                OProfilePhoto = image.url;
+                                OFname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname").Value;
+                                OLname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname").Value;
+                                OGender = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:google:gender").Value;
+                                break;
+                            case "Microsoft":
+                                OEmail = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
 
-                            string bday = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:birth_day").Value,
-                                   bmonth = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:birth_month").Value, 
-                                   byear = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:birth_year").Value;
+                                string bday = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:birth_day").Value,
+                                       bmonth = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:birth_month").Value,
+                                       byear = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:birth_year").Value;
 
-                            OBirthday = string.Format("{0}/{1}/{2}", bday, bmonth, byear);
-                            OFname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:first_name").Value;
-                            OLname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:last_name").Value;
-                            OProfilePhoto = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:image").Value;
-                            OGender = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:google:gender").Value;
-                            break;
-                        default:
-                            OEmail = null;
-                            OBirthday = null;
-                            OFname = null;
-                            OLname = null;
-                            OProfilePhoto = null;
-                            OGender = null;
-                            break;
+                                OBirthday = string.Format("{0}/{1}/{2}", bday, bmonth, byear);
+                                OFname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:first_name").Value;
+                                OLname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:last_name").Value;
+                                OProfilePhoto = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:image").Value;
+                                OGender = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:google:gender").Value;
+                                break;
+                            default:
+                                OEmail = null;
+                                OBirthday = null;
+                                OFname = null;
+                                OLname = null;
+                                OProfilePhoto = null;
+                                OGender = null;
+                                break;
+                        }
                     }
-                  
+                    catch (System.Exception ex)
+                    {
+                        return RedirectToAction("Error", "Errors", new { error = ex.Message });
+                    }
 
-                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = OEmail, ExtFirstName = OFname, ExtLastName = OLname, ExtBirtDate = OBirthday, ExtProfilePhoto = OProfilePhoto, ExtGender = OGender});
+                    return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = OEmail, ExtFirstName = OFname, ExtLastName = OLname, ExtBirtDate = OBirthday, ExtProfilePhoto = OProfilePhoto, ExtGender = OGender, ExtCountry = OCountry});
             }
         }
 

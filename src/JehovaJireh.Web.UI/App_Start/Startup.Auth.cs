@@ -20,6 +20,8 @@ using Microsoft.Owin.Security.OAuth;
 using JehovaJireh.Web.UI.Providers;
 using Microsoft.Owin.Security.Facebook;
 using JehovaJireh.Web.UI.Facebook;
+using System.Threading.Tasks;
+using System.Globalization;
 
 namespace JehovaJireh.Web.UI
 {
@@ -102,25 +104,41 @@ namespace JehovaJireh.Web.UI
             //   consumerKey: "",
             //   consumerSecret: "");
             #region Facebook
-            var facebookAuthenticationOptions = new FacebookAuthenticationOptions()
+            var facebookAuthenticationOptions = new Microsoft.Owin.Security.Facebook.FacebookAuthenticationOptions()
             {
                 AppId = ConfigurationManager.AppSettings["FaceI"],
                 AppSecret = ConfigurationManager.AppSettings["FaceS"],
+                SendAppSecretProof = true,
+                CallbackPath = new PathString("/signin-facebook"),
                 Provider = new FacebookAuthenticationProvider()
                 {
-                    OnAuthenticated = async context =>
+                    OnAuthenticated = (context) =>
                     {
                         context.Identity.AddClaim(new System.Security.Claims.Claim("FacebookAccessToken",
                             context.AccessToken));
+                        var expiryDuration = context.ExpiresIn ?? new TimeSpan();
+                        context.Identity.AddClaim(new System.Security.Claims.Claim("urn:facebook:expires_in", DateTime.UtcNow.Add(expiryDuration).ToString(CultureInfo.InvariantCulture)));
+
+                        // Add all other available claims
+                        foreach (var claim in context.User)
+                        {
+                            var claimType = string.Format("urn:facebook:{0}", claim.Key);
+                            var claimValue = claim.Value.ToString();
+                            if (!context.Identity.HasClaim(claimType, claimValue))
+                                context.Identity.AddClaim(new System.Security.Claims.Claim(claimType, claimValue, "XmlSchemaString", "Facebook"));
+                        }
+
+                        return Task.FromResult(0);
                     }
                 },
-                //BackchannelHttpHandler = new FacebookchannelHttpHandler(),
-                //UserInformationEndpoint = "https://graph.facebook.com/v2.12/428960084194493?fields=id,email,publuc_profile,user_birth_day"
+                BackchannelHttpHandler = new FacebookchannelHttpHandler()
+
             };
 
-            facebookAuthenticationOptions.Scope.Add("public_profile");
-            facebookAuthenticationOptions.Scope.Add("email");
-            facebookAuthenticationOptions.Scope.Add("user_birthday");
+            //facebookAuthenticationOptions.UserInformationEndpoint = "https://graph.facebook.com/v2.12/me?fields=id,name";
+            //facebookAuthenticationOptions.Scope.Add("id");
+            //facebookAuthenticationOptions.Scope.Add("name");
+
             app.UseFacebookAuthentication(facebookAuthenticationOptions);
             #endregion
             #region Google

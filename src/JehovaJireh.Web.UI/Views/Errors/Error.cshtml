@@ -1,7 +1,9 @@
 ﻿@{
 	ViewBag.Title = "Error";
 }
-
-<h2>Error</h2>
-<h2>@Html.ValidationSummary()</h2>
+<div style="color:red">
+    <h2>Error</h2>
+    <h2>@Html.ValidationSummary()</h2>
+    <p>@ViewBag.error</p>
+</div>
 

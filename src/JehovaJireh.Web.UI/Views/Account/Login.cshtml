@@ -59,6 +59,9 @@
             </section>
         </div>
     </div>
+    <fb:login-button scope="public_profile,email"
+                     onlogin="checkLoginState();">
+    </fb:login-button>
 }
 else
 {
@@ -71,11 +74,20 @@ else
     }
 }
 
+
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     @Styles.Render("~/Content/fontawesome")
 
+
+
     <script type="text/javascript">
+        $(document).ready(function () {
+            FB.getLoginStatus(function (response) {
+                statusChangeCallback(response);
+            });
+        });
+
         $('#btnGoogleLogin').on("click", function (e) {
             var url = "/Account/ExternalLogin?provider=Google&returnUrl=Home%2FIndex";
             alert(url);

@@ -21,8 +21,9 @@ namespace JehovaJireh.Web.UI.Controllers
 			return View();
 		}
 
-        public ActionResult Error()
+        public ActionResult Error(string error = null)
         {
+            ViewBag.error = error;
             return View();
         }
 

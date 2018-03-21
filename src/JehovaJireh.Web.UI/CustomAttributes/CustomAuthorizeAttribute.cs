@@ -33,7 +33,13 @@ namespace JehovaJireh.Web.UI.CustomAttributes
 
             if (skipAuthorization)
                 return;
-            
+
+            if (filterContext.HttpContext.Request.IsLocal)
+            {
+                // when connection to the application is local, don't do any HTTPS stuff
+                return;
+            }
+
             if (AuthorizeCore(filterContext.HttpContext))
             {
                 SetCachePolicy(filterContext);

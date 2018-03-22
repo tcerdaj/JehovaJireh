@@ -36,7 +36,8 @@
                 <p>
                     @foreach (AuthenticationDescription p in loginProviders)
                     {
-                        <button type="submit" class="btn btn-block btn-social btn-@p.AuthenticationType.ToLower()" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account"><i class="fa fa-@p.AuthenticationType.ToLower()"></i>Continue with @p.AuthenticationType</button>
+                        string icon = p.AuthenticationType.ToLower() == "microsoft" ? "windows" : p.AuthenticationType.ToLower();
+                        <button type="submit" class="btn btn-block btn-social btn-@icon" id="@icon" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account"><i class="fa fa-@icon"></i>Continue with @p.AuthenticationType</button>
                     }
                 </p>
             </div>

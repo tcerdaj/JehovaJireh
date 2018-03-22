@@ -96,9 +96,37 @@ namespace JehovaJireh.Web.UI
             app.UseOAuthBearerTokens(OAuthOptions);
 
             // Uncomment the following lines to enable logging in with third party login providers
-            //app.UseMicrosoftAccountAuthentication(
-            //    clientId: "",
-            //    clientSecret: "");
+            #region Microsoft
+            var microsoftAuthenticationOptions = new Microsoft.Owin.Security.MicrosoftAccount.MicrosoftAccountAuthenticationOptions()
+            {
+                ClientId = ConfigurationManager.AppSettings["MsI"],
+                ClientSecret = ConfigurationManager.AppSettings["MsS"],
+                CallbackPath = new PathString("/signin-microsoft"),
+                Provider = new Microsoft.Owin.Security.MicrosoftAccount.MicrosoftAccountAuthenticationProvider
+                {
+                    OnAuthenticated = async (context) =>
+                    {
+                        context.Identity.AddClaim(new System.Security.Claims.Claim("MicrosoftAccessToken",
+                            context.AccessToken));
+                        var expiryDuration = context.ExpiresIn ?? new TimeSpan();
+                        context.Identity.AddClaim(new System.Security.Claims.Claim("urn:microsft:expires_in", DateTime.UtcNow.Add(expiryDuration).ToString(CultureInfo.InvariantCulture)));
+
+                        // Add all other available claims
+                        foreach (var claim in context.User)
+                        {
+                            var claimType = string.Format("urn:microsoft:{0}", claim.Key);
+                            var claimValue = claim.Value.ToString();
+                            if (!context.Identity.HasClaim(claimType, claimValue))
+                                context.Identity.AddClaim(new System.Security.Claims.Claim(claimType,
+                                    claimValue, "XmlSchemaString", "Microsoft"));
+                        }
+                    }
+                },
+                Scope = { "wl.basic", "wl.emails", "wl.birthday", "wl.photos" }
+            };
+
+            app.UseMicrosoftAccountAuthentication(microsoftAuthenticationOptions);
+            #endregion
 
             //app.UseTwitterAuthentication(
             //   consumerKey: "",
@@ -134,10 +162,6 @@ namespace JehovaJireh.Web.UI
                 BackchannelHttpHandler = new FacebookchannelHttpHandler()
 
             };
-
-            //facebookAuthenticationOptions.UserInformationEndpoint = "https://graph.facebook.com/v2.12/me?fields=id,name";
-            //facebookAuthenticationOptions.Scope.Add("id");
-            //facebookAuthenticationOptions.Scope.Add("name");
 
             app.UseFacebookAuthentication(facebookAuthenticationOptions);
             #endregion

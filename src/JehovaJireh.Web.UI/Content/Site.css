@@ -367,3 +367,14 @@ textarea {
     color: #190202;
     border-style: ridge;
 }
+
+.profile-picture {
+    width:160px;
+    height:160px; 
+    background: #FFFFFF; 
+    margin: auto;
+    -moz-border-radius: 60px;
+    border-radius: 100px;
+    padding: 6px;
+    box-shadow: 0px 0px 20px #888;
+}

@@ -18,6 +18,7 @@ using Facebook;
 using System.Security.Claims;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Net.Http;
 
 namespace JehovaJireh.Web.UI.Controllers
 {
@@ -395,9 +396,10 @@ namespace JehovaJireh.Web.UI.Controllers
             //bool custEmailConf = false; //to check if email is confirmed;
             string custUserName = null; //to check if username exist in the database
             var info = await AuthenticationManager.GetExternalLoginInfoAsync();
+           // LogOff();
             if (info == null)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Error", "Errors", new { error= "Error loading external login information during confirmation" });
             }
             string userprokey = info.Login.ProviderKey;
             User user = null;
@@ -465,13 +467,14 @@ namespace JehovaJireh.Web.UI.Controllers
                                 dynamic uPicture = uLimage.picture.data.url;
                                 dynamic uGender = fb.Get("/me?fields=gender");
                                 dynamic uCountry = fb.Get("/me?fields=hometown");
+                                string _uCountry = Convert.ToString(uCountry.hometown.name);
                                 OEmail = uEmail.email;
                                 OBirthday = uBirtDate.birthday;
                                 OFname = uFname.first_name;
                                 OLname = uLname.last_name;
                                 OGender = uGender.gender;
                                 OProfilePhoto = uPicture;
-                                OCountry = uCountry.hometown.name;
+                                OCountry = string.IsNullOrEmpty(_uCountry)? _uCountry: _uCountry.Split(',')[1].Trim();
                                 break;
                             case "Google":
                                 OEmail = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
@@ -483,17 +486,27 @@ namespace JehovaJireh.Web.UI.Controllers
                                 OGender = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:google:gender").Value;
                                 break;
                             case "Microsoft":
-                                OEmail = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
-
+                               // identity = AuthenticationManager.GetExternalIdentity
+                               //(DefaultAuthenticationTypes.ExternalCookie);
+                                //access_token = identity.FindFirstValue("MicrosoftAccessToken");
+                                //var endPoint = "https://graph.microsoft.com/beta/me/photos/48x48/$value";
+                                //string photoUrl = string.Empty;
+                                //using (var client = new System.Net.Http.HttpClient())
+                                //{
+                                //    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + access_token);
+                                //    var response = await client.GetAsync(endPoint);
+                                //    photoUrl  = await response.Content.ReadAsStringAsync();
+                                //}
+                                OEmail = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
                                 string bday = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:birth_day").Value,
                                        bmonth = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:birth_month").Value,
                                        byear = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:birth_year").Value;
 
-                                OBirthday = string.Format("{0}/{1}/{2}", bday, bmonth, byear);
-                                OFname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:first_name").Value;
-                                OLname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:last_name").Value;
-                                OProfilePhoto = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:image").Value;
-                                OGender = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:google:gender").Value;
+                                OBirthday = string.IsNullOrEmpty(bday) || string.IsNullOrEmpty(bmonth) || string.IsNullOrEmpty(byear)? null:  string.Format("{0}/{1}/{2}", bday, bmonth, byear);
+                                OFname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:first_name")?.Value;
+                                OLname = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:last_name")?.Value;
+                                OProfilePhoto = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:microsoft:profile-picture")?.Value;
+                                OGender = info.ExternalIdentity.Claims.FirstOrDefault(c => c.Type == "urn:google:gender")?.Value;
                                 break;
                             default:
                                 OEmail = null;

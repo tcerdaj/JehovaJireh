@@ -82,12 +82,7 @@ else
 
 
     <script type="text/javascript">
-        $(document).ready(function () {
-            FB.getLoginStatus(function (response) {
-                statusChangeCallback(response);
-            });
-        });
-
+        
         $('#btnGoogleLogin').on("click", function (e) {
             var url = "/Account/ExternalLogin?provider=Google&returnUrl=Home%2FIndex";
             alert(url);
